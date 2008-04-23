@@ -19,9 +19,9 @@ begin 12. 3e-4  > field1
 @ i=0
 while( $i < 40)
 #	reflection from the convex mirror and propagation 
-	rect_ap 5.48 < field1 | lens -1e4 | Fresnel 1e4 > field2
+	rect_ap 5.48 < field1 | lens -1e4 | fresnel 1e4 > field2
 #	reflection from the concave mirror and propagation
-	rect_ap 10.96 < field2 | lens 2e4  | Fresnel 1e4 | normal y > field1
+	rect_ap 10.96 < field2 | lens 2e4  | fresnel 1e4 | normal y > field1
 	Strehl y < field1 > /dev/null
 	file_int in < field1 | cros_out cross > /dev/null
 	@ i += 1

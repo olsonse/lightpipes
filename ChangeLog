@@ -1,0 +1,6 @@
+2006-12-22  Spencer Olson  <olsonse@umich.edu>
+	* Field.C, Field.h: Changed lens and t_lens functions so that focal
+        length f is positive for f>0 (this is unlike the original lightpipes
+        code).  This also involved changing the spherical_coords convert
+        function and the lens.C and t_lens.C programs so that they do not add
+        the extra minus sign when calling lens and t_lens.

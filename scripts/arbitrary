@@ -8,7 +8,7 @@
 #	Here a shifted Gaussian distribution 
 #	aberrated with coma is formed	
 
-begin 0.1 1e-6 256 | gauss 0.02 0.02 0.01 | Zernike 3 1 0.02 1 > field1
+begin 0.1 1e-6 256 | gauss 0.02 0.02 0.01 | zernike 3 1 0.02 1 > field1
 
 #	Intensity and phase are saved in files in and pha
 #	Note the command line argument  64 (!) -

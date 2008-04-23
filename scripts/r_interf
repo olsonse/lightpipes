@@ -7,7 +7,7 @@
 
 #	coma 
 
-begin 0.025 5e-7 | circ_ap 0.01 | Zernike 3 1 0.01 10 | b_split foo1 > foo
+begin 0.025 5e-7 | circ_ap 0.01 | zernike 3 1 0.01 10 | b_split foo1 > foo
 # rotating and mixing
 interpol same same  0. 0. 180 < foo1 | b_mix foo > foo2
 show foo2
@@ -16,7 +16,7 @@ file_ps rotational1.ps same < foo2 >/dev/null
 rm foo foo1 foo2
 
 #	astigmatism
-begin 0.025 5e-7 | circ_ap 0.01 | Zernike 2 2 0.01 10 | b_split foo1 > foo
+begin 0.025 5e-7 | circ_ap 0.01 | zernike 2 2 0.01 10 | b_split foo1 > foo
 # rotating and mixing
 interpol same same  0. 0. 90   < foo1 | b_mix foo > foo2
 show foo2
@@ -26,7 +26,7 @@ rm foo foo1 foo2
 
 
 #	high order
-begin 0.025 5e-7 | circ_ap 0.01 | Zernike 7 3 0.01 10 | b_split foo1 > foo
+begin 0.025 5e-7 | circ_ap 0.01 | zernike 7 3 0.01 10 | b_split foo1 > foo
 # rotating and mixing
 interpol same same 0. 0. 90 < foo1 | b_mix foo > foo2
 show foo2

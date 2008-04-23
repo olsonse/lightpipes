@@ -1,23 +1,25 @@
-#!/bin/csh -f
+#!/bin/bash
 #	(C) Gleb Vdovin 1993-1996
 #	This file is a part of LightPipes distribution
 #	
 
 #model of a screen 
-        begin 0.007 0.55e-6  258 > beam
+       begin 0.007 0.55e-6  1024 > beam
 #Two apertures:
-       rect_ap 0.0001 0.0025  -0.0005 < beam > beam1
-       rect_ap 0.0001 0.0025  0.0005 0 15 < beam > beam2
+       rect_ap 0.0001 0.0025  -0.0005      < beam > beam1
+       rect_ap 0.0001 0.0025   0.0005 0 15 < beam > beam2
 #Mixing beams, rewriting the initial beam:
        b_mix beam1 < beam2  > beam
 echo "Initial field"
 show beam
 #writing  Postscript Picture in0r.ps
-        cat beam | file_ps slit0.ps same  > /dev/null
+        #cat beam | file_ps slit0.ps same  > /dev/null
+        cat beam | file_pgm slit0.pgm ascii  > /dev/null
 #propagation 0.75 m and second file in1r.ps
-        Fresnel 0.75 < beam  | file_ps slit1.ps same  >beam1
+        #fresnel 0.75 < beam  | file_ps slit1.ps same  >beam1
+        fresnel 0.75 < beam  | file_pgm slit1.pgm ascii  >beam1
 echo "Diffracted field"
 show beam1
 #removing all beam files
-        rm beam beam1 beam2 
+#       rm beam beam1 beam2 
 #all done

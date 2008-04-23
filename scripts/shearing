@@ -15,7 +15,7 @@ show foo2
 rm foo foo1 foo2
 
 #	shearing intererometer, astigmatism
-begin 0.04 5e-7 | circ_ap 0.01 | Zernike 2 2 0.01 20 |\
+begin 0.04 5e-7 | circ_ap 0.01 | zernike 2 2 0.01 20 |\
 forvard 0.5 | b_split foo1 > foo
 # shifting beam 3 mm without real interpolation, mixing it
 # with centered beam
@@ -26,7 +26,7 @@ show foo2
 rm foo foo1 foo2
 
 #	shearing intererometer, coma
-begin 0.04 5e-7 | circ_ap 0.01 | Zernike 3 1 0.01 10 |\
+begin 0.04 5e-7 | circ_ap 0.01 | zernike 3 1 0.01 10 |\
 forvard 0.5 | b_split foo1 > foo
 # shifting beam 3 mm without real interpolation, mixing it
 # with centered beam
@@ -37,7 +37,7 @@ show foo2
 rm foo foo1 foo2
 
 #	this may be a spherical aberration ??
-begin 0.04 5e-7  | circ_ap 0.01 | Zernike 4 0 0.01 10|\
+begin 0.04 5e-7  | circ_ap 0.01 | zernike 4 0 0.01 10|\
 forvard 0.5 | b_split foo1 > foo
 # shifting beam 3 mm without real interpolation, mixing it
 # with centered beam

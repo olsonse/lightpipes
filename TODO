@@ -1,0 +1,26 @@
+1.
+    Finish porting the code in some of the old c-programs into the c++ Field
+    class.
+
+2.
+    Reimplement the command-line access programs to this code.
+
+3.
+    Implement multilayer transmission/reflection code that appears to be added
+    to the commercial Matlab version.  This can easily be done using the
+    multilayer code from the XUVMulti program/library.  (I have been meaning
+    to visit XUVMulti again for some time to clean it up and package it.)
+
+4.
+    Add a lot of examples for:
+    a.  The octave interface to the package
+    b.  The commandline interface.  This mostly involves upgrading fixing the
+        scripts that were part of the original c-code. 
+    c.  The c++ interface.
+
+5.
+    Extend and finish the inline doxygen comments for the library.
+
+6.
+    Generate the doxygen documentation as a part of the install.  
+

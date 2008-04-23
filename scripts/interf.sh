@@ -12,7 +12,7 @@
 
 
 #	Aberrated beam - you may try different aberrations here:
-begin 1e-2 1e-6  100 | Zernike 7 1 0.72e-2 10 > foo
+begin 1e-2 1e-6  100 | zernike 7 1 0.72e-2 10 > foo
 
 #	Saving and unfolding the phase:
 file_pha pha 50 < foo > /dev/null

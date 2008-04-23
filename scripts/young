@@ -26,7 +26,7 @@ echo "Result of the interference, spectral method:"
 show beam2
 
 #propagation 0.75 m and second file in1r.ps
-        Fresnel 0.75 < beam  | file_ps young1.ps ame > beam2
+        fresnel 0.75 < beam  | file_ps young1.ps ame > beam2
 echo "Result of the interference, FFT convolution:"
 show beam2
 
