@@ -7,6 +7,11 @@ extern "C" {
 #include <math.h>
 
 
+
+const double M_2PI = 2.0 * M_PI;
+const std::complex<double> I(0.0,1.0);
+
+
 int fresnl ( double xxa, double * ssa, double * cca );
 double polevl ( double x, double coef[], int N );
 double p1evl ( double x, double coef[], int N );
@@ -52,14 +57,9 @@ std::ostream & Field::write(std::ostream & out) {
 
 
 
-Field & Field::circular_aperture(double r, double x0, double y0) {
+Field & Field::circular_aperture(const double & r, const double & x0, const double & y0) {
 
     double r2 = SQR(r);
-
-    int i, j;
-    double  x, y;
-    long ik1;
-
     double dx = info.side_length / ( info.number );
     int i2 = info.number / 2;
 
@@ -68,13 +68,13 @@ Field & Field::circular_aperture(double r, double x0, double y0) {
      */
 
 
-    for ( i = 1; i <= info.number; i++ ) {
-        x = ( i - i2 - 1 ) * dx - x0;
-        for ( j = 1; j <= info.number; j++ ) {
-            y = ( j - i2 - 1 ) * dx - y0;
-            ik1 = ( i - 1 ) * info.number + j - 1;
+    for ( int i = 1; i <= info.number; i++ ) {
+        double x = ( i - i2 - 1 ) * dx - x0;
+        for ( int j = 1; j <= info.number; j++ ) {
+            double y = ( j - i2 - 1 ) * dx - y0;
+            long ik1 = ( i - 1 ) * info.number + j - 1;
 
-            if ( SQR(x) + SQR(y) > r2 ) {
+            if ( (SQR(x) + SQR(y)) > r2 ) {
                 val[ik1] = 0.0;
                 //val[ik1].real() = 0.;
                 //val[ik1].imag() = 0.;
@@ -86,11 +86,9 @@ Field & Field::circular_aperture(double r, double x0, double y0) {
 }
 
 /*
- * F>0 for negative lens !!!!! 
+ * f>0 for positive lens !!!!!  (Unlike the original lightpipes code)
  */
 Field & Field::lens ( const double & f, const double & x0, const double & y0 ) {
-    const double M_2PI = 2.0 * M_PI;
-
     double K = M_2PI / info.lambda;
     int n2 = info.number / 2;
     double dx = info.side_length / info.number;
@@ -102,16 +100,9 @@ Field & Field::lens ( const double & f, const double & x0, const double & y0 ) {
         double x2 = SQR(x);
         for ( int j = 1; j <= info.number; j++ ) {
             register double y = ( j - n2 - 1 ) * dx - y0;
-            double fi = 0.5 * K * ( x2 + SQR(y) ) / f;
-            double cab = cos ( fi );
-            double sab = sin ( fi );
+            register double fi = -0.5 * K * ( x2 + SQR(y) ) / f;
+            val[ik] *= exp(I * fi);
 
-            register double ccr = val[ik].real() * cab - val[ik].imag() * sab;
-            register double cci = val[ik].real() * sab + val[ik].imag() * cab;
-
-            val[ik] = std::complex<double>( ccr, cci );
-            //val[ik].real() = ccr;
-            //val[ik].imag() = cci;
             ik++;
         }
     }
@@ -120,10 +111,9 @@ Field & Field::lens ( const double & f, const double & x0, const double & y0 ) {
 }/* Field::lens */
 
 /*
- * f>0 for negative lens !!!!! 
+ * f>0 for positive lens !!!!!  (Unlike the original lightpipes code)
  */
 Field & Field::t_lens ( const double & R, const double & f, const double & x0, const double & y0 ) {
-    const double M_2PI = 2.0 * M_PI;
 
     double K = M_2PI / info.lambda;
     int n2 = info.number / 2;
@@ -136,16 +126,8 @@ Field & Field::t_lens ( const double & R, const double & f, const double & x0, c
         double x2 = SQR(x);
         for ( int j = 1; j <= info.number; j++ ) {
             register double y = ( j - n2 - 1 ) * dx - y0;
-            double fi = 0.5 * K * SQR( R - sqrt ( x2 + SQR(y) ) ) / f;
-            double cab = cos ( fi );
-            double sab = sin ( fi );
-
-            register double ccr = val[ik].real() * cab - val[ik].imag() * sab;
-            register double cci = val[ik].real() * sab + val[ik].imag() * cab;
-
-            val[ik] = std::complex<double>( ccr, cci );
-            //val[ik].real() = ccr;
-            //val[ik].imag() = cci;
+            register double fi = -0.5 * K * SQR( R - sqrt ( x2 + SQR(y) ) ) / f;
+            val[ik] *= exp(I * fi);
 
             ik++;
         }
@@ -218,8 +200,7 @@ Field & Field::forvard ( const double & zz ) {
     int ii, ij, n12;
     long ik, ir;
     double z1;
-    double sw, sw1, bus, abus, cab, sab;
-    const double M_2PI = 2.0 * M_PI;
+    double sw, sw1, bus, abus;
     double z = fabs ( zz );
 
     ik = 0;
@@ -259,17 +240,7 @@ Field & Field::forvard ( const double & zz ) {
                  * if (ir > 1e8) fprintf(stderr,"%ld\n",ir); 
                  */
                 abus = M_2PI * ( ir - bus );
-
-                cab = cos ( abus );
-                sab = sin ( abus );
-
-                register double ccr = val[ik].real() * cab - val[ik].imag() * sab;
-                register double cci = val[ik].real() * sab + val[ik].imag() * cab;
-
-                val[ik] = std::complex<double>( ccr, cci );
-                //val[ik].real() = ccr;
-                //val[ik].imag() = cci;
-
+                val[ik] *= exp(I * abus);
                 ik++;
             }
         }
@@ -290,17 +261,7 @@ Field & Field::forvard ( const double & zz ) {
                  * if (ir > 1e8) fprintf(stderr,"%ld\n",ir); 
                  */
                 abus = M_2PI * ( ir - bus );
-
-                cab = cos ( abus );
-                sab = sin ( abus );
-
-                register double ccr = val[ik].real() * cab + val[ik].imag() * sab;
-                register double cci = val[ik].imag() * cab - val[ik].real() * sab;
-
-                val[ik] = std::complex<double>( ccr, cci );
-                //val[ik].real() = ccr;
-                //val[ik].imag() = cci;
-
+                val[ik] *= exp(-I * abus);
                 ik++;
             }
         }
@@ -552,10 +513,9 @@ Field & Field::lens_fresnel ( const double & f_in, const double & z ) {
 
 Field & Field::spherical_to_normal_coords ( ) {
     if ( info.sph_coords_factor != 0. ) {
-        this->lens ( -1. / info.sph_coords_factor, 0., 0. );
+        this->lens ( 1. / info.sph_coords_factor, 0., 0. );
         info.sph_coords_factor = 0;
     }
-
     return *this;
 }
 
@@ -1260,16 +1220,7 @@ Field & Field::tilt ( double tx, double ty ) {
         for ( int j = 1; j <= info.number; j++ ) {
             double register y = ( j - n2 - 1 ) * dx;
             double fi = -( tx * x + ty * y ) * K;
-            double cab = cos ( fi );
-            double sab = sin ( fi );
-
-            register double ccr = val[ik].real() * cab - val[ik].imag() * sab;
-            register double cci = val[ik].real() * sab + val[ik].imag() * cab;
-
-            val[ik] = std::complex<double>( ccr, cci );
-            //val[ik].real() = ccr;
-            //val[ik].imag() = cci;
-
+            val[ik] *= exp(I * fi);
             ik++;
         }
 
@@ -1375,21 +1326,42 @@ Field & Field::zernike ( int n, int m, double R, double A ) {
             double phi = arg ( std::complex<double>(x, y) );
 
             double fi = A * Zernike ( n, m, rho, phi );
-            double cab = cos ( fi );
-            double sab = sin ( fi );
-
-            register double ccr = val[ik].real() * cab - val[ik].imag() * sab;
-            register double cci = val[ik].real() * sab + val[ik].imag() * cab;
-
-            val[ik] = std::complex<double>( ccr, cci );
-            //val[ik].real() = ccr;
-            //val[ik].imag() = cci;
-
+            val[ik] *= exp(I * fi);
             ik++;
         }
     }
 
     return *this;
+}
+
+double Field::get_strehl () {
+    double dx = info.side_length / ( info.number );
+    double dx2 = SQR(dx);
+    int n2 = info.number / 2 + 1;
+
+    /*
+     * Calculating the power 
+     */
+    double sum = 0., sum1r = 0., sum1i = 0., sum2 = 0.;
+    long ik1 = 0;
+    for ( int i = 1; i <= info.number; i++ ) {
+        for ( int j = 1; j <= info.number; j++ ) {
+            double s_p = norm(val[ik1]);;
+            sum2 += s_p;
+            sum += sqrt ( s_p );
+            sum1r += val[ik1].real();
+            sum1i += val[ik1].imag();
+            ik1++;
+        }
+    }
+    double sum1 = SQR(sum1r) + SQR(sum1i);
+
+
+    if ( sum == 0 ) {
+        throw std::runtime_error ( "Strehl: Zero beam power, program terminated" );
+    }
+
+    return (sum1 / SQR(sum));
 }
 
 std::ostream & Field::print_strehl (std::ostream & output) {
@@ -1700,19 +1672,13 @@ Field & Field::l_amplify(const double & gain, const double & length, const doubl
     return *this;
 }
 
-/*
- * phi>0 for ???? !!!!! 
- */
 Field & Field::axicon ( const double & phi, const std::complex<double> & n1, const double & x0, const double & y0 ) {
-    const double M_2PI = 2.0 * M_PI;
-
     double      KtanB   = (M_2PI / info.lambda) * tan( 0.5 * (M_PI - fabs(phi)) );
     std::complex<double>
                 epsilon = 1.0 - n1;
     int         n2      = info.number / 2;
     double      dx      = info.side_length / info.number;
 
-    std::complex<double> I (0.0,1.0);
 
     long        ik = 0;
 
@@ -1723,12 +1689,8 @@ Field & Field::axicon ( const double & phi, const std::complex<double> & n1, con
         for ( int j = 1; j <= info.number; j++ ) {
             register double y = ( j - n2 - 1 ) * dx - y0;
             register double r = sqrt(x2 + SQR(y));
-
             std::complex<double> fi = KtanB * ( epsilon*r );
-
-            /* we will update the field this way to allow a complex phase */
             val[ik] *= exp(I * fi);
-            //val[ik] = val[ik] * exp(I * fi);
             ik++;
         }
     }
