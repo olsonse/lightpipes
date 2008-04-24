@@ -35,12 +35,13 @@ extern void setmode ( int, int );
 #endif
 
 
-/*
+/** Field structure represents the light field at a given place in
+ * time/position.
+ *
  * The structure FIELD contains the characteristics of the light beam:
  * number of points along the side of a square grid, wavelength and side
  * length of the square grid, then two huge arrays of Re and Im data 
  */
-
 class Field {
   private:
     void cleanup() { if (val) { delete[] val; val = NULL; } }
@@ -54,6 +55,9 @@ class Field {
     }
 
   public:
+    /** Defines character of Field such as wavelength of light, spatial size,
+     * spatial precision, etc.
+     */
     class Info {
       public:
         Info() : number(0), side_length(0.), lambda(0.),
@@ -128,17 +132,20 @@ class Field {
         init();
     }
 
+    /** Constructor with Field::Info initialization. */
     Field (const Info & that_info) {
         val = NULL;
         info = that_info;
         init();
     }
 
+    /** Copy constructor. */
     Field (const Field & that) {
         val = NULL;
         (*this) = that;
     }
 
+    /** Destructor. */
     ~Field () { cleanup(); }
 
     std::ostream & write(std::ostream & out = std::cout);
@@ -147,6 +154,7 @@ class Field {
     std::complex<double> & operator[](const unsigned int i) { return val[i]; }
     const std::complex<double> & operator[](const unsigned int i) const { return val[i]; }
 
+    /** Copy operator. */
     Field & operator = (const Field & that) {
         cleanup();
         this->info = that.info;
@@ -158,6 +166,7 @@ class Field {
         return *this;
     }
 
+    /** Scaling operator. */
     template <class T>
     Field & operator *= ( const T & input ) {
         for (int i=1;i<=info.number; i++){
@@ -170,6 +179,7 @@ class Field {
         return *this;
     }
 
+    /** Field addition operator (Field1 += Field2). */
     Field & operator += ( const Field & that ) {
         if (!compatible(that))
             throw std::runtime_error("cannot add fields that are not compatible");
@@ -276,6 +286,7 @@ class Field {
 };
 
 
+/** Field addition operator. */
 inline Field operator + (const Field & f1, const Field & f2) throw (std::runtime_error)  {
     Field retval(f1);
     retval += f2;

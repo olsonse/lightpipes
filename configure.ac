@@ -2,14 +2,24 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(lightpipes, rev-1, olsonse@umich.edu)
-AM_INIT_AUTOMAKE(lightpipes,rev-1)
+AC_INIT(lightpipes, r459, olsonse@umich.edu)
+AM_INIT_AUTOMAKE(lightpipes,r459)
 AC_CONFIG_SRCDIR([src/lib/Field.h])
 AC_CONFIG_HEADER([src/lib/config.h])
 AX_PREFIX_CONFIG_H([src/lib/$PACKAGE-config.h])
 AC_PREFIX_DEFAULT(`pwd`)
 
 
+# Docygen features
+DX_HTML_FEATURE(ON)
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_MAN_FEATURE(OFF)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(OFF)
+DX_PS_FEATURE(OFF)
+DX_INIT_DOXYGEN(lightpipes, doxygen.cfg, doc/api)
 
 # Checks for programs.
 AC_PROG_CXX

@@ -19,13 +19,3 @@ $(shell ${INSTALL} -p ${srcdir}/Field.h ${PACKAGE}-config.h ${LP_INC}/ )
 PWD=$(shell pwd)
 #OUTESC=$(shell pwd | sed -e "s/\//\\\\\//g")
 OUTESC=$(shell ${top_srcdir}/fullpath.sh ${top_builddir} | sed -e "s/\//\\\\\//g")
-
-
-apidoc : lightpipes-fixed.doxy
-	cd ${srcdir}; doxygen ${PWD}/lightpipes-fixed.doxy
-
-lightpipes-fixed.doxy :
-	cat ${srcdir}/lightpipes.doxy | \
-        sed -e "s/__BASE_OUTPUT_DIRECTORY__/${OUTESC}/" \
-        > lightpipes-fixed.doxy
-

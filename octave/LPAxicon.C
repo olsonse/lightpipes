@@ -44,7 +44,7 @@ DEFUN_DLD (LPAxicon, args, nargout,
         if ( args.length() >= 3 && !args(2).is_real_scalar() ) octave_stdout << "arg 2 is invalid" << std::endl;
         if ( args.length() >= 4 && !args(3).is_real_scalar() ) octave_stdout << "arg 3 is invalid" << std::endl;
 
-        print_usage();
+        print_usage("LPAxicon");
         return octave_value();
     }
 
