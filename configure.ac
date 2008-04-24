@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(lightpipes, r459, olsonse@umich.edu)
-AM_INIT_AUTOMAKE(lightpipes,r459)
+AC_INIT(lightpipes, r462, olsonse@umich.edu)
+AM_INIT_AUTOMAKE(lightpipes,r462)
 AC_CONFIG_SRCDIR([src/lib/Field.h])
 AC_CONFIG_HEADER([src/lib/config.h])
 AX_PREFIX_CONFIG_H([src/lib/$PACKAGE-config.h])
