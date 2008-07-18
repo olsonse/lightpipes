@@ -40,8 +40,7 @@ int main ( int argc, char *argv[] ) {
     return EXIT_SUCCESS;
 }
 
-void error_print ( const char *arr )
-{
+void error_print ( const char *arr ) {
     fprintf ( stderr, "\n%s propagates the field to "
                       "distance Z [units you use]\n", arr );
     fprintf ( stderr, "\nUSAGE:  " );

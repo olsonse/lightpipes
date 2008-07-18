@@ -25,7 +25,7 @@ DEFUN_DLD (LPCircAperture, args, nargout,
 "\n"
 "	with:\n"
 "	r = the radius of the aperture\n"
-"	x0, y0 = the position of the centre of the aperture\n"
+"	x0, y0 = the position of the center of the aperture\n"
 "	Fin  = input field struct (see LPBegin)\n"
 "	Fout = output field struct (see LPBegin)\n"
 "*****************************************************\n"

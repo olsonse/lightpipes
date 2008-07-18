@@ -20,6 +20,7 @@ bin_PROGRAMS =          \
   LPGain.oct            \
   LPGaussAperture.oct   \
   LPGaussScreen.oct     \
+  LPInterpol.oct        \
   LPLens.oct            \
   LPLensForvard.oct     \
   LPLensFresnel.oct     \
@@ -46,6 +47,7 @@ LPForvard_oct_SOURCES  = LPForvard.C $(LPOctave_EXTRAHEADERS)
 LPFresnel_oct_SOURCES  = LPFresnel.C $(LPOctave_EXTRAHEADERS)
 LPGain_oct_SOURCES  = LPGain.C $(LPOctave_EXTRAHEADERS)
 LPGaussAperture_oct_SOURCES  = LPGaussAperture.C $(LPOctave_EXTRAHEADERS)
+LPInterpol_oct_SOURCES     = LPInterpol.C $(LPOctave_EXTRAHEADERS)
 LPGaussScreen_oct_SOURCES  = LPGaussScreen.C $(LPOctave_EXTRAHEADERS)
 LPLens_oct_SOURCES  = LPLens.C $(LPOctave_EXTRAHEADERS)
 LPLensForvard_oct_SOURCES  = LPLensForvard.C $(LPOctave_EXTRAHEADERS)
@@ -63,7 +65,6 @@ LPZernike_oct_SOURCES  = LPZernike.C $(LPOctave_EXTRAHEADERS)
 
 # I haven't finished the C++ library for these functions.
 # LPGaussHermite
-# LPInterpol
 # LPPhaseUnwrap             # Probably just use the unwrap function in octave.
 # LPReflectMultilayer
 # LPSteps
@@ -125,6 +126,7 @@ LPForvard.oct         : $(LPForvard_oct_OBJECTS)
 LPFresnel.oct         : $(LPFresnel_oct_OBJECTS)
 LPGain.oct            : $(LPGain_oct_OBJECTS)
 LPGaussAperture.oct   : $(LPGaussAperture_oct_OBJECTS)
+LPInterpol.oct        : $(LPInterpol_oct_OBJECTS)
 LPGaussScreen.oct     : $(LPGaussScreen_oct_OBJECTS)
 LPLens.oct            : $(LPLens_oct_OBJECTS)
 LPLensForvard.oct     : $(LPLensForvard_oct_OBJECTS)

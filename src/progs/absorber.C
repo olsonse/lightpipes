@@ -39,13 +39,11 @@ int main(int argc, const char *argv[]) {
 
 
 void error_print(const char *arr) {
-    fprintf(stderr,"\n%s filters the field through \
-intensity attenuator K\n", arr);
+    fprintf(stderr,
+        "\n%s filters the field through intensity attenuator K\n", arr);
 
-    fprintf(stderr,"\nUSAGE: %s K, where K \
-is the coefficient \nof attenuation or amplification (must be positive)\n\n", arr);
-
-
+    fprintf(stderr,
+        "\nUSAGE: %s K, where K is the coefficient \n"
+        "of attenuation or amplification (must be positive)\n\n", arr);
 }
-
 

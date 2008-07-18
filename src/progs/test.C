@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 
+/** Gleb Vdovin's way of computing phase. */
 double phase ( double y, double x ) throw (std::runtime_error) {
     double pp = 0.;
     if ( x == 0. ) {
@@ -18,6 +19,9 @@ double phase ( double y, double x ) throw (std::runtime_error) {
 }
 
 
+/** program to compare Vdovin's phase() function with
+ * std::arg(std::complex<> &) function. 
+ */
 int main() {
     double pi = 4*atan(1);
     std::complex<double> I(0,1);
@@ -33,7 +37,9 @@ int main() {
     for (double phi = 0; phi <= 10*M_PI; phi += 1e-6) {
         z.real() = cos(phi);
         z.imag() = sin(phi);
-        if ( fabs(phase(z.imag(), z.real()) - arg(z))/abs(z) > 1e-6 ) {
+        double val_phase = phase(z.imag(), z.real());
+        double val_arg = arg(z);
+        if ( fabs(val_phase - val_arg)/abs(z) > 1e-6 ) {
             std::cout << "phase is different at " << z << std::endl;
             exit(EXIT_FAILURE);
         }

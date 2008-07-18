@@ -32,8 +32,8 @@ int main ( int argc, char *argv[] ) {
     Field * field = Field::read (  );
 
     if ( field->info.sph_coords_factor != 0. ) {
-        fprintf ( stderr, "Forvard can not be applied in spherical\
- coordinates,\nuse CONVERT first\n" );
+        fprintf ( stderr, "Forvard can not be applied in spherical "
+                          "coordinates,\nuse CONVERT first\n" );
         exit ( 1 );
     }
 
@@ -43,12 +43,11 @@ int main ( int argc, char *argv[] ) {
     return 0;
 }
 
-void error_print ( const char *arr )
-{
-    fprintf ( stderr, "\n%s propagates the field to \
-distance Z [units you use]\n\
-using FFT algorithm", arr );
-    fprintf ( stderr, "\nUSAGE:  " );
+void error_print ( const char *arr ) {
+    fprintf ( stderr, "\n%s propagates the field to "
+                      "distance Z [units you use]\n"
+                      "using FFT algorithm\n", arr );
+    fprintf ( stderr, "USAGE:  " );
     fprintf ( stderr, "%s Z, where  Z is the distance to propagate\n\n",
               arr );
 

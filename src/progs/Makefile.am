@@ -15,6 +15,7 @@ bin_PROGRAMS = \
         fresnel \
         gauss \
         gauss_screen \
+        interpol \
         l_amplif \
         lens \
         lens_forvard \
@@ -53,6 +54,7 @@ fresnel_SOURCES         = fresnel.C
 gauss_SOURCES           = gauss.C
 gauss_screen_SOURCES    = gauss_screen.C
 l_amplif_SOURCES        = l_amplif.C
+interpol_SOURCES        = interpol.C
 lens_SOURCES            = lens.C
 lens_forvard_SOURCES    = lens_forvard.C
 lens_fresn_SOURCES      = lens_fresn.C

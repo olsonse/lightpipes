@@ -25,7 +25,7 @@ DEFUN_DLD (LPLens, args, nargout,
 "\n"
 "	with:\n"
 "	f                = focal length of the lens\n"
-"	x0, y0           = displacement from the centre\n"
+"	x0, y0           = displacement from the center\n"
 "	Fin              = the input field struct (see LPBegin)\n"
 "	Fout             = the output field struct (see LPBegin)\n"
 "\n"

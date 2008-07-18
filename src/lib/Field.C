@@ -1495,9 +1495,10 @@ std::ostream & Field::print_field(std::ostream & output,
                                   int output_size /* = 0 */,
                                   const double & gamma /* = 2.0 */,
                                   const int & max_val /* = 255 */,
-                                  const bool ascii /* = false */
+                                  const bool & ascii /* = false */,
+                                  const bool & output_norm /* = true. */
                                   ) {
-    double max_int = 0;
+    double max_px = 0;
 
     if (output_size == 0) output_size = info.number;
 
@@ -1516,103 +1517,77 @@ std::ostream & Field::print_field(std::ostream & output,
     }
 
     /*
-     * fprintf(stderr,"%d\n", istep); 
-     */
-    /*
      * header of the PNM file 
+     * seo:  
+     * FIXME:  This header is wrong in size for istep!=1 and should we
+     * actually use P5?
      */
     output << "P2\n"
            << "#Creator: LightPipes (C) 1993-1996, Gleb Vdovin\n"
+           << "#Creator: LightPipes/C++ (C) 2006-2008, Spencer E. Olson\n"
            << (istep==1 ? output_size : (output_size-1)) << ' '
            << (istep==1 ? output_size : (output_size-1)) << '\n'
            << max_val << '\n';
 
-    if ( istep != 1 ) {
-
-        for ( int i = 1; i <= info.number - istep; i += istep ) {
-            for ( int j = 1; j <= info.number - istep; j += istep ) {
-                double sum;
-                sum = 0;
-                for ( int ii = i; ii <= i + istep; ii++ )
-                    for ( int jj = j; jj <= j + istep; jj++ ) {
-                        long ik1 = ( ii - 1 ) * info.number + jj - 1;
-                        sum += norm(val[ik1]);
-                    }
-                sum = sum / SQR(istep);
-                if ( sum > max_int )
-                    max_int = sum;
+    /* determine the maximum intensity in the image so as to normalize to
+     * max_val when writing to file. */
+    if (output_norm) {
+        for ( int i = 0; i < info.number; i++ ) {
+            for ( int j = 0; j < info.number; j++ ) {
+                double sum = norm (val[i * info.number + j]);
+                if ( sum > max_px ) max_px = sum;
             }
-        }
-
-
-        int i_i = 1;
-        for ( int i = 1; i <= info.number - istep; i += istep ) {
-            for ( int j = 1; j <= info.number - istep; j += istep ) {
-                double sum;
-                sum = 0;
-                for ( int ii = i; ii <= i + istep; ii++ )
-                    for ( int jj = j; jj <= j + istep; jj++ ) {
-                        long ik1 = ( ii - 1 ) * info.number + jj - 1;
-                        sum += norm(val[ik1]);
-                    }
-                sum = sum / SQR( istep );
-                int i0 = ( int )
-                    floor ( pow ( ( sum / max_int ), 1. / ( gamma + 0.0001 ) ) * max_val );
-                /*
-                 * i0=(int) (sum/max_int)*255;
-                 */
-                if (ascii) {
-                    output << i0 << ' ';
-                    i_i++;
-                    if ( i_i == 40 ) {
-                        output << '\n';
-                        i_i = 1;
-                    }
-
-                } else {
-                    output.write((char*)&i0,sizeof(i0));
-                }
-            }
-
-
         }
     } else {
-
-        for ( int i = 1; i <= info.number; i++ ) {
-            for ( int j = 1; j <= info.number; j++ ) {
-                double sum;
-                long ik1 = ( i - 1 ) * info.number + j - 1;
-                sum = norm (val[ik1]);
-                if ( sum > max_int )
-                    max_int = sum;
-            }
-        }
-        int i_i = 1;
-        for ( int i = 1; i <= info.number; i++ ) {
-            for ( int j = 1; j <= info.number; j++ ) {
-                double sum;
-                long ik1 = ( i - 1 ) * info.number + j - 1;
-                sum = norm (val[ik1]);
-                int i0 = ( int )
-                    floor ( pow ( ( sum / max_int ),
-                                  1. / ( gamma + 0.00001 ) )
-                            * max_val );
-
-                if (ascii) {
-                    output << i0 << ' ';
-                    i_i++;
-                    if ( i_i == 40 ) {
-                        output << '\n';
-                        i_i = 1;
-                    }
-
-                } else {
-                    output.write((char*)&i0,sizeof(i0));
-                }
-            }
-        }
+        max_px = M_PI;
     }
 
+    /* now write pixel (set) values out to file. */
+    int i_i = 1;
+    for ( int i = 0; i <= info.number - istep; i += istep ) {
+        for ( int j = 0; j <= info.number - istep; j += istep ) {
+            /* determine the average intensity/phase in the next pixel set. */
+
+            double aval = 0.0;
+            if (output_norm) {
+                double tot = 0;
+                for ( int ii = i; ii < i + istep; ii++ ) {
+                    for ( int jj = j; jj < j + istep; jj++ ) {
+                        tot += norm(val[ii * info.number + jj]);
+                    }
+                }
+
+                aval = tot / SQR( istep );
+            } else {
+                std::complex<double> tot = 0;
+                for ( int ii = i; ii < i + istep; ii++ ) {
+                    for ( int jj = j; jj < j + istep; jj++ ) {
+                        tot += val[ii * info.number + jj];
+                    }
+                }
+
+                aval = arg(tot);
+            }
+
+            /* determine the integer bitmap value. */
+            int i0 = ( int )
+                floor ( pow ( ( aval / max_px ),
+                              1. / ( gamma + 0.0001 ) )
+                        * max_val );
+
+            if (ascii) {
+                output << i0 << ' ';
+                i_i++;
+                if ( i_i == 40 ) {
+                    output << '\n';
+                    i_i = 1;
+                }
+
+            } else {
+                output.write((char*)&i0,sizeof(i0));
+            }
+        } /* j loop */
+    } /* i loop */
     return output;
 }
 
@@ -1647,9 +1622,7 @@ Field & Field::normalize(double * norm_coeff /* = NULL */) {
             long ik1 = ( i - 1 ) * info.number + j - 1;
             val[ik1] *= asum;
         }
-    /*
-     * sscanf(argv[1],"%c", &in);
-     */
+
     if ( norm_coeff != NULL ) {
         (*norm_coeff) = sum;
     }
@@ -1697,3 +1670,433 @@ Field & Field::axicon ( const double & phi, const std::complex<double> & n1, con
 
     return *this;
 }/* Field::axicon */
+
+
+
+/* *** STUFF FOR INTERPOLATE BEGINS HERE *** */
+template <class T, unsigned int N>
+class SquareMatrix {
+  public:
+    T val[N][N];
+
+    void zero() {
+        memset(val,0,sizeof(T)*N*N);
+    }
+
+    T & operator()(const unsigned int i, const unsigned int j) {
+        return val[i][j];
+    }
+
+    const T & operator()(const unsigned int i, const unsigned int j) const {
+        return val[i][j];
+    }
+};
+
+
+
+
+
+template <class T>
+T int16 ( double xc, double yc, double xp, double yp, double dx,
+          const SquareMatrix<T,4> & z ) {
+    T zz1  = int4 ( yc, dx, z(0,0), z(0,1), z(0,2), z(0,3), yp );
+    T zz2  = int4 ( yc, dx, z(1,0), z(1,1), z(1,2), z(1,3), yp );
+    T zz3  = int4 ( yc, dx, z(2,0), z(2,1), z(2,2), z(2,3), yp );
+    T zz4  = int4 ( yc, dx, z(3,0), z(3,1), z(3,2), z(3,3), yp );
+    /** FIXME:  the original code had zz1,zz2,zz2,zz3.
+     * I think that was a bug.  Work it out some time and see if the following
+     * is now correct. */
+    return   int4 ( xc, dx, zz1,    zz2,    zz3,    zz4, xp );
+}
+
+/*
+ * cubic four-point interpolation
+ * 
+ * a+b*x1+c*x1^2+d*x1^3=y1 ...................... a+b*x4+c*x4^2+d*x4^3=y4
+ * 
+ * where x1=x2-dx; x3=x2+dx; x4=x2+2*dx; the grid is uniform
+ * 
+ */
+
+template <class T>
+T int4 ( const double & x2, const double & dx,
+         const T & y1, const T & y2, const T & y3, const T & y4,
+         const double & xz ) {
+    double t0;
+    T a, b, c, d;
+
+    /*
+     * if(xz < x2 || xz >x2+dx ){ fprintf(stderr,"out of range in the
+     * cubic interpolation routine \n"); }
+     */
+
+    /*
+     * maple staff, sorry 
+     */
+    t0 = 1. / ( dx * dx * dx );
+
+    a =  t0 * (  y2 * (3.0 * x2 * dx * dx) + y1 * (      x2 * x2 * x2) +
+                 y1 * (3.0 * x2 * x2 * dx) + y1 * (2.0 * x2 * dx * dx) -
+                 y4 * (      x2 * x2 * x2) + y3 * (3.0 * x2 * x2 * x2) +
+                 y3 * (3.0 * x2 * x2 * dx) - y3 * (6.0 * x2 * dx * dx) +
+                 y4 * (      x2 * dx * dx) + y2 * (6.0 * dx * dx * dx) -
+                 y2 * (3.0 * x2 * x2 * x2) - y2 * (6.0 * x2 * x2 * dx) ) / 6.0;
+
+    b = -t0 * (  y3 * (-6.0 * dx * dx) + y4 * (      dx * dx) +
+                 y2 * ( 3.0 * dx * dx) + y3 * (9.0 * x2 * x2) -
+                 y4 * ( 3.0 * x2 * x2) - y2 * (9.0 * x2 * x2) -
+                 y2 * (12.0 * x2 * dx) + y3 * (6.0 * x2 * dx) +
+                 y1 * ( 3.0 * x2 * x2) + y1 * (6.0 * x2 * dx) +
+                 y1 * ( 2.0 * dx * dx) ) / 6.0;
+                 
+    d = -t0 * ( -3.0 * y2 - y4 + y1 + 3.0 * y3 ) / 6.0;
+
+    c = t0 * (   y2 * (-3.0 * x2) +
+                 y3 * dx +
+                 y1 * dx -
+                 y2 * (2.0 * dx) -
+                 y4 * x2 +
+                 y3 * (3.0 * x2) +
+                 y1 * x2
+             ) * 0.5;
+
+
+
+    /*
+     * return a+b*xz+c*xz*xz+d*xz*xz*xz;
+     */
+    return a + xz * ( b + xz * ( c + xz * d ) );
+
+}
+
+template <class T>
+T inv_squares ( double x, double y, double dx,
+                const T & z,  const T & zx,
+                const T & zy, const T & zxy,
+                double x1, double y1 ) {
+    double tol = 1e-6 * dx;
+    if ( x1 < x - tol || x1 > x + dx + tol || y1 < y - tol
+         || y1 > y + dx + tol ) {
+        char err[256] = "";
+        snprintf ( err, 256,
+                  "out of range in inv_squares %g %g %g %g %g %g %g\n", x,
+                  x1, y, y1, dx, y1 - y, x1 - x );
+        throw std::runtime_error(err);
+    }
+
+    double xlow = x1 - x;
+    double xhigh = x + dx - x1;
+    double ylow = y1 - y;
+    double yhigh = y + dx - y1;
+
+    if ( xlow < -tol || xhigh < -tol || ylow < -tol || yhigh < -tol ) {
+        char err[256] = "";
+        snprintf ( err, 256,
+                  " inv_squares: out of range, %g %g %g %g\n",
+                  xlow, xhigh, ylow, yhigh );
+        throw std::runtime_error(err);
+    }
+
+
+    if ( fabs ( xlow ) < tol )
+        return z + ylow * ( zy - z ) / dx;
+    if ( fabs ( ylow ) < tol )
+        return z + xlow * ( zx - z ) / dx;
+    if ( fabs ( xhigh ) < tol )
+        return zx + ylow * ( zxy - zx ) / dx;
+    if ( fabs ( yhigh ) < tol )
+        return zy + xlow * ( zxy - zx ) / dx;
+
+    double s1 = 1. / ( xlow * ylow );
+    double s2 = 1. / ( xhigh * ylow );
+    double s3 = 1. / ( xlow * yhigh );
+    double s4 = 1. / ( xhigh * yhigh );
+
+
+    double sum = s1 + s2 + s3 + s4;
+    s1 = s1 / sum;
+    s2 = s2 / sum;
+    s3 = s3 / sum;
+    s4 = s4 / sum;
+
+    return z * s1 + zx * s2 + zy * s3 + zxy * s4;
+}
+
+
+
+Field & Field::interpolate(const double & new_side_length /* = 0.0 */,
+                           const int    & new_number /* = 0.0 */,
+                           const double & x_shift /* = 0.0 */,
+                           const double & y_shift /* = 0.0 */,
+                           const double & angle /* = 0.0 */,
+                           const double & magnif /* = 1.0 */) 
+                           throw (std::runtime_error) {
+
+    Info new_info = info;
+    if (new_side_length > 0) new_info.side_length = new_side_length;
+    if (new_number > 0) new_info.number = new_number;
+
+    if ( magnif <= 0.0 ) {
+        throw std::runtime_error("Field::interpolate:  magnification <= 0.0");
+    }
+
+    Field new_field(new_info);
+
+    SquareMatrix<std::complex<double>,4> z; z.zero();
+
+    long n_old_max = info.number * ( info.number - 1 ) - 1;
+
+    double dx_new = new_field.info.side_length / ( new_field.info.number - 1. );
+    double dx_old = info.side_length / ( info.number - 1. );
+
+
+    double on21 = info.number / 2 + 1;
+    double nn2  = new_field.info.number / 2;
+    double lower = ( 1 - on21 ) * dx_old;
+    double upper = ( info.number - on21 ) * dx_old;
+
+    double cc = cos ( angle );
+    double ss = sin ( angle );
+
+
+    for ( int i = 0; i < new_field.info.number; i++ ) {
+        for ( int j = 0; j < new_field.info.number; j++ ) {
+
+            double x0 = ( i - nn2  ) * dx_new - x_shift;
+            double y0 = ( j - nn2  ) * dx_new - y_shift;
+            double x_new = ( x0 * cc + y0 * ss ) / magnif;
+            double y_new = ( -x0 * ss + y0 * cc ) / magnif;
+
+            int i_old = ( int ) ( floor ( x_new / dx_old ) + on21 );
+            double x_old = ( i_old - on21 ) * dx_old;
+            int j_old = ( int ) ( floor ( y_new / dx_old ) + on21 );
+            double y_old = ( j_old - on21 ) * dx_old;
+
+            int i_small = 0;
+            int i_local = 0;
+            /*
+             * first row 
+             */
+            long n_tmp = ( i_old - 2 ) * info.number + j_old - 2;
+
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(0,0) = val[n_tmp];
+            else
+                z(0,0) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(1,0) = val[n_tmp];
+            else
+                z(1,0) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(2,0) = val[n_tmp];
+            else
+                z(2,0) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(3,0) = val[n_tmp];
+            else
+                z(3,0) = 0.0;
+            i_local = 0;
+
+            /*
+             * second row 
+             */
+            n_tmp = ( i_old - 2 ) * info.number + j_old - 1;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(0,1) = val[n_tmp];
+            else
+                z(0,1) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(1,1) = val[n_tmp];
+            else
+                z(1,1) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(2,1) = val[n_tmp];
+            else
+                z(2,1) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(3,1) = val[n_tmp];
+            else
+                z(3,1) = 0.0;
+            i_local = 0;
+
+            /*
+             * third row 
+             */
+            n_tmp = ( i_old - 2 ) * info.number + j_old;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(0,2) = val[n_tmp];
+            else
+                z(0,2) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(1,2) = val[n_tmp];
+            else
+                z(1,2) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(2,2) = val[n_tmp];
+            else
+                z(2,2) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(3,2) = val[n_tmp];
+            else
+                z(3,2) = 0.0;
+            i_local = 0;
+
+
+            /*
+             * fourth row 
+             */
+            n_tmp = ( i_old - 2 ) * info.number + j_old + 1;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(0,3) = val[n_tmp];
+            else
+                z(0,3) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(1,3) = val[n_tmp];
+            else
+                z(1,3) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(2,3) = val[n_tmp];
+            else
+                z(2,3) = 0.0;
+            i_local = 0;
+
+            n_tmp += info.number;
+            if ( n_tmp < 0 || n_tmp > n_old_max ) {
+                i_small = 1;
+                i_local = 1;
+            }
+            if ( i_local != 1 )
+                z(3,3) = val[n_tmp];
+            else
+                z(3,3) = 0.0;
+            i_local = 0;
+
+
+
+
+            /* now finally create the new value. */
+            if ( i_small == 1 ) {
+                if (    x_new > lower
+                     && x_new < upper
+                     && y_new > lower
+                     && y_new < upper ) {
+                    new_field(i,j) =
+                        inv_squares ( x_old, y_old, dx_old,
+                                      z(1,1), z(2,1),
+                                      z(1,2), z(2,2),
+                                      x_new, y_new )
+                        / magnif;
+                }
+            } else {
+                if (    x_new > lower
+                     && x_new < upper
+                     && y_new > lower
+                     && y_new < upper ) {
+                    new_field(i,j) =
+                        int16 ( x_old, y_old, x_new, y_new, dx_old, z ) / magnif;
+                }
+            }
+        }/* j */
+    }/* i */
+
+
+    /* now move the new info+data into the proper storage location. */
+    *this = new_field;
+
+    return *this;
+}
+
+/* *** STUFF FOR INTERPOLATE ENDS HERE *** */

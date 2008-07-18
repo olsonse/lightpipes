@@ -26,7 +26,7 @@ int main ( int argc, char *argv[] ) {
     /*
      * Processing the command line argument 
      */
-    if ( argc < 2 || argc > 6 ) {
+    if ( argc < 2 || argc > 7 ) {
         error_print ( argv[0] );
         exit ( 1 );
     }
@@ -50,11 +50,15 @@ int main ( int argc, char *argv[] ) {
     if ( argc >= 5 ) sscanf ( argv[4], "%le", &gamma );
     if ( argc >= 6 ) sscanf ( argv[5], "%d", &max_val );
 
+    bool output_norm = true;
+    if ( argc >= 7 && strstr ( argv[6], "phas" ) != NULL ) {
+        output_norm = false;
+    }
 
     std::ofstream output (argv[1]);
 
     Field * field = Field::read (  );
-    field->print_field (output, output_size, gamma, max_val, ascii);
+    field->print_field (output, output_size, gamma, max_val, ascii, output_norm);
     output.close (  );
     field->write (  );
     delete field;
@@ -65,15 +69,17 @@ int main ( int argc, char *argv[] ) {
 
 
 void error_print ( const char *arr ) {
-    fprintf ( stderr, "\n%s writes intensity distribution\
-into *.pgm file F\n", arr );
+    fprintf ( stderr, "\n%s writes intensity distribution into *.pgm file F\n", arr );
 
-    fprintf ( stderr, "\nUSAGE: %s F ['raw'|'ascii', N, G, MAX], where F is the output filename,\n\
-optional parameter N is the grid size, N=128 if omitted in command line\n\
-N equals to grid sampling if you pass the word \"same\"\n\
-G is the Gamma parameter, [0.1...10], higher G gives better\n\
-contrast in low intensities, default G=2.0\n\
-MAX is the number of gray levels, default MAX=255\n\n",
+    fprintf ( stderr,
+              "\nUSAGE: %s F ['raw'|'ascii', N, G, MAX, ['int'|'phase'] ], where F is the output filename,\n"
+              "optional parameter N is the grid size, N=128 if omitted in command line\n"
+              "N equals to grid sampling if you pass the word \"same\"\n"
+              "G is the Gamma parameter, [0.1...10], higher G gives better\n"
+              "contrast in low intensities, default G=2.0\n"
+              "MAX is the number of gray levels, default MAX=255\n"
+              "'int' for intensity output (default), or 'phase' for phase output\n"
+              "\n",
               arr );
     fprintf ( stderr,
               "Output file F can be processed with netpbm package \n\n" );

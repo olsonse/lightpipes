@@ -60,13 +60,31 @@ class Field {
      */
     class Info {
       public:
+        /** Constructor. */
         Info() : number(0), side_length(0.), lambda(0.),
                  fft_level(0), sph_coords_factor(0.) { }
+
+        /** The number of side-elements stored in Field::val
+         * (sizeof(Field::val) = number^{2}.
+         */
         int number;
-        double side_length, lambda;
+
+        /** The physical size of the side of the Field view. */
+        double side_length;
+
+        /** Wavelength of the Field. */
+        double lambda;
+
+        /** FFT status. */
         int fft_level;
+
+        /** Spherical coordinates conversion factor, see Field::lens_fresnel
+         * and Field::lens_forvard. */
         double sph_coords_factor;
 
+        /** Test to see if two Fields are compatible based on their field type
+         * (wavelength, size, etc.).
+         */
         bool compatible(const Info & that) const {
             if (number  != that.number  ||
                 side_length    != that.side_length    ||
@@ -76,6 +94,7 @@ class Field {
             else return true;
         }
 
+        /** read the Field::Info data from file. */
         std::istream & read(std::istream & in) {
             if ( !in.read((char*)&number, sizeof(int)) )
                 throw std::runtime_error("Error while reading FIELD.number\n");
@@ -99,6 +118,7 @@ class Field {
             return in;
         }
 
+        /** write the Field::Info data to file. */
         std::ostream & write(std::ostream & out) {
             if ( !out.write((char*)&number, sizeof(int)) )
                 throw std::runtime_error("Error while writing FIELD.number\n");
@@ -148,11 +168,34 @@ class Field {
     /** Destructor. */
     ~Field () { cleanup(); }
 
+    /** Write the Field to file (internal format). 
+    * The internal format is 1. Field::Info, 2. complex<double> array of
+    * length N*N.
+    */
+
     std::ostream & write(std::ostream & out = std::cout);
+    /** Read a new Field from file (internal format). 
+     * @see Field::write.
+     */
     static Field * read(std::istream & in = std::cin) throw (std::runtime_error) ;
 
+    /** Field index operator (non-const). */
     std::complex<double> & operator[](const unsigned int i) { return val[i]; }
+
+    /** Field index operator (const). */
     const std::complex<double> & operator[](const unsigned int i) const { return val[i]; }
+
+    /** Field index operator (non-const) using column AND row indices. */
+    std::complex<double> & operator()(const unsigned int row,
+                                      const unsigned int col) {
+        return val[row*info.number + col];
+    }
+
+    /** Field index operator (const) using column AND row indices. */
+    const std::complex<double> & operator()(const unsigned int row,
+                                      const unsigned int col) const {
+        return val[row*info.number + col];
+    }
 
     /** Copy operator. */
     Field & operator = (const Field & that) {
@@ -217,16 +260,43 @@ class Field {
      */
     Field & axicon ( const double & phi, const std::complex<double> & n1, const double & x0, const double & y0 );
 
+    /** Propagates Field using convolution.
+     * @param z
+     *     Distance to propagate.
+     */
     Field & fresnel ( const double &z );
 
-    /**
+    /** Propagates Field using direct integration.
      * Note that this operates on the input field structure.
      * @returns a reference to the changed field.
      */
     Field & forward( const double & z, const double & new_side_length, const int & new_number );
+
+    /** Propagates Field in spherical coordinates using FFT.
+     * @param f
+     *     Focal distance of lens that determines the curvature of the
+     *     coordinate system. 
+     * @param z
+     *     Propagation distance. 
+     */
     Field & lens_forvard(double f, double z);
+
+    /** Propagates Field in spherical coordinates.
+     * @param f
+     *     Focal distance of lens that determines the curvature of the
+     *     coordinate system. 
+     * @param z
+     *     Propagation distance. 
+     */
     Field & lens_fresnel ( const double & f, const double & z );
+
+    /** Propagates Field using FFT. 
+     * @param z
+     *     Distance to propagate.
+     */
     Field & forvard( const double & z );
+
+    /** Convert from spherical coordinates to normal coordinates. */
     Field & spherical_to_normal_coords ( );
 
     Field & circular_aperture( const double & r, const double & x0, const double & y0);
@@ -270,18 +340,66 @@ class Field {
 
     Field& pip_fft(const int&);
 
+    /** Test to see if two Fields are compatible based on their field type
+     * (wavelength, size, etc.).
+     */
     bool compatible (const Field & that) const { return info.compatible(that.info); }
 
+    /** Normalize the field to have unity total power. 
+     * @param norm_coeff
+     *    Output variable of the normalization factor applied. 
+     */
     Field & normalize(double * norm_coeff = NULL );
     Field & l_amplify(const double & gain, const double & length, const double & i_sat);
 
+    /** Interpolate the field onto a new grid.
+     * @param angle Angle of rotation of field in radians. 
+     */
+    Field & interpolate(const double & new_side_length = 0.0,
+                        const int    & new_number = 0.0,
+                        const double & x_shift = 0.0,
+                        const double & y_shift = 0.0,
+                        const double & angle = 0.0,
+                        const double & magnif = 1.0) throw (std::runtime_error);
+
+    /* **** END FIELD PHYSICAL OPERATORS. ***** */
+
+
+
+
+
+
+
+    /** Print norm values of Field.  Calls print_field. */
+    std::ostream & print_norm(std::ostream & output,
+                               int output_size = 0,
+                               const double & gamma = 2.0,
+                               const int & max_val = 255,
+                               const bool & ascii = false) {
+        return print_field(output,output_size,gamma,max_val,ascii,true);
+    }
+
+    /** Print phase values of Field. Calls print_field. */
+    std::ostream & print_phase(std::ostream & output,
+                               int output_size = 0,
+                               const double & gamma = 2.0,
+                               const int & max_val = 255,
+                               const bool & ascii = false) {
+        return print_field(output,output_size,gamma,max_val,ascii,false);
+    }
+
+    /** Print either norm or phase values of Field. */
     std::ostream & print_field(std::ostream & output,
                                int output_size = 0,
                                const double & gamma = 2.0,
                                const int & max_val = 255,
-                               const bool ascii = false);
+                               const bool & ascii = false,
+                               const bool & output_norm = true);
 
+    /** Field::Info describes wavelength, view size, view area. */
     Info info;
+
+    /** Array of Field values. */
     std::complex < double > * val;
 };
 

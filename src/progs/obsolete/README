@@ -1,3 +1,3 @@
 These are files that I've determined that I am not going to upgrade or keep
 around because there are ample other tools to do the same thing (netpbm for
-example to convert pgm to ps).
+example to convert pgm to ps, or pgm-raw to ascii).
