@@ -22,9 +22,11 @@ include doxygen.am
 MOSTLYCLEANFILES = $(DX_CLEANFILES)
 
 if DX_COND_doc
-all-local: doxygen-doc
+all-local: doc doxygen-doc
+doc :
+	mkdir -p doc
 APIDOCS = doc/api
 endif
 
-EXTRA_DIST = manual scripts $(DX_CONFIG) $(APIDOCS)
+EXTRA_DIST = manual examples $(DX_CONFIG) $(APIDOCS)
 

@@ -1,5 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
+SVNREV="$Revision$"
+SVNID="$Id$"
 
 AC_PREREQ(2.59)
 AC_INIT(lightpipes, r462, olsonse@umich.edu)
