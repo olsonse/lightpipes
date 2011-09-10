@@ -1,4 +1,12 @@
-The description of LightPipes is available online at
+lightpipes:  Light field propagation toolbox
+    - Co-authored by Air Force Research Lab (U.S. Government)
+    - See AUTHORS for contributors
+
+This version is a conversion of the original code to c++.  This also includes a
+set of tools loadable in octave. 
+
+----------------
+The description of the original LightPipes is available online at
 
 http://xs4all.nl/~oko/pipes/
 http://okotech.com/pipes/

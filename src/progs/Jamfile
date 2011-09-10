@@ -1,0 +1,74 @@
+project /lightpipes/progs
+  : requirements
+    <library>/lightpipes//lightpipes
+  ;
+
+exe absorber      : absorber.cpp ;
+exe axicon        : axicon.cpp ;
+exe begin         : begin.cpp ;
+exe b_mix         : b_mix.cpp ;
+exe circ_ap       : circ_ap.cpp ;
+exe circ_screen   : circ_screen.cpp ;
+exe convert       : convert.cpp ;
+exe cros_out      : cros_out.cpp ;
+exe file_pgm      : file_pgm.cpp ;
+#exe file_ps      : file_ps.cpp ;
+exe forvard       : forvard.cpp ;
+exe forward       : forward.cpp ;
+exe fresnel       : fresnel.cpp ;
+exe gauss         : gauss.cpp ;
+exe gauss_screen  : gauss_screen.cpp ;
+exe interpol      : interpol.cpp ;
+exe l_amplif      : l_amplif.cpp ;
+exe lens          : lens.cpp ;
+exe lens_forvard  : lens_forvard.cpp ;
+exe lens_fresn    : lens_fresn.cpp ;
+exe negate        : negate.cpp ;
+exe normal        : normal.cpp ;
+exe pip_fft       : pip_fft.cpp ;
+exe rect_ap       : rect_ap.cpp ;
+exe rect_screen   : rect_screen.cpp ;
+exe strehl        : strehl.cpp ;
+exe test          : test.cpp ;
+exe tilt          : tilt.cpp ;
+exe tor_lens      : tor_lens.cpp ;
+exe zernike       : zernike.cpp ;
+#exe steps1        : steps1.cpp ;
+#exe steps         : steps.cpp ;
+
+
+install convenient-copy
+  : absorber      
+    axicon        
+    begin         
+    b_mix         
+    circ_ap       
+    circ_screen   
+    convert       
+    cros_out      
+    file_pgm      
+#   file_ps       
+    forvard       
+    forward       
+    fresnel       
+    gauss         
+    gauss_screen  
+    interpol      
+    l_amplif      
+    lens          
+    lens_forvard  
+    lens_fresn    
+    negate        
+    normal        
+    pip_fft       
+    rect_ap       
+    rect_screen   
+    strehl        
+    test          
+    tilt          
+    tor_lens      
+    zernike       
+#   steps1       
+#   steps        
+    : <location>bin/
+    ;

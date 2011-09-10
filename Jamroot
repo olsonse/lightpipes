@@ -1,0 +1,142 @@
+# Copyright 2004-2008 Spencer Olson
+
+echo "Lightpipes" ;
+
+# Usage:
+#
+#   bjam [options] [properties] [install|stage]
+#
+#   Builds and installs lightpipes.
+#
+# Targets and Related Options:
+#
+#   install                 Install headers and compiled library files to the
+#   =======                 configured locations (below).
+#
+#   --prefix=<PREFIX>       Install architecture independent files here.
+#                           Default; C:\lightpipes on Win32
+#                           Default; /usr/local on Unix. Linux, etc.
+#
+#   --exec-prefix=<EPREFIX> Install architecture dependent files here.
+#                           Default; <PREFIX>
+#
+#   --libdir=<DIR>          Install library files here.
+#                           Default; <EPREFIX>/lib
+#
+#   --includedir=<HDRDIR>   Install header files here.
+#                           Default; <PREFIX>/include
+#
+#   stage                   Build and install only compiled library files
+#   =====                   to the ./stage directory.
+#
+# Other Options:
+#
+#   --build-dir=DIR         Build in this location instead of building
+#                           within the distribution tree. Recommended!
+#
+#   --help                  This message.
+#
+# Properties:
+#
+#   toolset=toolset         Indicates the toolset to build with.
+#
+#   variant=debug|release   Select the build variant
+#
+#   link=static|shared      Whether to build static or shared libraries
+#
+#   threading=single|multi  Whether to build single or multithreaded binaries
+# 
+#   runtime-link=static|shared      
+#                           Whether to link to static or shared C and C++ runtime.
+#   
+
+import feature : feature ;
+import path ; # for getting a better glob
+import package ; # used for installing whole package (provides --prefix related
+                 # options )
+import common : find-tool ;
+import numbers : less ;
+
+
+path-constant TOP : . ;
+
+constant VERSION : [ SHELL "printf `cd $(TOP); git describe 2> /dev/null` 2> /dev/null || printf lightpipes-0.0.0 " ] ;
+
+#use-project /boost : ../boost ;
+
+project /lightpipes
+    : requirements
+        <include>src
+#        <library>/boost//headers
+        <define>LIGHTPIPES_VERSION=\\\"$(VERSION)\\\"
+    : usage-requirements
+        <include>src
+#        <library>/boost//headers
+        <define>LIGHTPIPES_VERSION=\\\"$(VERSION)\\\"
+    ;
+
+lib lightpipes
+    : # sources
+      src/lightpipes/Field.cpp
+      src/lightpipes/fftn.c
+      [ glob src/lightpipes/*.h ]
+    : <link>static
+      # fftn.c has to include itself ...
+      <include>.
+    : # no default build
+    : # no client includes
+    ;
+
+build-project src/progs ;
+
+# installation configuration
+
+# options:
+install-properties =
+    <install-no-version-symlinks>on
+    ;
+
+if [ modules.peek : NT ] {
+    install-properties += <install-default-prefix>C:/lightpipes ;
+} else if [ modules.peek : UNIX ] {
+    install-properties += <install-default-prefix>/usr/local ;
+}
+
+
+# the list of libraries to build and install
+local libraries = libraries ;
+# all headers to install
+local all_headers = [ path.glob-tree cxx : *.h *.cpp : .svn ] ;
+# docs to install
+local docs = [ path.glob-tree docs/api/html docs/api/latex : * : .svn ] ;
+
+
+# Complete install allowing --prefix and related command line options
+alias install : install-code install-docs ;
+explicit install ;
+
+# Complete install allowing --prefix and related command line options
+package.install install-code
+    : $(install-properties)
+      <install-source-root>$(TOP)/cxx
+    :
+    : $(libraries)
+    : $(all_headers)
+    ;
+explicit install-code ;
+
+# install data allowing --prefix and related command line options
+package.install install-docs
+    : $(install-properties)
+      <install-source-root>$(TOP)
+      <install-header-subdir>../share/lightpipes
+    :
+    :
+    : $(docs)
+    ;
+explicit install-docs ;
+
+
+# install the libs into a staging dir
+install stage : $(libraries) ;
+explicit stage ;

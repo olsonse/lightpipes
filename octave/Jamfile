@@ -1,0 +1,31 @@
+project /lightpipes/octave
+  : requirements
+    <library>/lightpipes//lightpipes
+  ;
+
+oct LPAxicon.oct             : LPAxicon.cpp ;
+oct LPBegin.oct              : LPBegin.cpp ;
+oct LPCircAperture.oct       : LPCircAperture.cpp ;
+oct LPCircScreen.oct         : LPCircScreen.cpp ;
+oct LPConvert.oct            : LPConvert.cpp ;
+oct LPForward.oct            : LPForward.cpp ;
+oct LPForvard.oct            : LPForvard.cpp ;
+oct LPFresnel.oct            : LPFresnel.cpp ;
+oct LPGain.oct               : LPGain.cpp ;
+oct LPGaussAperture.oct      : LPGaussAperture.cpp ;
+oct LPGaussScreen.oct        : LPGaussScreen.cpp ;
+oct LPInterpol.oct           : LPInterpol.cpp ;
+oct LPLens.oct               : LPLens.cpp ;
+oct LPLensForvard.oct        : LPLensForvard.cpp ;
+oct LPLensFresnel.oct        : LPLensFresnel.cpp ;
+oct LPNormal.oct             : LPNormal.cpp ;
+oct LPPipFFT.oct             : LPPipFFT.cpp ;
+oct LPRectAperture.oct       : LPRectAperture.cpp ;
+oct LPRectScreen.oct         : LPRectScreen.cpp ;
+oct LPStrehl.oct             : LPStrehl.cpp ;
+oct LPSuperGaussAperture.oct : LPSuperGaussAperture.cpp ;
+oct LPSuperGaussScreen.oct   : LPSuperGaussScreen.cpp ;
+oct LPTilt.oct               : LPTilt.cpp ;
+oct LPToroidalLens.oct       : LPToroidalLens.cpp ;
+oct LPZernike.oct            : LPZernike.cpp ;
+
