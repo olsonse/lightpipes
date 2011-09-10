@@ -3,29 +3,86 @@ project /lightpipes/octave
     <library>/lightpipes//lightpipes
   ;
 
-oct LPAxicon.oct             : LPAxicon.cpp ;
-oct LPBegin.oct              : LPBegin.cpp ;
-oct LPCircAperture.oct       : LPCircAperture.cpp ;
-oct LPCircScreen.oct         : LPCircScreen.cpp ;
-oct LPConvert.oct            : LPConvert.cpp ;
-oct LPForward.oct            : LPForward.cpp ;
-oct LPForvard.oct            : LPForvard.cpp ;
-oct LPFresnel.oct            : LPFresnel.cpp ;
-oct LPGain.oct               : LPGain.cpp ;
-oct LPGaussAperture.oct      : LPGaussAperture.cpp ;
-oct LPGaussScreen.oct        : LPGaussScreen.cpp ;
-oct LPInterpol.oct           : LPInterpol.cpp ;
-oct LPLens.oct               : LPLens.cpp ;
-oct LPLensForvard.oct        : LPLensForvard.cpp ;
-oct LPLensFresnel.oct        : LPLensFresnel.cpp ;
-oct LPNormal.oct             : LPNormal.cpp ;
-oct LPPipFFT.oct             : LPPipFFT.cpp ;
-oct LPRectAperture.oct       : LPRectAperture.cpp ;
-oct LPRectScreen.oct         : LPRectScreen.cpp ;
-oct LPStrehl.oct             : LPStrehl.cpp ;
-oct LPSuperGaussAperture.oct : LPSuperGaussAperture.cpp ;
-oct LPSuperGaussScreen.oct   : LPSuperGaussScreen.cpp ;
-oct LPTilt.oct               : LPTilt.cpp ;
-oct LPToroidalLens.oct       : LPToroidalLens.cpp ;
-oct LPZernike.oct            : LPZernike.cpp ;
+import oct ;
 
+oct LPAxicon.oct             : LPAxicon_obj ;
+oct LPBegin.oct              : LPBegin_obj ;
+oct LPCircAperture.oct       : LPCircAperture_obj ;
+oct LPCircScreen.oct         : LPCircScreen_obj ;
+oct LPConvert.oct            : LPConvert_obj ;
+oct LPForward.oct            : LPForward_obj ;
+oct LPForvard.oct            : LPForvard_obj ;
+oct LPFresnel.oct            : LPFresnel_obj ;
+oct LPGain.oct               : LPGain_obj ;
+oct LPGaussAperture.oct      : LPGaussAperture_obj ;
+oct LPGaussScreen.oct        : LPGaussScreen_obj ;
+oct LPInterpol.oct           : LPInterpol_obj ;
+oct LPLens.oct               : LPLens_obj ;
+oct LPLensForvard.oct        : LPLensForvard_obj ;
+oct LPLensFresnel.oct        : LPLensFresnel_obj ;
+oct LPNormal.oct             : LPNormal_obj ;
+oct LPPipFFT.oct             : LPPipFFT_obj ;
+oct LPRectAperture.oct       : LPRectAperture_obj ;
+oct LPRectScreen.oct         : LPRectScreen_obj ;
+oct LPStrehl.oct             : LPStrehl_obj ;
+oct LPSuperGaussAperture.oct : LPSuperGaussAperture_obj ;
+oct LPSuperGaussScreen.oct   : LPSuperGaussScreen_obj ;
+oct LPTilt.oct               : LPTilt_obj ;
+oct LPToroidalLens.oct       : LPToroidalLens_obj ;
+oct LPZernike.oct            : LPZernike_obj ;
+
+install convenient-copy :
+  LPAxicon.oct             
+  LPBegin.oct              
+  LPCircAperture.oct       
+  LPCircScreen.oct         
+  LPConvert.oct            
+  LPForward.oct            
+  LPForvard.oct            
+  LPFresnel.oct            
+  LPGain.oct               
+  LPGaussAperture.oct      
+  LPGaussScreen.oct        
+  LPInterpol.oct           
+  LPLens.oct               
+  LPLensForvard.oct        
+  LPLensFresnel.oct        
+  LPNormal.oct             
+  LPPipFFT.oct             
+  LPRectAperture.oct       
+  LPRectScreen.oct         
+  LPStrehl.oct             
+  LPSuperGaussAperture.oct 
+  LPSuperGaussScreen.oct   
+  LPTilt.oct               
+  LPToroidalLens.oct       
+  LPZernike.oct            
+  : <location>oct-files ;
+
+
+
+obj LPAxicon_obj             : LPAxicon.cpp ;
+obj LPBegin_obj              : LPBegin.cpp ;
+obj LPCircAperture_obj       : LPCircAperture.cpp ;
+obj LPCircScreen_obj         : LPCircScreen.cpp ;
+obj LPConvert_obj            : LPConvert.cpp ;
+obj LPForward_obj            : LPForward.cpp ;
+obj LPForvard_obj            : LPForvard.cpp ;
+obj LPFresnel_obj            : LPFresnel.cpp ;
+obj LPGain_obj               : LPGain.cpp ;
+obj LPGaussAperture_obj      : LPGaussAperture.cpp ;
+obj LPGaussScreen_obj        : LPGaussScreen.cpp ;
+obj LPInterpol_obj           : LPInterpol.cpp ;
+obj LPLens_obj               : LPLens.cpp ;
+obj LPLensForvard_obj        : LPLensForvard.cpp ;
+obj LPLensFresnel_obj        : LPLensFresnel.cpp ;
+obj LPNormal_obj             : LPNormal.cpp ;
+obj LPPipFFT_obj             : LPPipFFT.cpp ;
+obj LPRectAperture_obj       : LPRectAperture.cpp ;
+obj LPRectScreen_obj         : LPRectScreen.cpp ;
+obj LPStrehl_obj             : LPStrehl.cpp ;
+obj LPSuperGaussAperture_obj : LPSuperGaussAperture.cpp ;
+obj LPSuperGaussScreen_obj   : LPSuperGaussScreen.cpp ;
+obj LPTilt_obj               : LPTilt.cpp ;
+obj LPToroidalLens_obj       : LPToroidalLens.cpp ;
+obj LPZernike_obj            : LPZernike.cpp ;

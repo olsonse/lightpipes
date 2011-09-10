@@ -1,0 +1,25 @@
+#Generator for Octave .oct files
+import os ;
+import type ;
+import toolset : flags ;
+import generators ;
+
+
+type.register OCT : oct ;
+
+generators.register-linker oct.oct : CPP OBJ LIB : OCT ;
+flags oct.oct OPTIONS <debug-symbols>on : -g ;
+flags oct.oct OPTIONS <optimization>off : ;
+flags oct.oct OPTIONS <optimization>speed : -O3 ;
+flags oct.oct INCLUDES <include> ;
+flags oct.oct LINKFLAGS <linkflags> ;
+flags oct.oct LINKPATH <library-path> ;
+flags oct.oct FINDLIBS-ST <find-static-library> ;
+flags oct.oct FINDLIBS-SA <find-shared-library> ;
+flags oct.oct LIBRARIES <library-file> ;
+
+actions oct {
+  mkoctfile $(OPTIONS) $(>) -I$(INCLUDES) $(LINKFLAGS) -L$(LINKPATH) -l$(FINDLIBS-SA) -l$(FINDLIBS-ST) -l$(LIBRARIES) -o $(<)
+}
+
+

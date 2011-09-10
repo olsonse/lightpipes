@@ -12,13 +12,13 @@
 #ifndef lightpipies_Field_h
 #define lightpipies_Field_h
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
 #include <iostream>
 #include <stdexcept>
 #include <complex>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
 
 #ifdef _DJGPP_
 #  include <fcntl.h>
@@ -43,27 +43,12 @@ namespace lightpipes {
    * length of the square grid, then two huge arrays of Re and Im data 
    */
   class Field {
-  private:
-    void cleanup() { if (val) { delete[] val; val = NULL; } }
-
-    void init () {
-      cleanup();
-      val = new std::complex<double>[SQR(info.number)];
-      if (val == NULL)
-        throw std::runtime_error("field allocation error");
-      memset(val, 0, sizeof(std::complex<double>) * SQR(info.number));
-    }
-
+    /* TYPEDEFS */
   public:
     /** Defines character of Field such as wavelength of light, spatial size,
-     * spatial precision, etc.
-     */
-    class Info {
-    public:
-      /** Constructor. */
-      Info() : number(0), side_length(0.), lambda(0.),
-               fft_level(0), sph_coords_factor(0.) { }
-
+     * spatial precision, etc. */
+    struct Info {
+      /* STORAGE MEMBERS */
       /** The number of side-elements stored in Field::val
        * (sizeof(Field::val) = number^{2}.
        */
@@ -82,99 +67,60 @@ namespace lightpipes {
        * and Field::lens_forvard. */
       double sph_coords_factor;
 
+
+
+      /* FUNCTION MEMBERS */
+      /** Constructor--zeros everything. */
+      Info();
+
       /** Test to see if two Fields are compatible based on their field type
        * (wavelength, size, etc.).
        */
-      bool compatible(const Info & that) const {
-        if (number  != that.number  ||
-            side_length    != that.side_length    ||
-            lambda  != that.lambda  ||
-            sph_coords_factor != that.sph_coords_factor)
-          return false;
-        else
-          return true;
-      }
+      bool compatible(const Info & that) const;
 
       /** read the Field::Info data from file. */
-      std::istream & read(std::istream & in) {
-        if ( !in.read((char*)&number, sizeof(int)) )
-          throw std::runtime_error("Error while reading FIELD.number\n");
-
-        if ( number / 2 != ( float ) ( number ) / 2. )
-          throw std::runtime_error("Sorry, number of points must be even, stopping\n");
-
-
-        if ( !in.read((char*)&side_length, sizeof(double)) )
-          throw std::runtime_error("Error while reading FIELD.side_length\n");
-
-        if ( !in.read((char*)&lambda, sizeof(double)) )
-          throw std::runtime_error("Error while reading FIELD.lambda\n");
-
-        if ( !in.read((char*)&fft_level, sizeof(int)) )
-          throw std::runtime_error("Error while reading FIELD.fft_level\n");
-
-        if ( !in.read((char*)&sph_coords_factor, sizeof(double)) )
-          throw std::runtime_error("Error while reading FIELD.sph_coords_factor\n");
-
-        return in;
-      }
+      std::istream & read(std::istream & in);
 
       /** write the Field::Info data to file. */
-      std::ostream & write(std::ostream & out) {
-        if ( !out.write((char*)&number, sizeof(int)) )
-          throw std::runtime_error("Error while writing FIELD.number\n");
-
-        if ( !out.write((char*)&side_length, sizeof(double)) )
-          throw std::runtime_error("Error while writing FIELD.side_length\n");
-
-        if ( !out.write((char*)&lambda, sizeof(double)) )
-          throw std::runtime_error("Error while writing FIELD.lambda\n");
-
-        if ( !out.write((char*)&fft_level, sizeof(int)) )
-          throw std::runtime_error("Error while writing FIELD.fft_level\n");
-
-        if ( !out.write((char*)&sph_coords_factor, sizeof(double)) )
-          throw std::runtime_error("Error while writing FIELD.sph_coords_factor\n");
-
-        return out;
-      }
+      std::ostream & write(std::ostream & out);
     };
 
 
+
+    /* STORAGE MEMBERS */
+  public:
+    /** Field::Info describes wavelength, view size, view area. */
+    Info info;
+
+    /** Array of Field values. */
+    std::complex < double > * val;
+
+
+
+    /* FUNCTION MEMBERS */
+  public:
     /** Constructor. */
-    Field ( unsigned int number, double side_length, double lambda,
-            int fft_level = 0, double sph_coords_factor = 0.0 ) {
-      val = NULL;
-      info.number = number;
-      info.side_length = side_length;
-      info.lambda = lambda;
-      info.fft_level = fft_level;
-      info.sph_coords_factor = sph_coords_factor;
-      init();
-    }
+    Field ( unsigned int number,
+            double side_length,
+            double lambda,
+            int fft_level = 0,
+            double sph_coords_factor = 0.0 );
 
     /** Constructor with Field::Info initialization. */
-    Field (const Info & that_info) {
-      val = NULL;
-      info = that_info;
-      init();
-    }
+    Field (const Info & that_info);
 
     /** Copy constructor. */
-    Field (const Field & that) {
-      val = NULL;
-      (*this) = that;
-    }
+    Field (const Field & that);
 
     /** Destructor. */
-    ~Field () { cleanup(); }
+    ~Field ();
 
     /** Write the Field to file (internal format). 
     * The internal format is 1. Field::Info, 2. complex<double> array of
     * length N*N.
     */
-
     std::ostream & write(std::ostream & out = std::cout);
+
     /** Read a new Field from file (internal format). 
      * @see Field::write.
      */
@@ -194,25 +140,16 @@ namespace lightpipes {
 
     /** Field index operator (const) using column AND row indices. */
     const std::complex<double> & operator()(const unsigned int row,
-                                      const unsigned int col) const {
+                                            const unsigned int col) const {
       return val[row*info.number + col];
     }
 
     /** Copy operator. */
-    Field & operator = (const Field & that) {
-      cleanup();
-      this->info = that.info;
-
-      val = new std::complex<double>[SQR(info.number)];
-      if (val == NULL)
-          throw std::runtime_error("field allocation error");
-      memcpy(val, that.val, sizeof(std::complex<double>) * SQR(info.number));
-      return *this;
-    }
+    Field & operator= (const Field & that);
 
     /** Scaling operator. */
     template <class T>
-    Field & operator *= ( const T & input ) {
+    Field & operator*= ( const T & input ) {
       for (int i=1;i<=info.number; i++){
         for (int j=1;j<=info.number; j++){
           long ik1=(i-1)*info.number+j-1; 
@@ -224,16 +161,7 @@ namespace lightpipes {
     }
 
     /** Field addition operator (Field1 += Field2). */
-    Field & operator += ( const Field & that ) {
-      if (!compatible(that))
-        throw std::runtime_error("cannot add fields that are not compatible");
-
-      for ( int i = SQR(info.number)-1; i >= 0; i-- ) {
-        val[i] += that.val[i];
-      }
-
-      return *this;
-    }
+    Field & operator+= ( const Field & that );
 
 
     /** Apply a lens.
@@ -250,7 +178,10 @@ namespace lightpipes {
      * @param x0 x-shift in position of center.
      * @param y0 y-shift in position of center.
      */
-    Field & t_lens ( const double & R, const double & f, const double & x0, const double & y0 );
+    Field & t_lens ( const double & R,
+                     const double & f,
+                     const double & x0,
+                     const double & y0 );
 
     /** Apply an axicon lens.
      * @param phi including angle of axicon (note that the sign of this value
@@ -259,7 +190,10 @@ namespace lightpipes {
      * @param x0 x-shift in position of center.
      * @param y0 y-shift in position of center.
      */
-    Field & axicon ( const double & phi, const std::complex<double> & n1, const double & x0, const double & y0 );
+    Field & axicon ( const double & phi,
+                     const std::complex<double> & n1,
+                     const double & x0,
+                     const double & y0 );
 
     /** Propagates Field using convolution.
      * @param z
@@ -271,7 +205,9 @@ namespace lightpipes {
      * Note that this operates on the input field structure.
      * @returns a reference to the changed field.
      */
-    Field & forward( const double & z, const double & new_side_length, const int & new_number );
+    Field & forward( const double & z,
+                     const double & new_side_length,
+                     const int & new_number );
 
     /** Propagates Field in spherical coordinates using FFT.
      * @param f
@@ -300,22 +236,48 @@ namespace lightpipes {
     /** Convert from spherical coordinates to normal coordinates. */
     Field & spherical_to_normal_coords ( );
 
-    Field & circular_aperture( const double & r, const double & x0, const double & y0);
-    Field & circular_screen( const double & r, const double & x0 = 0.0, const double & y0 = 0.0 );
-    Field & rectangular_aperture ( const double & Lx, const double & Ly = -0.1,
-                                   const double & x0 = 0.0, const double & y0 = 0.0,
-                                   const double & angle = 0.0 ); 
-    Field & rectangular_screen   ( const double & Lx, const double & Ly = -0.1,
-                                   const double & x0 = 0.0, const double & y0 = 0.0,
+    Field & circular_aperture( const double & r,
+                               const double & x0,
+                               const double & y0);
+
+    Field & circular_screen( const double & r,
+                             const double & x0 = 0.0,
+                             const double & y0 = 0.0 );
+
+    Field & rectangular_aperture ( const double & Lx,
+                                   const double & Ly = -0.1,
+                                   const double & x0 = 0.0,
+                                   const double & y0 = 0.0,
                                    const double & angle = 0.0 ); 
 
-    Field & supergaussian_aperture(const double & w, /* 1/e intensity width */
-                                   const int    & n, /* (2*n) == power of super gaussian */
-                                   const double & x0 = 0.0, const double & y0 = 0.0,
+    Field & rectangular_screen   ( const double & Lx,
+                                   const double & Ly = -0.1,
+                                   const double & x0 = 0.0,
+                                   const double & y0 = 0.0,
+                                   const double & angle = 0.0 ); 
+
+    /** Supergaussian aperature.
+     * @param w
+     *    1/e intensity width
+     * @param n
+     *    (2*n) == power of super gaussian
+     */
+    Field & supergaussian_aperture(const double & w,
+                                   const int    & n,
+                                   const double & x0 = 0.0,
+                                   const double & y0 = 0.0,
                                    const double & A = 1.0 );
-    Field & supergaussian_screen  (const double & w, /* 1/e intensity width */
-                                   const int    & n, /* (2*n) == power of super gaussian */
-                                   const double & x0 = 0.0, const double & y0 = 0.0,
+
+    /** Supergaussian aperature.
+     * @param w
+     *    1/e intensity width
+     * @param n
+     *    (2*n) == power of super gaussian
+     */
+    Field & supergaussian_screen  (const double & w,
+                                   const int    & n,
+                                   const double & x0 = 0.0,
+                                   const double & y0 = 0.0,
                                    const double & A = 1.0 );
 
     Field & gaussian_aperture    ( const double & w,
@@ -332,11 +294,12 @@ namespace lightpipes {
 
     Field & fft3 ( int ind );
 
-
     Field & tilt ( double tx, double ty );
+
     Field & zernike ( int n, int m, double R, double A );
 
     std::ostream & print_strehl (std::ostream & output);
+
     double get_strehl ();
 
     Field& pip_fft(const int&);
@@ -397,11 +360,11 @@ namespace lightpipes {
                                const bool & ascii = false,
                                const bool & output_norm = true);
 
-    /** Field::Info describes wavelength, view size, view area. */
-    Info info;
 
-    /** Array of Field values. */
-    std::complex < double > * val;
+
+  private:
+    void cleanup();
+    void init();
   };
 
 

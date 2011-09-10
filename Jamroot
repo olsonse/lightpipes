@@ -81,6 +81,8 @@ lib lightpipes
       src/lightpipes/fftn.c
       [ glob src/lightpipes/*.h ]
     : <link>static
+      <cxxflags>-fPIC
+      <cflags>-fPIC
       # fftn.c has to include itself ...
       <include>.
     : # no default build
@@ -88,6 +90,7 @@ lib lightpipes
     ;
 
 build-project src/progs ;
+build-project octave ;
 
 # installation configuration
 

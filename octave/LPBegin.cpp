@@ -49,7 +49,7 @@ DEFUN_DLD (LPBegin, args, nargout,
 
     /* Initialize the field to (1,0) */
     {
-        int N2 = SQR(field.info.number);
+        int N2 = lightpipes::SQR(field.info.number);
         for ( int j = 0; j < N2; j++ ) {
             field[j] = std::complex<double>(1.,0.);
         }

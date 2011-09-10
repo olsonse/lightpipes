@@ -5,18 +5,121 @@ extern "C" {
   #include <lightpipes/fftn.h>
 }
 
+#include <algorithm>
+
 #include <cmath>
 
 
 namespace lightpipes {
 
-  const double M_2PI = 2.0 * M_PI;
-  const std::complex<double> I(0.0,1.0);
+
+  Field::Info::Info()
+    : number(0), side_length(0.), lambda(0.),
+      fft_level(0), sph_coords_factor(0.) { }
+
+
+  bool Field::Info::compatible( const Info & that ) const {
+    if (number  != that.number  ||
+        side_length    != that.side_length    ||
+        lambda  != that.lambda  ||
+        sph_coords_factor != that.sph_coords_factor)
+      return false;
+    else
+      return true;
+  }
+
+
+  std::istream & Field::Info::read(std::istream & in) {
+    if ( !in.read((char*)&number, sizeof(int)) )
+      throw std::runtime_error("Error while reading FIELD.number\n");
+
+    if ( number / 2 != ( float ) ( number ) / 2. )
+      throw std::runtime_error("Sorry, number of points must be even, stopping\n");
+
+
+    if ( !in.read((char*)&side_length, sizeof(double)) )
+      throw std::runtime_error("Error while reading FIELD.side_length\n");
+
+    if ( !in.read((char*)&lambda, sizeof(double)) )
+      throw std::runtime_error("Error while reading FIELD.lambda\n");
+
+    if ( !in.read((char*)&fft_level, sizeof(int)) )
+      throw std::runtime_error("Error while reading FIELD.fft_level\n");
+
+    if ( !in.read((char*)&sph_coords_factor, sizeof(double)) )
+      throw std::runtime_error("Error while reading FIELD.sph_coords_factor\n");
+
+    return in;
+  }
+
+
+  std::ostream & Field::Info::write(std::ostream & out) {
+    if ( !out.write((char*)&number, sizeof(int)) )
+      throw std::runtime_error("Error while writing FIELD.number\n");
+
+    if ( !out.write((char*)&side_length, sizeof(double)) )
+      throw std::runtime_error("Error while writing FIELD.side_length\n");
+
+    if ( !out.write((char*)&lambda, sizeof(double)) )
+      throw std::runtime_error("Error while writing FIELD.lambda\n");
+
+    if ( !out.write((char*)&fft_level, sizeof(int)) )
+      throw std::runtime_error("Error while writing FIELD.fft_level\n");
+
+    if ( !out.write((char*)&sph_coords_factor, sizeof(double)) )
+      throw std::runtime_error("Error while writing FIELD.sph_coords_factor\n");
+
+    return out;
+  }
+
+
+
+
+
+
+
+  namespace {
+    const double M_2PI = 2.0 * M_PI;
+    const std::complex<double> I(0.0,1.0);
+  }
 
 
   int fresnl ( double xxa, double * ssa, double * cca );
   double polevl ( double x, double coef[], int N );
   double p1evl ( double x, double coef[], int N );
+
+
+  Field::Field ( unsigned int number,
+                 double side_length,
+                 double lambda,
+                 int fft_level,
+                 double sph_coords_factor ) {
+    val = NULL;
+    info.number = number;
+    info.side_length = side_length;
+    info.lambda = lambda;
+    info.fft_level = fft_level;
+    info.sph_coords_factor = sph_coords_factor;
+    init();
+  }
+
+
+  Field::Field (const Info & that_info) {
+    val = NULL;
+    info = that_info;
+    init();
+  }
+
+
+  Field::Field (const Field & that) {
+    val = NULL;
+    (*this) = that;
+  }
+
+
+  Field::~Field () {
+    cleanup();
+  }
 
 
   /** program read_field reads the FIELD from the standard input. */
@@ -56,6 +159,34 @@ namespace lightpipes {
 
     return out;
   }/* Field::write */
+
+
+  Field & Field::operator= (const Field & that) {
+    cleanup();
+    this->info = that.info;
+
+    size_t sz = SQR(info.number);
+
+    val = new std::complex<double>[sz];
+    if (val == NULL)
+        throw std::runtime_error("field allocation error");
+
+    std::copy( that.val, that.val+sz, val );
+
+    return *this;
+  }
+
+
+  Field & Field::operator+= ( const Field & that ) {
+    if (!compatible(that))
+      throw std::runtime_error("cannot add fields that are not compatible");
+
+    for ( int i = SQR(info.number)-1; i >= 0; i-- ) {
+      val[i] += that.val[i];
+    }
+
+    return *this;
+  }
 
 
 
@@ -143,6 +274,8 @@ namespace lightpipes {
 
 
   Field & Field::lens_forvard(double f, double z) {
+    const size_t sz = SQR(info.number);
+
     {
       double f1 = 0.;
 
@@ -165,16 +298,16 @@ namespace lightpipes {
     info.sph_coords_factor = -1. / ( z - f );
 
     if ( z1 >= 0. ) {
-      for ( int i = SQR(info.number) - 1; i >= 0; i-- ) {
+      for ( int i = sz - 1; i >= 0; i-- ) {
         val[i] /= ampl_scale;
       }
     } else {
-      std::complex<double> * f1 = new std::complex<double>[SQR(info.number)];
+      std::complex<double> * f1 = new std::complex<double>[sz];
       if ( f1 == NULL ) {
         throw std::runtime_error("Allocation error, f1 in lens_forvard");
       }
 
-      memset(f1, 0, sizeof(std::complex<double>) * SQR(info.number));
+      std::fill(f1, f1+sz, std::complex<double>(0.0));
 
       for ( int i = 1; i <= info.number; i++ ) {
         for ( int j = 1; j <= info.number; j++ ) {
@@ -187,7 +320,7 @@ namespace lightpipes {
 
       }
 
-      memcpy ( val, f1, sizeof(std::complex<double>) * SQR(info.number) );
+      std::copy( f1, f1 + sz, val );
       delete[] f1;
     }
     /*
@@ -686,10 +819,10 @@ Field & Field::fresnel ( const double &z ) {
         throw std:: runtime_error ( "Allocation error in Fresnel, use smaller grid" );
     }
 
-    memset( F_R, 0, sizeof(double) * len );
-    memset( F_I, 0, sizeof(double) * len );
-    memset( K_R, 0, sizeof(double) * len );
-    memset( K_I, 0, sizeof(double) * len );
+    std::fill( F_R, F_R+len, 0.0 );
+    std::fill( F_I, F_I+len, 0.0 );
+    std::fill( K_R, K_R+len, 0.0 );
+    std::fill( K_I, K_I+len, 0.0 );
 
     /*****************************************************/
 
@@ -1337,9 +1470,9 @@ Field & Field::zernike ( int n, int m, double R, double A ) {
 }
 
 double Field::get_strehl () {
-    double dx = info.side_length / ( info.number );
-    double dx2 = SQR(dx);
-    int n2 = info.number / 2 + 1;
+    //double dx = info.side_length / ( info.number );
+    //double dx2 = SQR(dx);
+    //int n2 = info.number / 2 + 1;
 
     /*
      * Calculating the power 
@@ -1675,24 +1808,24 @@ Field & Field::axicon ( const double & phi, const std::complex<double> & n1, con
 
 
 
-/* *** STUFF FOR INTERPOLATE BEGINS HERE *** */
-template <class T, unsigned int N>
-class SquareMatrix {
+  /* *** STUFF FOR INTERPOLATE BEGINS HERE *** */
+  template <class T, unsigned int N>
+  class SquareMatrix {
   public:
     T val[N][N];
 
     void zero() {
-        memset(val,0,sizeof(T)*N*N);
+      std::fill( val[0], val[0]+(N*N), T(0));
     }
 
     T & operator()(const unsigned int i, const unsigned int j) {
-        return val[i][j];
+      return val[i][j];
     }
 
     const T & operator()(const unsigned int i, const unsigned int j) const {
-        return val[i][j];
+      return val[i][j];
     }
-};
+  };
 
 
 
@@ -1826,21 +1959,22 @@ T inv_squares ( double x, double y, double dx,
 
 
 
-Field & Field::interpolate(const double & new_side_length /* = 0.0 */,
-                           const int    & new_number /* = 0.0 */,
-                           const double & x_shift /* = 0.0 */,
-                           const double & y_shift /* = 0.0 */,
-                           const double & angle /* = 0.0 */,
-                           const double & magnif /* = 1.0 */) 
-                           throw (std::runtime_error) {
+  Field & Field::interpolate(const double & new_side_length /* = 0.0 */,
+                             const int    & new_number /* = 0.0 */,
+                             const double & x_shift /* = 0.0 */,
+                             const double & y_shift /* = 0.0 */,
+                             const double & angle /* = 0.0 */,
+                             const double & magnif /* = 1.0 */) 
+                             throw (std::runtime_error) {
 
     Info new_info = info;
-    if (new_side_length > 0) new_info.side_length = new_side_length;
-    if (new_number > 0) new_info.number = new_number;
+    if (new_side_length > 0)
+      new_info.side_length = new_side_length;
+    if (new_number > 0)
+      new_info.number = new_number;
 
-    if ( magnif <= 0.0 ) {
-        throw std::runtime_error("Field::interpolate:  magnification <= 0.0");
-    }
+    if ( magnif <= 0.0 )
+      throw std::runtime_error("Field::interpolate:  magnification <= 0.0");
 
     Field new_field(new_info);
 
@@ -1862,236 +1996,236 @@ Field & Field::interpolate(const double & new_side_length /* = 0.0 */,
 
 
     for ( int i = 0; i < new_field.info.number; i++ ) {
-        for ( int j = 0; j < new_field.info.number; j++ ) {
+      for ( int j = 0; j < new_field.info.number; j++ ) {
 
-            double x0 = ( i - nn2  ) * dx_new - x_shift;
-            double y0 = ( j - nn2  ) * dx_new - y_shift;
-            double x_new = ( x0 * cc + y0 * ss ) / magnif;
-            double y_new = ( -x0 * ss + y0 * cc ) / magnif;
+        double x0 = ( i - nn2  ) * dx_new - x_shift;
+        double y0 = ( j - nn2  ) * dx_new - y_shift;
+        double x_new = ( x0 * cc + y0 * ss ) / magnif;
+        double y_new = ( -x0 * ss + y0 * cc ) / magnif;
 
-            int i_old = ( int ) ( floor ( x_new / dx_old ) + on21 );
-            double x_old = ( i_old - on21 ) * dx_old;
-            int j_old = ( int ) ( floor ( y_new / dx_old ) + on21 );
-            double y_old = ( j_old - on21 ) * dx_old;
+        int i_old = ( int ) ( floor ( x_new / dx_old ) + on21 );
+        double x_old = ( i_old - on21 ) * dx_old;
+        int j_old = ( int ) ( floor ( y_new / dx_old ) + on21 );
+        double y_old = ( j_old - on21 ) * dx_old;
 
-            int i_small = 0;
-            int i_local = 0;
-            /*
-             * first row 
-             */
-            long n_tmp = ( i_old - 2 ) * info.number + j_old - 2;
+        int i_small = 0;
+        int i_local = 0;
+        /*
+         * first row 
+         */
+        long n_tmp = ( i_old - 2 ) * info.number + j_old - 2;
 
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(0,0) = val[n_tmp];
-            else
-                z(0,0) = 0.0;
-            i_local = 0;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(0,0) = val[n_tmp];
+        else
+          z(0,0) = 0.0;
+        i_local = 0;
 
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(1,0) = val[n_tmp];
-            else
-                z(1,0) = 0.0;
-            i_local = 0;
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(1,0) = val[n_tmp];
+        else
+          z(1,0) = 0.0;
+        i_local = 0;
 
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(2,0) = val[n_tmp];
-            else
-                z(2,0) = 0.0;
-            i_local = 0;
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+            i_small = 1;
+            i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(2,0) = val[n_tmp];
+        else
+          z(2,0) = 0.0;
+        i_local = 0;
 
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(3,0) = val[n_tmp];
-            else
-                z(3,0) = 0.0;
-            i_local = 0;
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(3,0) = val[n_tmp];
+        else
+          z(3,0) = 0.0;
+        i_local = 0;
 
-            /*
-             * second row 
-             */
-            n_tmp = ( i_old - 2 ) * info.number + j_old - 1;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(0,1) = val[n_tmp];
-            else
-                z(0,1) = 0.0;
-            i_local = 0;
+        /*
+         * second row 
+         */
+        n_tmp = ( i_old - 2 ) * info.number + j_old - 1;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(0,1) = val[n_tmp];
+        else
+          z(0,1) = 0.0;
+        i_local = 0;
 
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(1,1) = val[n_tmp];
-            else
-                z(1,1) = 0.0;
-            i_local = 0;
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(1,1) = val[n_tmp];
+        else
+          z(1,1) = 0.0;
+        i_local = 0;
 
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(2,1) = val[n_tmp];
-            else
-                z(2,1) = 0.0;
-            i_local = 0;
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(2,1) = val[n_tmp];
+        else
+          z(2,1) = 0.0;
+        i_local = 0;
 
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(3,1) = val[n_tmp];
-            else
-                z(3,1) = 0.0;
-            i_local = 0;
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(3,1) = val[n_tmp];
+        else
+          z(3,1) = 0.0;
+        i_local = 0;
 
-            /*
-             * third row 
-             */
-            n_tmp = ( i_old - 2 ) * info.number + j_old;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(0,2) = val[n_tmp];
-            else
-                z(0,2) = 0.0;
-            i_local = 0;
+        /*
+         * third row 
+         */
+        n_tmp = ( i_old - 2 ) * info.number + j_old;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(0,2) = val[n_tmp];
+        else
+          z(0,2) = 0.0;
+        i_local = 0;
 
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(1,2) = val[n_tmp];
-            else
-                z(1,2) = 0.0;
-            i_local = 0;
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(1,2) = val[n_tmp];
+        else
+          z(1,2) = 0.0;
+        i_local = 0;
 
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(2,2) = val[n_tmp];
-            else
-                z(2,2) = 0.0;
-            i_local = 0;
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(2,2) = val[n_tmp];
+        else
+          z(2,2) = 0.0;
+        i_local = 0;
 
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(3,2) = val[n_tmp];
-            else
-                z(3,2) = 0.0;
-            i_local = 0;
-
-
-            /*
-             * fourth row 
-             */
-            n_tmp = ( i_old - 2 ) * info.number + j_old + 1;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(0,3) = val[n_tmp];
-            else
-                z(0,3) = 0.0;
-            i_local = 0;
-
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(1,3) = val[n_tmp];
-            else
-                z(1,3) = 0.0;
-            i_local = 0;
-
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(2,3) = val[n_tmp];
-            else
-                z(2,3) = 0.0;
-            i_local = 0;
-
-            n_tmp += info.number;
-            if ( n_tmp < 0 || n_tmp > n_old_max ) {
-                i_small = 1;
-                i_local = 1;
-            }
-            if ( i_local != 1 )
-                z(3,3) = val[n_tmp];
-            else
-                z(3,3) = 0.0;
-            i_local = 0;
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(3,2) = val[n_tmp];
+        else
+          z(3,2) = 0.0;
+        i_local = 0;
 
 
+        /*
+         * fourth row 
+         */
+        n_tmp = ( i_old - 2 ) * info.number + j_old + 1;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(0,3) = val[n_tmp];
+        else
+          z(0,3) = 0.0;
+        i_local = 0;
+
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(1,3) = val[n_tmp];
+        else
+          z(1,3) = 0.0;
+        i_local = 0;
+
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(2,3) = val[n_tmp];
+        else
+          z(2,3) = 0.0;
+        i_local = 0;
+
+        n_tmp += info.number;
+        if ( n_tmp < 0 || n_tmp > n_old_max ) {
+          i_small = 1;
+          i_local = 1;
+        }
+        if ( i_local != 1 )
+          z(3,3) = val[n_tmp];
+        else
+          z(3,3) = 0.0;
+        i_local = 0;
 
 
-            /* now finally create the new value. */
-            if ( i_small == 1 ) {
-                if (    x_new > lower
-                     && x_new < upper
-                     && y_new > lower
-                     && y_new < upper ) {
-                    new_field(i,j) =
-                        inv_squares ( x_old, y_old, dx_old,
-                                      z(1,1), z(2,1),
-                                      z(1,2), z(2,2),
-                                      x_new, y_new )
-                        / magnif;
-                }
-            } else {
-                if (    x_new > lower
-                     && x_new < upper
-                     && y_new > lower
-                     && y_new < upper ) {
-                    new_field(i,j) =
-                        int16 ( x_old, y_old, x_new, y_new, dx_old, z ) / magnif;
-                }
-            }
-        }/* j */
+
+
+        /* now finally create the new value. */
+        if ( i_small == 1 ) {
+          if (    x_new > lower
+               && x_new < upper
+               && y_new > lower
+               && y_new < upper ) {
+            new_field(i,j) =
+                inv_squares ( x_old, y_old, dx_old,
+                              z(1,1), z(2,1),
+                              z(1,2), z(2,2),
+                              x_new, y_new )
+                / magnif;
+          }
+        } else {
+          if (    x_new > lower
+               && x_new < upper
+               && y_new > lower
+               && y_new < upper ) {
+            new_field(i,j) =
+                int16 ( x_old, y_old, x_new, y_new, dx_old, z ) / magnif;
+          }
+        }
+      }/* j */
     }/* i */
 
 
@@ -2099,8 +2233,28 @@ Field & Field::interpolate(const double & new_side_length /* = 0.0 */,
     *this = new_field;
 
     return *this;
-}
+  }
 
-/* *** STUFF FOR INTERPOLATE ENDS HERE *** */
+  /* *** STUFF FOR INTERPOLATE ENDS HERE *** */
+
+
+  void Field::cleanup() {
+    if (val) {
+      delete[] val;
+      val = NULL;
+    }
+  }
+
+  void Field::init() {
+    cleanup();
+
+    size_t sz = SQR(info.number);
+
+    val = new std::complex<double>[sz];
+    if (val == NULL)
+      throw std::runtime_error("field allocation error");
+
+    std::fill(val, val+sz, std::complex<double>(0.0));
+  }
 
 }/* namespace lightpipes */

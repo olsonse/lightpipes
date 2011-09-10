@@ -10,9 +10,12 @@
 /*--------------------------------------------------------------*/
 
 
-#include <math.h>
-#include <fstream>
 #include <lightpipes/Field.h>
+
+#include <fstream>
+#include <cmath>
+#include <cstring>
+
 #define GAMMA 2.0
 
 void error_print ( const char * arr = NULL );

@@ -6,6 +6,8 @@
 #include <octave/ov-struct.h>
 #include <lightpipes/Field.h>
 
+using lightpipes::Field;
+
 Field::Info & mapToInfo(const Octave_map & ov_info, Field::Info & info) {
     info.number                 = ov_info.contents("number")(0).int_value();
     info.side_length           = ov_info.contents("side_length")(0).double_value();;
