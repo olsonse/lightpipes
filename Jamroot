@@ -106,27 +106,57 @@ if [ modules.peek : NT ] {
 }
 
 
+# all programs to install
+local binaries = [ path.glob-tree src/progs/bin : * ] ;
+# all octave stuff to install
+local octfiles = [ path.glob-tree octave/oct-files : * ] ;
+local mfiles   = [ path.glob-tree octave : *.m ] ;
 # the list of libraries to build and install
-local libraries = libraries ;
+local libraries = lightpipes ;
 # all headers to install
-local all_headers = [ path.glob-tree cxx : *.h *.cpp : .svn ] ;
+local all_headers = [ path.glob-tree src : *.h *.cpp : progs ] ;
 # docs to install
-local docs = [ path.glob-tree docs/api/html docs/api/latex : * : .svn ] ;
+local docs = [ path.glob-tree docs/api/html docs/api/latex : * ] ;
+# docs (old manual) to install
+local manual = [ path.glob-tree manual : * ] ;
 
 
 # Complete install allowing --prefix and related command line options
-alias install : install-code install-docs ;
+alias install
+  : install-code install-octfiles install-mfiles install-docs install-manual ;
 explicit install ;
 
 # Complete install allowing --prefix and related command line options
 package.install install-code
     : $(install-properties)
-      <install-source-root>$(TOP)/cxx
-    :
+      <install-source-root>$(TOP)/src
+    : $(binaries)
     : $(libraries)
     : $(all_headers)
     ;
 explicit install-code ;
+
+# install oct-files allowing --prefix and related command line options
+package.install install-octfiles
+    : $(install-properties)
+      <install-source-root>$(TOP)/octave/oct-files
+      <install-header-subdir>../lib/lightpipes/octave
+    :
+    :
+    : $(octfiles)
+    ;
+explicit install-octfiles ;
+
+# install m-files allowing --prefix and related command line options
+package.install install-mfiles
+    : $(install-properties)
+      <install-source-root>$(TOP)/octave
+      <install-header-subdir>../lib/lightpipes/octave
+    :
+    :
+    : $(mfiles)
+    ;
+explicit install-mfiles ;
 
 # install data allowing --prefix and related command line options
 package.install install-docs
@@ -138,6 +168,17 @@ package.install install-docs
     : $(docs)
     ;
 explicit install-docs ;
+
+# install data allowing --prefix and related command line options
+package.install install-manual
+    : $(install-properties)
+      <install-source-root>$(TOP)
+      <install-header-subdir>../share/lightpipes/docs
+    :
+    :
+    : $(manual)
+    ;
+explicit install-manual ;
 
 
 # install the libs into a staging dir
