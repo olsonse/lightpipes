@@ -29,7 +29,7 @@ exe pip_fft       : pip_fft.cpp ;
 exe rect_ap       : rect_ap.cpp ;
 exe rect_screen   : rect_screen.cpp ;
 exe strehl        : strehl.cpp ;
-exe test          : test.cpp ;
+exe phase_test    : test.cpp ;
 exe tilt          : tilt.cpp ;
 exe tor_lens      : tor_lens.cpp ;
 exe zernike       : zernike.cpp ;
@@ -64,7 +64,7 @@ install convenient-copy
     rect_ap       
     rect_screen   
     strehl        
-    test          
+    phase_test          
     tilt          
     tor_lens      
     zernike       
