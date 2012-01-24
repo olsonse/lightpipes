@@ -343,6 +343,7 @@ namespace lightpipes {
 
 
 
+    const Field::Info & getinfo() const { return info; }
 
 
 
