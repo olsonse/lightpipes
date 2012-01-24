@@ -47,23 +47,7 @@ int main ( int argc, char *argv[] ) {
 
 
     lightpipes::Field field = lightpipes::Field ( n_grid, side_length, lambda );
-
-
-    /*
-     * Here the initial field is formed 
-     */
-    ik = 0;
-    for ( i = 1; i <= field.info.number; i++ )
-        for ( j = 1; j <= field.info.number; j++ )
-        {
-            field[ik] = std::complex<double>(1.0,0.0);
-            /* stupid old gcc templates */
-            //field[ik].real() = 1.;
-            //field[ik].imag() = 0.;
-            ik++;
-        }
-
-
+    field.fill( std::complex<double>(1.0,0.0) );
     field.write ( );
     /*
      * return (0); 

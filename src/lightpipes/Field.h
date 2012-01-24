@@ -147,6 +147,19 @@ namespace lightpipes {
     /** Copy operator. */
     Field & operator= (const Field & that);
 
+    /** fill the field with a constant value operator. */
+    template < typename T >
+    Field & fill(const T & t) {
+      for (int i=1;i<=info.number; ++i){
+        for (int j=1;j<=info.number; ++j){
+          long ik1=(i-1)*info.number+j-1;
+          val[ik1] = t;
+        }
+      }
+
+      return *this;
+    }
+
     /** Scaling operator. */
     template <class T>
     Field & operator*= ( const T & input ) {
