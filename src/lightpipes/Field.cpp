@@ -8,6 +8,7 @@ extern "C" {
 #include <algorithm>
 #include <fstream>
 
+#include <stdint.h>
 #include <cmath>
 
 
@@ -1720,7 +1721,15 @@ std::ostream & Field::print_field(std::ostream & output,
                 }
 
             } else {
-                output.write((char*)&i0,sizeof(i0));
+                if (max_val <= 255) {
+                  uint8_t i0T = i0;
+                  output.write( reinterpret_cast<char*>(&i0T), sizeof(i0T) );
+                } else if (max_val <= 65535) {
+                  uint16_t i0T = i0;
+                  output.write( reinterpret_cast<char*>(&i0T), sizeof(i0T) );
+                } else {
+                  output.write( reinterpret_cast<char*>(&i-1), sizeof(i0) );
+                }
             }
         } /* j loop */
     } /* i loop */
