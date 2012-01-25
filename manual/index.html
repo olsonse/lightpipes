@@ -106,7 +106,7 @@ P5), surface wireframes (Xplot or Gnuplot required) and contour plots
 (Gnuplot required) are included.
 <P>
 C shell syntax is used for all examples in this manual.  A good
-reference for the syntax of C shell is given in &nbsp;[<A HREF="betaman.html#Cshell">1</A>]. Any
+reference for the syntax of C shell is given in &nbsp;[<A HREF="#Cshell">1</A>]. Any
 other shell environment or script language can be used with <TT>
 LightPipes</TT> as far as binary system pipes are supported.
 <P>
@@ -386,7 +386,7 @@ rm foo foo1 foo2 foo3</PRE>
 <P>
 </OL>
 <P>
-The resulting intensity distributions are shown in Fig.&nbsp;<A HREF="betaman.html#circcent">1</A>.
+The resulting intensity distributions are shown in Fig.&nbsp;<A HREF="#circcent">1</A>.
 <P>
 <P><A NAME="117">&#160;</A><A NAME="circcent">&#160;</A> <IMG WIDTH=420 HEIGHT=102 ALIGN=BOTTOM ALT="figure112" SRC="img6.gif"  > <BR>
 <STRONG>Figure 1:</STRONG> Intensity distributions produced by  four examples (from
@@ -421,7 +421,7 @@ and  <IMG WIDTH=7 HEIGHT=13 ALIGN=MIDDLE ALT="tex2html_wrap_inline1721" SRC="img
 demo) and  <IMG WIDTH=30 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1725" SRC="img8.gif"  >  (it increases slightly the brightness in
 low-intensity regions, showing the distribution in a more natural
 way). The postscript output of the previous example
-(Fig.&nbsp;<A HREF="betaman.html#circcent">1</A>) is 128x128 and occupies approximately 32K on
+(Fig.&nbsp;<A HREF="#circcent">1</A>) is 128x128 and occupies approximately 32K on
 disk (different in demo). When  <IMG WIDTH=11 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1727" SRC="img9.gif"  >  sampling is used in calculations,
 the sampling of postscript graph must be also  <IMG WIDTH=11 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1727" SRC="img9.gif"  > 
 i.e. 32,64,128,256,512....  The filter does not report a wrong
@@ -502,7 +502,7 @@ gnuplot&gt; plot  'out' using 1:4 with li,  'out' using 1:5 with li</PRE>
 <P>
 The first operator plots the intensity plot, second- the phase plot,
 the third and the fourth plot the Y intensity cross-sections and the Y
-phase cross-section. The graphic output is shown in Fig.&nbsp;<A HREF="betaman.html#circ1">2</A>.
+phase cross-section. The graphic output is shown in Fig.&nbsp;<A HREF="#circ1">2</A>.
 <P>
 <P><A NAME="835">&#160;</A><A NAME="circ1">&#160;</A> <IMG WIDTH=429 HEIGHT=100 ALIGN=BOTTOM ALT="figure155" SRC="img10.gif"  > <BR>
 <STRONG>Figure 2:</STRONG> Graphs produced with <TT>gnuplot</TT>: Surface plot intensity, surface plot phase and intensity cross sections<BR>
@@ -526,38 +526,38 @@ of <I>U</I>(<I>x</I>,<I>y</I>,0) to the distance <I>z</I>, with the Fourier tran
 these two (initial and propagated ) wave functions given by  <IMG WIDTH=52 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1745" SRC="img11.gif"  >  and  <IMG WIDTH=53 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1747" SRC="img12.gif"  >  correspondently. In the Fresnel
 approximation, the Fourier transform of the diffracted wave function
 is related to the Fourier transform of the initial function via the
-frequency transfer characteristic of the free space  <IMG WIDTH=56 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1749" SRC="img13.gif"  > , given by&nbsp;[<A HREF="betaman.html#Goodman">4</A>, <A HREF="betaman.html#Southwell">5</A>]:
+frequency transfer characteristic of the free space  <IMG WIDTH=56 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1749" SRC="img13.gif"  > , given by&nbsp;[<A HREF="#Goodman">4</A>, <A HREF="#Southwell">5</A>]:
 <P>
 <P><A NAME="transfer">&#160;</A> <IMG WIDTH=500 HEIGHT=31 ALIGN=BOTTOM ALT="equation171" SRC="img14.gif"  > <P>      
 where
 <P><A NAME="up">&#160;</A> <IMG WIDTH=500 HEIGHT=27 ALIGN=BOTTOM ALT="equation177" SRC="img15.gif"  > <P>
 <P><A NAME="down">&#160;</A> <IMG WIDTH=500 HEIGHT=27 ALIGN=BOTTOM ALT="equation183" SRC="img16.gif"  > <P>
 <P>
-Expressions (<A HREF="betaman.html#transfer">2</A>, <A HREF="betaman.html#up">3</A>, <A HREF="betaman.html#down">4</A>) provide a
+Expressions (<A HREF="#transfer">2</A>, <A HREF="#up">3</A>, <A HREF="#down">4</A>) provide a
 symmetrical relation between the initial and diffracted wave functions
 in the Fresnel approximation. Applied in the order
-(<A HREF="betaman.html#up">3</A>)&nbsp; <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1751" SRC="img17.gif"  > &nbsp;(<A HREF="betaman.html#transfer">2</A>) <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1753" SRC="img17.gif"  > &nbsp;(<A HREF="betaman.html#down">4</A>)
+(<A HREF="#up">3</A>)&nbsp; <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1751" SRC="img17.gif"  > &nbsp;(<A HREF="#transfer">2</A>) <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1753" SRC="img17.gif"  > &nbsp;(<A HREF="#down">4</A>)
 they result in the diffracted wave function, while being applied in
 the reversed order they allow for reconstruction of the initial wave
 function from the result of diffraction. We shall denote the forward
 and the reversed propagation operations defined by expressions
-(<A HREF="betaman.html#transfer">2</A>, <A HREF="betaman.html#up">3</A> and <A HREF="betaman.html#down">4</A>) with operators  <IMG WIDTH=15 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1755" SRC="img19.gif"  >  and
+(<A HREF="#transfer">2</A>, <A HREF="#up">3</A> and <A HREF="#down">4</A>) with operators  <IMG WIDTH=15 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1755" SRC="img19.gif"  >  and
  <IMG WIDTH=15 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1757" SRC="img20.gif"  >  respectively.
 <P>
 The described algorithm can be implemented numerically using Fast
-Fourier Transform (FFT)&nbsp;[<A HREF="betaman.html#Southwell">5</A>, <A HREF="betaman.html#siegman2">6</A>] on a finite
+Fourier Transform (FFT)&nbsp;[<A HREF="#Southwell">5</A>, <A HREF="#siegman2">6</A>] on a finite
 rectangular grid with periodic border conditions. It results in a
 model of beam propagation inside a rectangular waveguide with
 reflective walls. To approximate a free-space propagation, wide empty
 guard bands have to be formed around the wave function defined on a
 grid. To eliminate the influence of the finite rectangular data
 window, Gaussian amplitude windowing in the frequency domain should be
-applied - see&nbsp;[<A HREF="betaman.html#Southwell">5</A>, <A HREF="betaman.html#siegman2">6</A>] for extensive analysis of
+applied - see&nbsp;[<A HREF="#Southwell">5</A>, <A HREF="#siegman2">6</A>] for extensive analysis of
 these computational aspects.
 <P>
 The simplest and fastest <TT>LightPipes</TT> command for propagation is
 <TT>forvard</TT>.  It implements the spectral method described by
-(<A HREF="betaman.html#transfer">2</A>,&nbsp;<A HREF="betaman.html#up">3</A>,&nbsp;<A HREF="betaman.html#down">4</A>). The syntax is simple, for
+(<A HREF="#transfer">2</A>,&nbsp;<A HREF="#up">3</A>,&nbsp;<A HREF="#down">4</A>). The syntax is simple, for
 example if you want to filter your field through 1cm circular aperture
 and then propagate the beam 1m forward, you type:
 <P>
@@ -624,7 +624,7 @@ forvard 30 &lt;foo |file_ps diffr30.ps &gt;foo1
 #reconstruction of the initial field: 
 forvard -30 &lt; foo1 | file_ps diffr_back.ps &gt;/dev/null
 rm foo foo1</PRE>
-The result produced by this script is shown in Fig.&nbsp;<A HREF="betaman.html#reversed">4</A>.
+The result produced by this script is shown in Fig.&nbsp;<A HREF="#reversed">4</A>.
 <P>
 <P><A NAME="222">&#160;</A><A NAME="reversed">&#160;</A> <IMG WIDTH=402 HEIGHT=131 ALIGN=BOTTOM ALT="figure218" SRC="img24.gif"  > <BR>
 <STRONG>Figure 4:</STRONG> The initial field, the field propagated to the near field and the
@@ -639,26 +639,26 @@ direct summation of the Fresnel-Kirchoff diffraction integral:
 <P><A NAME="fresn">&#160;</A> <IMG WIDTH=500 HEIGHT=28 ALIGN=BOTTOM ALT="eqnarray226" SRC="img25.gif"  > <P>
 with functions <I>U</I>(<I>x</I>,<I>y</I>,0) and <I>U</I>(<I>x</I>,<I>y</I>,<I>z</I>) defined on rectangular
 grids. This integral may be converted into a convolution form which
-can be efficiently computed using FFT&nbsp;[<A HREF="betaman.html#Elkin">7</A>, <A HREF="betaman.html#Baracat">8</A>]. This
+can be efficiently computed using FFT&nbsp;[<A HREF="#Elkin">7</A>, <A HREF="#Baracat">8</A>]. This
 method is free from many drawbacks of the spectral method given by the
 sequence
-(<A HREF="betaman.html#up">3</A>)&nbsp; <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1751" SRC="img17.gif"  > &nbsp;(<A HREF="betaman.html#transfer">2</A>) <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1753" SRC="img17.gif"  > &nbsp;(<A HREF="betaman.html#down">4</A>),
+(<A HREF="#up">3</A>)&nbsp; <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1751" SRC="img17.gif"  > &nbsp;(<A HREF="#transfer">2</A>) <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1753" SRC="img17.gif"  > &nbsp;(<A HREF="#down">4</A>),
 although it is still very fast due to its use of FFT for computing of
 the integral sums.
 <P>
 We'll explain this using two-dimensional example,
-following&nbsp;[<A HREF="betaman.html#Elkin">7</A>], p.100. Let the integral is defined in a finite
+following&nbsp;[<A HREF="#Elkin">7</A>], p.100. Let the integral is defined in a finite
 interval  <IMG WIDTH=68 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1775" SRC="img26.gif"  > :
 <P>
 <P><A NAME="td">&#160;</A> <IMG WIDTH=500 HEIGHT=35 ALIGN=BOTTOM ALT="eqnarray240" SRC="img27.gif"  > <P>
 <P>
 Replacing functions <I>U</I>(<I>x</I>) and  <IMG WIDTH=30 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1779" SRC="img28.gif"  >  with step functions  <IMG WIDTH=11 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1781" SRC="img29.gif"  >  and
  <IMG WIDTH=15 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1783" SRC="img30.gif"  > , defined in the sampling points of the grid with  <IMG WIDTH=58 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1785" SRC="img31.gif"  > ,
-and  <IMG WIDTH=63 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1787" SRC="img32.gif"  >  we convert the integral&nbsp;<A HREF="betaman.html#td">5</A> to the form:
+and  <IMG WIDTH=63 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1787" SRC="img32.gif"  >  we convert the integral&nbsp;<A HREF="#td">5</A> to the form:
 <P>
 <P><A NAME="ssum">&#160;</A> <IMG WIDTH=500 HEIGHT=75 ALIGN=BOTTOM ALT="eqnarray251" SRC="img33.gif"  > <P>
 <P>
-Taking integrals in <A HREF="betaman.html#ssum">5</A> we obtain:
+Taking integrals in <A HREF="#ssum">5</A> we obtain:
 <P><A NAME="sshort">&#160;</A> <IMG WIDTH=500 HEIGHT=38 ALIGN=BOTTOM ALT="eqnarray274" SRC="img34.gif"  > <P>
 <P>
 where:  <IMG WIDTH=94 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1789" SRC="img35.gif"  >  are analytically expressed with the
@@ -727,9 +727,9 @@ where (we put  <IMG WIDTH=85 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1807
 <P> <IMG WIDTH=500 HEIGHT=26 ALIGN=BOTTOM ALT="equation366" SRC="img44.gif"  > <P>
 <P> <IMG WIDTH=500 HEIGHT=30 ALIGN=BOTTOM ALT="equation374" SRC="img45.gif"  > <P>
 <P>
-The three-diagonal system of linear equations&nbsp;(<A HREF="betaman.html#Elk2">9</A>) is solved
+The three-diagonal system of linear equations&nbsp;(<A HREF="#Elk2">9</A>) is solved
 by standard elimination (double sweep) method, described for example
-in&nbsp;[<A HREF="betaman.html#samar">11</A>].  This scheme is absolutely stable (this variant is
+in&nbsp;[<A HREF="#samar">11</A>].  This scheme is absolutely stable (this variant is
 explicit with respect to the index <I>i</I> and implicit with respect to
 the index <I>j</I>).  One step of propagation is divided into two
 sub-steps: the first sub-step applies the described procedure to all
@@ -858,7 +858,7 @@ one ``shifted'' hole. After mixing these two beams we have a screen
 with two holes: a Young's interferometer.  After execution of this
 script, two intensity distributions are stored in files <TT>
 young0.ps</TT> and <TT>young1.ps</TT>. The result of the interference is
-shown in (Fig&nbsp;<A HREF="betaman.html#interf2">7</A>):
+shown in (Fig&nbsp;<A HREF="#interf2">7</A>):
 <P>
 <P><A NAME="431">&#160;</A><A NAME="interf2">&#160;</A> <IMG WIDTH=295 HEIGHT=146 ALIGN=BOTTOM ALT="figure428" SRC="img49.gif"  > <BR>
 <STRONG>Figure 7:</STRONG> Intensity distributions in the plane of the screen and 75cm
@@ -998,7 +998,7 @@ shift in X direction by 0.2 and in Y direction by 0.3, then rotate
 <TT>interpol same same 0. 0. 0. 1.3</TT> - inherit size and sampling,
 magnify (afocal) the field with a ratio of 1.3
 </UL>
-The following example (Fig.&nbsp;<A HREF="betaman.html#grids">11</A>)  illustrates the usage of <TT>
+The following example (Fig.&nbsp;<A HREF="#grids">11</A>)  illustrates the usage of <TT>
 interpol</TT> for transition from a fine grid used by <TT>forvard</TT> (near
 field) to the coarse grid used by <TT>forward</TT> (far field).
 <PRE>#!/bin/csh -f
@@ -1055,7 +1055,7 @@ The wavefront tilt is illustrated by following examples:
 <PRE>begin 0.04 1e-6   | rect_ap 0.02 | tilt 1e-4 -1e-4 |forvard 8  &gt; foo
 cros_out out &lt;foo &gt;/dev/null</PRE>
 <P>
-The result is shown in Fig.&nbsp;<A HREF="betaman.html#lens2">13</A>.
+The result is shown in Fig.&nbsp;<A HREF="#lens2">13</A>.
 <P><A NAME="500">&#160;</A><A NAME="lens2">&#160;</A> <IMG WIDTH=363 HEIGHT=131 ALIGN=BOTTOM ALT="figure497" SRC="img56.gif"  > <BR>
 <STRONG>Figure 13:</STRONG> The intensity and the phase after tilting the wavefront by 1e-4 rad
 and propagating it 8 m forward. Note the transversal shift of
@@ -1072,15 +1072,15 @@ arguments of <TT>tilt</TT> equals to zero.
 <H2><A NAME="SECTION00048000000000000000">Zernike polynomials</A></H2>
 <P>
 	Any aberration in a circle can be decomposed over a sum of
-	Zernike polynomials. Formulas given in&nbsp;[<A HREF="betaman.html#Born1">2</A>] have been
+	Zernike polynomials. Formulas given in&nbsp;[<A HREF="#Born1">2</A>] have been
 	directly implemented in <TT>LightPipes</TT>.  The filter is named
 	<TT>Zernike</TT> and accepts four command line arguments:
-<OL><LI> The radial order <I>n</I> (first column in Table 13.2&nbsp;[<A HREF="betaman.html#Malacara">3</A>] p. 465).<LI> The azimuthal order <I>m</I>,  <IMG WIDTH=41 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1837" SRC="img59.gif"  > , polynomials with negative
+<OL><LI> The radial order <I>n</I> (first column in Table 13.2&nbsp;[<A HREF="#Malacara">3</A>] p. 465).<LI> The azimuthal order <I>m</I>,  <IMG WIDTH=41 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1837" SRC="img59.gif"  > , polynomials with negative
 <I>n</I> are rotated  <IMG WIDTH=16 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1697" SRC="img2.gif"  >  relative to the polynomials with positive
 <I>n</I>. For example <TT>Zernike 5 3 1 1</TT> gives the same aberration as
 <TT>Zernike 5 -3 1 1</TT>, but the last is rotated  <IMG WIDTH=16 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1697" SRC="img2.gif"  > . This index
 corresponds to the <I>n</I>-2<I>m</I> given in the third column of Table 13.2
-in&nbsp;[<A HREF="betaman.html#Malacara">3</A>], p. 465.<LI> The radius  <I>R</I><LI> The amplitude of aberration in radians,  at <I>R</I></OL> 
+in&nbsp;[<A HREF="#Malacara">3</A>], p. 465.<LI> The radius  <I>R</I><LI> The amplitude of aberration in radians,  at <I>R</I></OL> 
 We can uniformly introduce the <TT>lens</TT> and <TT>tilt</TT> using <TT>
 Zernike</TT>. The difference is that <TT>lens</TT> and <TT>tilt</TT> accept
 conventional meters and radians, which are widely in use for
@@ -1102,13 +1102,13 @@ free space propagation.  <BR>
 <P>
 <P>
 The result of propagation to the focal plane of cylindric lens, defined
-as a combination of two Zernike polynomials, is shown in Fig.&nbsp;<A HREF="betaman.html#cl">14</A>.
+as a combination of two Zernike polynomials, is shown in Fig.&nbsp;<A HREF="#cl">14</A>.
 <P>
 <H2><A NAME="SECTION00049000000000000000">Spherical coordinates</A></H2>
 <P>
 	The principle of beam propagation in the ``floating''
 coordinate system (for the case of a lens waveguide) is shown in
-Fig.&nbsp;<A HREF="betaman.html#coord">15</A>
+Fig.&nbsp;<A HREF="#coord">15</A>
 <P><A NAME="533">&#160;</A><A NAME="coord">&#160;</A> <IMG WIDTH=290 HEIGHT=283 ALIGN=BOTTOM ALT="figure531" SRC="img61.gif"  > <BR>
 <STRONG>Figure 15:</STRONG> Illustration for  the  light propagation in lens waveguides with 
 fixed and floating coordinate systems.<BR>
@@ -1228,7 +1228,7 @@ c     all done:
 <P>
 This program forms two files: <TT>in</TT> and <TT>pha</TT>. A beam can be
 filtered through these filters to produce the intensity distribution
-shown in Fig.&nbsp;<A HREF="betaman.html#arb">16</A>:
+shown in Fig.&nbsp;<A HREF="#arb">16</A>:
 <P>
 <PRE>begin 0.1 1e-6 | fil_ter int subs in|file_ter pha subs pha\
  | file_ps arb.ps &gt; /dev/null</PRE>
@@ -1373,7 +1373,7 @@ Grid size: 1.000000e+00, Grid sampling: 256</PRE>
 <P>
 We can easily model a shearing interferometer using the operators
 introduced in the previous sections. Suppose we have to model a device
-shown in Fig.&nbsp;<A HREF="betaman.html#shearing">18</A>.
+shown in Fig.&nbsp;<A HREF="#shearing">18</A>.
 <P><A NAME="605">&#160;</A><A NAME="shearing">&#160;</A> <IMG WIDTH=188 HEIGHT=170 ALIGN=BOTTOM ALT="figure603" SRC="img68.gif"  > <BR>
 <STRONG>Figure 18:</STRONG> The shearing interferometer<BR>
 <P>
@@ -1392,7 +1392,7 @@ interpol 0.04 256 0.003 0.001 &lt;foo1|b_mix foo |forvard 0.5&gt;foo2
 # postscript output
 file_ps shear1.ps 128&lt;foo2|cros_out out &gt;/dev/null
 rm foo foo1 foo2</PRE>
-In Fig&nbsp;<A HREF="betaman.html#shear1">19</A> is shown the intensity distribution in the plane
+In Fig&nbsp;<A HREF="#shear1">19</A> is shown the intensity distribution in the plane
 of the screen, obtained as a result of running this script:
 <P><A NAME="612">&#160;</A><A NAME="shear1">&#160;</A> <IMG WIDTH=389 HEIGHT=160 ALIGN=BOTTOM ALT="figure609" SRC="img73.gif"  > <BR>
 <STRONG>Figure 19:</STRONG> The intensity distribution in the plane of the screen, obtained with
@@ -1414,7 +1414,7 @@ file_ps shear3.ps 128&lt;foo2 &gt;/dev/null
 rm foo foo1 foo2</PRE>
 Changing the amplitude and the order of aberration we can obtain all
 the shearing interferograms shown in the section about shearing
-interferometers of&nbsp;[<A HREF="betaman.html#Malacara">3</A>].
+interferometers of&nbsp;[<A HREF="#Malacara">3</A>].
 <P><A NAME="620">&#160;</A><A NAME="shear2">&#160;</A> <IMG WIDTH=359 HEIGHT=117 ALIGN=BOTTOM ALT="figure616" SRC="img74.gif"  > <BR>
 <STRONG>Figure 20:</STRONG> Shearing interferograms of the  spherical aberration, coma and astigmatism <BR>
 <P><H2><A NAME="SECTION00052000000000000000">Rotational shear interferometer</A></H2>
@@ -1496,7 +1496,7 @@ rm foo foo1 foo2</PRE>
 <P><A NAME="643">&#160;</A><A NAME="tg">&#160;</A> <IMG WIDTH=325 HEIGHT=190 ALIGN=BOTTOM ALT="figure640" SRC="img78.gif"  > <BR>
 <STRONG>Figure 23:</STRONG> Twyman-Green interferometer (left) and the output of the interferometer model<BR>
 <P>
-	The scheme of the interferometer is shown in Fig.&nbsp;<A HREF="betaman.html#tg">23</A>.
+	The scheme of the interferometer is shown in Fig.&nbsp;<A HREF="#tg">23</A>.
 	In this example we put <I>D</I>=1cm,  <IMG WIDTH=57 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1865" SRC="img69.gif"  > ,  <IMG WIDTH=57 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1889" SRC="img79.gif"  > ,
 	 <IMG WIDTH=57 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1891" SRC="img80.gif"  > ,  <IMG WIDTH=47 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1893" SRC="img81.gif"  > ,  <IMG WIDTH=58 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1869" SRC="img71.gif"  > . The first mirror is
 	plane and the second is aberrated (coma) with aberration
@@ -1520,8 +1520,8 @@ rm foo foo1 foo2 foo3</PRE>
 <P>
 	We know enough to solve a real problem with <TT>LightPipes</TT>.
 Here is the script which calculates the output mode of an unstable
-resonator with square mirrors. The example is taken from [<A HREF="betaman.html#rench">10</A>].
-The scheme of the resonator is shown in Fig.&nbsp;<A HREF="betaman.html#unst">24</A> together with
+resonator with square mirrors. The example is taken from [<A HREF="#rench">10</A>].
+The scheme of the resonator is shown in Fig.&nbsp;<A HREF="#unst">24</A> together with
 the equivalent lens waveguide scheme used in calculations. The
 infinite sequence of reflections from resonator mirrors is replaced
 here by finite but long enough sequence of propagations through afocal
@@ -1575,7 +1575,7 @@ should be commented, othervise it will start again the calculations
 from a plane wave.
 <P>
 We can compare the intensity and phase distribution in the output
-mode with original distributions obtained by Rench [<A HREF="betaman.html#rench">10</A>]:
+mode with original distributions obtained by Rench [<A HREF="#rench">10</A>]:
 <P>
 	In this example we calculated the mode profile of an ideal
 unstable resonator.  A resonator with aberrated and misaligned mirrors
@@ -1682,7 +1682,7 @@ c     xmax is the grid size
 <P>
 Here we use the approximation for the profile of the refractive
 coefficient in th form:  <IMG WIDTH=93 HEIGHT=22 ALIGN=MIDDLE ALT="tex2html_wrap_inline1903" SRC="img86.gif"  > . It is a well-known
-fact&nbsp;[<A HREF="betaman.html#Marcuse">12</A>] that the half-width of the fundamental Gaussian mode of a
+fact&nbsp;[<A HREF="#Marcuse">12</A>] that the half-width of the fundamental Gaussian mode of a
 lens-like waveguide is defined as:  <IMG WIDTH=84 HEIGHT=23 ALIGN=MIDDLE ALT="tex2html_wrap_inline1905" SRC="img87.gif"  > .  For a waveguide of 1x1mm,  <IMG WIDTH=46 HEIGHT=18 ALIGN=MIDDLE ALT="tex2html_wrap_inline1907" SRC="img88.gif"  > ,  <IMG WIDTH=48 HEIGHT=18 ALIGN=MIDDLE ALT="tex2html_wrap_inline1909" SRC="img89.gif"  >  and   <IMG WIDTH=57 HEIGHT=18 ALIGN=MIDDLE ALT="tex2html_wrap_inline1911" SRC="img90.gif"  > ,
 the Gaussian mode has a diameter of 226 <IMG WIDTH=7 HEIGHT=13 ALIGN=MIDDLE ALT="tex2html_wrap_inline1913" SRC="img91.gif"  > m. We shall use this value
 in the following script, which demonstrates three-dimensional propagation
@@ -1735,28 +1735,28 @@ steps 1e-3 1000  refr.ind  abs.co s_ss.out 10 &gt; /dev/null
 
 rm foo*</PRE>
 <P>
-The array of refractive coefficients is plotted in Fig.&nbsp;<A HREF="betaman.html#refr_ind">27</A>.
+The array of refractive coefficients is plotted in Fig.&nbsp;<A HREF="#refr_ind">27</A>.
 <P><A NAME="681">&#160;</A><A NAME="refr_ind">&#160;</A> <IMG WIDTH=262 HEIGHT=157 ALIGN=BOTTOM ALT="figure679" SRC="img92.gif"  > <BR>
 <STRONG>Figure 27:</STRONG> Distribution of the refractive index in a lens-like waveguide.<BR>
 <P>
 The result of the first example - centered Gaussian beam under small
-angle to the axis in a lens-like medium is shown in Fig.&nbsp;<A HREF="betaman.html#wav1">28</A>
+angle to the axis in a lens-like medium is shown in Fig.&nbsp;<A HREF="#wav1">28</A>
 <P><A NAME="688">&#160;</A><A NAME="wav1">&#160;</A> <IMG WIDTH=393 HEIGHT=108 ALIGN=BOTTOM ALT="figure685" SRC="img93.gif"  > <BR>
 <STRONG>Figure 28:</STRONG> Radial (x at the left, y at the right) energy distribution in a tilted Gaussian beam propagating in a lens-like absorptive medium.<BR>
 <P>
 The result of ``reversed'' propagation is shown in
-Fig.&nbsp;<A HREF="betaman.html#wav2">29</A>. Comparison with Fig.&nbsp;<A HREF="betaman.html#wav1">28</A> proves the validity
+Fig.&nbsp;<A HREF="#wav2">29</A>. Comparison with Fig.&nbsp;<A HREF="#wav1">28</A> proves the validity
 of algorithm for refractive/absorptive media.
 <P><A NAME="696">&#160;</A><A NAME="wav2">&#160;</A> <IMG WIDTH=393 HEIGHT=110 ALIGN=BOTTOM ALT="figure693" SRC="img94.gif"  > <BR>
 <STRONG>Figure 29:</STRONG> Radial (x at the left, y at the right) energy distribution in a tilted Gaussian beam, reversely propagated  in a lens-like absorptive medium.<BR>
 <P>
-The result of propagation of ``shifted'' Gaussian beam, incident parallel to the axis is shown in Fig.&nbsp;<A HREF="betaman.html#wav3">30</A>.
+The result of propagation of ``shifted'' Gaussian beam, incident parallel to the axis is shown in Fig.&nbsp;<A HREF="#wav3">30</A>.
 <P><A NAME="703">&#160;</A><A NAME="wav3">&#160;</A> <IMG WIDTH=393 HEIGHT=108 ALIGN=BOTTOM ALT="figure700" SRC="img95.gif"  > <BR>
 <STRONG>Figure 30:</STRONG> Radial (x at the left, y at the right) energy distribution in a shifted Gaussian beam, incident parallel to the waveguide axis.<BR>
 <P>
 The result of propagation of two ``shifted'' Gaussian beams, both
 incident parallel to the axis of the waveguide is shown in
-Fig.&nbsp;<A HREF="betaman.html#wav4">31</A>.
+Fig.&nbsp;<A HREF="#wav4">31</A>.
 <P><A NAME="710">&#160;</A><A NAME="wav4">&#160;</A> <IMG WIDTH=393 HEIGHT=108 ALIGN=BOTTOM ALT="figure707" SRC="img96.gif"  > <BR>
 <STRONG>Figure 31:</STRONG> Radial (x at the left, y at the right) energy distribution in two Gaussian beams, incident parallel to the waveguide axis.<BR>
 <P>
@@ -1845,7 +1845,7 @@ lens 1 &lt; foo1 | forvard 1 | file_ps filtered_h.ps 200 4 &gt; /dev/null
 #	all done</PRE>
 <P>
 The initial distribution (file reg.pgm) and two filtered images are
-shown in Fig.&nbsp;<A HREF="betaman.html#filter">33</A>.
+shown in Fig.&nbsp;<A HREF="#filter">33</A>.
 <P>
 <H2><A NAME="SECTION000510000000000000000">Generation and reconstruction of interferograms</A></H2>
 <P>
@@ -1865,7 +1865,7 @@ begin 1e-2 1e-6 200 | b_mix foo1 | file_int int_in 256 &gt; foo2
 file_ps interf.ps 200 1 &lt; foo2 &gt; /dev/null
 #	All done</PRE>
 The generated interferogram, saved in file <TT>interf.ps</TT> may be
-directly plotted, as shown in Fig.&nbsp;<A HREF="betaman.html#interf1a">34</A>.
+directly plotted, as shown in Fig.&nbsp;<A HREF="#interf1a">34</A>.
 <P><A NAME="933">&#160;</A><A NAME="interf1a">&#160;</A> <IMG WIDTH=277 HEIGHT=116 ALIGN=BOTTOM ALT="figure740" SRC="img99.gif"  > <BR>
 <STRONG>Figure 34:</STRONG> The phase distribution and the interferogram, generated with <TT>
 LightPipes</TT> script.<BR>
@@ -1879,7 +1879,7 @@ where
 <P><A NAME="fringes1">&#160;</A> <IMG WIDTH=500 HEIGHT=14 ALIGN=BOTTOM ALT="equation749" SRC="img101.gif"  > <P>
 where the phase  <IMG WIDTH=36 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1915" SRC="img102.gif"  >  contains information about the mirror
 shape and the term  <IMG WIDTH=19 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1917" SRC="img103.gif"  >  describes the wavefront tilt.  Fourier
-transform of the expression&nbsp;(<A HREF="betaman.html#fringes">13</A>) gives:
+transform of the expression&nbsp;(<A HREF="#fringes">13</A>) gives:
 <P> <IMG WIDTH=500 HEIGHT=14 ALIGN=BOTTOM ALT="equation753" SRC="img104.gif"  > <P> 
 where the capitals <I>A</I> and <I>C</I> denote the Fourier spectra and <I>f</I> is
 the spatial frequency.
@@ -1889,16 +1889,16 @@ frequency  <IMG WIDTH=10 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1701" S
 (bottom). <BR>
 <P>
 <P><A NAME="938">&#160;</A><A NAME="interf">&#160;</A> <IMG WIDTH=378 HEIGHT=118 ALIGN=BOTTOM ALT="figure760" SRC="img106.gif"  > <BR>
-<STRONG>Figure:</STRONG> Spectrum of the interferogram shown in Fig.&nbsp;<A HREF="betaman.html#interf1a">34</A>,
+<STRONG>Figure:</STRONG> Spectrum of the interferogram shown in Fig.&nbsp;<A HREF="#interf1a">34</A>,
 with a side lobe shifted to the origin (left), the same after
 filtering (middle) and finally, the reconstructed phase (right).<BR>
 <P>
 We may take one of two side-lobe spectra  <IMG WIDTH=65 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1927" SRC="img107.gif"  >  or  <IMG WIDTH=70 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1929" SRC="img108.gif"  > 
 and translate it to the origin with zero spatial frequency as shown in
-Fig.&nbsp;<A HREF="betaman.html#spectr">35</A>. Now we can take the inverse Fourier transform of
+Fig.&nbsp;<A HREF="#spectr">35</A>. Now we can take the inverse Fourier transform of
 the translated spectrum to obtain <I>c</I>(<I>x</I>,<I>y</I>) defined in the
-expression(<A HREF="betaman.html#fringes">13</A>, <A HREF="betaman.html#fringes1">14</A>). Calculating the complex
-logarithm of the expression (<A HREF="betaman.html#fringes1">14</A>) we obtain the phase  <IMG WIDTH=36 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1915" SRC="img102.gif"  > :
+expression(<A HREF="#fringes">13</A>, <A HREF="#fringes1">14</A>). Calculating the complex
+logarithm of the expression (<A HREF="#fringes1">14</A>) we obtain the phase  <IMG WIDTH=36 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1915" SRC="img102.gif"  > :
 <P><A NAME="logarithm">&#160;</A> <IMG WIDTH=500 HEIGHT=14 ALIGN=BOTTOM ALT="equation771" SRC="img109.gif"  > <P>
 <P>
 The phase  <IMG WIDTH=36 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1915" SRC="img102.gif"  >  is obtained indeterminate to a factor of  <IMG WIDTH=13 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1937" SRC="img110.gif"  > 
