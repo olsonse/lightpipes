@@ -1,0 +1,14 @@
+import notfile ;
+
+notfile build_api : @build_api ;
+actions build_api
+{
+        if test -f Doxyfile ; then
+            echo "building api documentation for $(VERSION)..." ;
+            ( cat Doxyfile ; echo "PROJECT_NUMBER=$(VERSION)" ) | doxygen -
+        else
+            echo "  *** NOTE ***" ;
+            echo "Build the api by executing bjam IN the api directory" ;
+            echo "  *** NOTE ***" ;
+        fi
+}
