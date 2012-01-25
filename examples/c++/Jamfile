@@ -1,0 +1,11 @@
+# Build file for /lightpipes/python
+
+project /lightpipes/examples/c++
+  : requirements
+    <library>/lightpipes//lightpipes
+  ;
+
+exe zernike_test : zernike_test.cpp ;
+
+path-constant DIR : . ;
+install convenient-copy : zernike_test : <location>$(DIR) ;
