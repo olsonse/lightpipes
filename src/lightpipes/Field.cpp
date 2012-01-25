@@ -1345,7 +1345,7 @@ double p1evl ( double x, double coef[], int N ) {
 Field & Field::tilt ( double tx, double ty ) {
 
     int n2 = info.number / 2;
-    double K = 2. * 3.141592654 / info.lambda;
+    double K = 2. * M_PI / info.lambda;
     double dx = info.side_length / info.number;
 
     long ik = 0;

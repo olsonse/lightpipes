@@ -250,8 +250,8 @@ namespace lightpipes {
     Field & spherical_to_normal_coords ( );
 
     Field & circular_aperture( const double & r,
-                               const double & x0,
-                               const double & y0);
+                               const double & x0 = 0.0,
+                               const double & y0 = 0.0 );
 
     Field & circular_screen( const double & r,
                              const double & x0 = 0.0,
