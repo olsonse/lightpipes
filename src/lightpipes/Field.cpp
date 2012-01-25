@@ -6,6 +6,7 @@ extern "C" {
 }
 
 #include <algorithm>
+#include <fstream>
 
 #include <cmath>
 
@@ -1657,7 +1658,7 @@ std::ostream & Field::print_field(std::ostream & output,
      * FIXME:  This header is wrong in size for istep!=1 and should we
      * actually use P5?
      */
-    output << "P2\n"
+    output << (ascii ? "P2\n" : "P5\n")
            << "#Creator: LightPipes (C) 1993-1996, Gleb Vdovin\n"
            << "#Creator: LightPipes/C++ (C) 2006-2008, Spencer E. Olson\n"
            << (istep==1 ? output_size : (output_size-1)) << ' '
@@ -2236,6 +2237,509 @@ T inv_squares ( double x, double y, double dx,
   }
 
   /* *** STUFF FOR INTERPOLATE ENDS HERE *** */
+
+  namespace {
+    void elim ( const Field::Info & info,
+                      std::complex<double> * alpha,
+                      std::complex<double> * beta,
+                const std::complex<double> * a,
+                const std::complex<double> * b,
+                const std::complex<double> * c,
+                const std::complex<double> * p,
+                      std::complex<double> * u ) {
+      /*
+       * initial condition, everything is going to be zero at the edge 
+       */
+      alpha[info.number] = beta[info.number]
+        = alpha[2] = beta[2] = std::complex<double>(0.0, 0.0);
+
+      /*
+       * forward elimination 
+       */
+      std::complex<double> cc;
+      for ( int i = 2; i <= info.number - 2; ++i ) {
+        cc = c[i] -  a[i] * alpha[i];
+        alpha[i + 1] = b[i] / cc;
+        beta[i + 1] = ( p[i] + a[i] * beta[i] ) / cc;
+      }
+      cc = c[info.number] - a[info.number] * alpha[info.number];
+      beta[info.number + 1]
+        = ( p[info.number] + ( a[info.number] * beta[info.number] ) ) / cc;
+      /*
+       * edge amplitude =0 
+       */
+      u[info.number] = beta[info.number + 1];
+      /*
+       * backward elimination 
+       */
+      for ( int i = info.number - 1; i >= 1; --i ) {
+        u[i] = ( alpha[i + 1] * u[i + 1] ) + beta[i + 1];
+      }
+    }
+  }
+
+  /* *** STUFF FOR STEPS BEGINS HERE *** */
+  Field & Field::steps( const double & step_size,
+                        const int & N,
+                        const std::string & n_filename,
+                        const std::string & k_filename,
+                        const std::string & X_filename,
+                        const int & dump_period) throw (std::runtime_error) {
+    const double K = 2. * M_PI / info.lambda;
+
+    std::complex<double> * n = new std::complex<double>[ SQR(info.number+2) ];
+    if ( n == NULL )
+      throw std::runtime_error("Field::step: Allocation error for 'n'");
+    std::fill( n, n+SQR(info.number+2), std::complex<double>(1.0, 0.0) );
+
+    std::complex<double> * alpha= new std::complex<double>[ info.number+3 ];
+    std::complex<double> * beta = new std::complex<double>[ info.number+3 ];
+    std::complex<double> * a    = new std::complex<double>[ info.number+3 ];
+    std::complex<double> * b    = new std::complex<double>[ info.number+3 ];
+    std::complex<double> * c    = new std::complex<double>[ info.number+3 ];
+    std::complex<double> * p    = new std::complex<double>[ info.number+3 ];
+    std::complex<double> * u    = new std::complex<double>[ info.number+3 ];
+    std::complex<double> * u1   = new std::complex<double>[ info.number+3 ];
+    std::complex<double> * u2   = new std::complex<double>[ info.number+3 ];
+
+
+    if ( n_filename != "" ) {
+      std::ifstream n_file( n_filename.c_str() );
+      if ( !n_file )
+        throw std::runtime_error(
+          "Field::steps: error opening file refractive index file (%s)"
+        );
+
+      long ik = 0;
+      for ( int i = 1; i <= info.number; ++i ) {
+        for ( int j = 1; j <= info.number; ++j ) {
+          n_file >> n[ik++].real();
+          if ( !n_file )
+            throw std::runtime_error(
+              "Field::steps: reading the refractive indices "
+              "end of input file reached, exiting"
+            );
+        }
+      }
+    }
+
+    if ( k_filename != "" ) {
+      std::ifstream k_file( k_filename.c_str() );
+      if ( !k_file )
+        throw std::runtime_error(
+          "Field::steps: error opening file absorption index file (%s)"
+        );
+
+
+      long ik = 0;
+      for ( int i = 1; i <= info.number; ++i ) {
+        for ( int j = 1; j <= info.number; ++j ) {
+          k_file >> n[ik++].imag();
+          if ( !k_file )
+            throw std::runtime_error(
+              "Field::steps: reading the absorption indices "
+              "end of input file reached, exiting"
+            );
+        }
+      }
+    }
+
+    std::ofstream X_file;
+    double * int1 = NULL;
+    double * phase1 = NULL;
+    if ( X_filename != "" ) {
+      X_file.open( X_filename.c_str() );
+
+      int1 = new double[info.number + 2];
+      if ( int1 == NULL )
+        throw std::runtime_error("Field::steps: Allocation error for int1");
+
+      std::fill( int1, int1+(info.number + 2), 0.0 );
+
+      phase1 = new double[ info.number + 2 ];
+      if ( phase1 == NULL )
+        throw std::runtime_error("Field::steps: Allocation error for phase1");
+
+      std::fill( phase1, phase1+(info.number + 2), 0.0 );
+    }
+
+    /*
+     * the arrays for refraction and absorption are finally formed 
+     */
+
+    const double step_size_2 = step_size / 2.;
+    const double Pi4lz = 4. * M_PI / info.lambda / step_size_2;
+    const double delta2 = SQR( info.side_length / (info.number - 1.0 ) );
+    /*
+     * absorption at the borders is described here 
+     */
+    const double AA = -10. / step_size_2 / N; /* total absorption */
+    const double band_pow = 2.; /* profile of the absorption border,
+                                 * 2=quadratic */
+    /*
+     * width of the absorption border 
+     */
+    const int i_left = info.number / 2 + 1 - 0.4 * info.number;
+    const int i_right = info.number / 2 + 1 + 0.4 * info.number;
+    /*
+     * end absorption 
+     */
+
+
+    for ( int i = 1; i <= info.number; ++i ) {
+      u2[i] = std::complex<double>(0.0, 0.0);
+      a[i] = b[i] = std::complex<double>(-1.0 / delta2, 0.0);
+    }
+
+    double dist = 0.;
+    /*
+     * Main loop, steps here 
+     */
+    for ( int istep = 1; istep <= N; istep++ ) {
+      dist += 2. * step_size_2;
+      /*
+       * Elimination in the direction i, halfstep 
+       */
+
+      { int ik = 0;
+        for ( int i = 1; i <= info.number; ++i ) {
+          for ( int j = 1; j <= info.number; ++j ) {
+            register double fi = 0.25 * K * step_size_2 * ( n[ik].real() - 1. );
+            val[ik++] *= exp(I * fi);
+          }
+        }
+      }
+
+
+      for ( int jj = 2; jj <= info.number - 2; jj += 2 ) {
+        int j = jj;
+
+        for ( int i = 2; i <= info.number - 1; ++i ) {
+          const int ikij   = ( j - 1 ) * info.number + i - 1;
+          const int ikij1  = ( j     ) * info.number + i - 1;
+          const int ikij_1 = ( j - 2 ) * info.number + i - 1;
+
+          const std::complex<double> & uij   = val[ikij];
+          const std::complex<double> & uij1  = val[ikij1];
+          const std::complex<double> & uij_1 = val[ikij_1];
+
+          p[i] = -2. * uij;
+          p[i] = p[i] + uij1;
+          p[i] = p[i] + uij_1;
+          p[i] = ( -1. / delta2 ) * p[i];
+          p[i] =  std::complex<double> ( 0., Pi4lz ) * uij +  p[i];
+        }
+
+        for ( int i = 1; i <= info.number; i++ ) {
+          const int ik = ( j - 1 ) * info.number + i - 1;
+
+          const double medium_i = -2. * M_PI * n[ik].imag() / info.lambda;
+          c[i].real() = -2. / delta2;
+          c[i].imag() = Pi4lz + medium_i;
+          /*
+           * absorption borders are formed here 
+           */
+          if ( i <= i_left )
+            c[i].imag() -= ( AA * K )
+                         * std::pow ( static_cast<double>(i_left - i) /
+                                      static_cast<double >(i_left),
+                                      band_pow );
+
+          if ( i >= i_right )
+            c[i].imag() -= ( AA * K )
+                         * std::pow( static_cast<double>(i - i_right) /
+                                     static_cast<double>(info.number - i_right),
+                                     band_pow );
+          /*
+           * end absorption 
+           */
+
+        }
+
+
+        elim(info, alpha, beta, a, b, c, p, u);
+
+
+        for ( int i = 1; i <= info.number; ++i ) {
+          const int ikij_1 = ( j - 2 ) * info.number + i - 1;
+          val[ikij_1] = u2[i];
+          u1[i] = u[i];
+        }
+
+        j = jj + 1;
+
+        for ( int i = 2; i <= info.number - 1; ++i ) {
+          const int ikij   = ( j - 1 ) * info.number + i - 1;
+          const int ikij1  = ( j     ) * info.number + i - 1;
+          const int ikij_1 = ( j - 2 ) * info.number + i - 1;
+
+          const std::complex<double> & uij   = val[ikij];
+          const std::complex<double> & uij1  = val[ikij1];
+          const std::complex<double> & uij_1 = val[ikij_1];
+
+          p[i] = -2. * uij;
+          p[i] = p[i] + uij1;
+          p[i] = p[i] + uij_1;
+          p[i] = ( -1. / delta2) * p[i];
+          p[i] = std::complex<double> ( 0., Pi4lz ) * uij + p[i];
+        }
+
+        for ( int i = 1; i <= info.number; ++i ) {
+          int ik = ( j - 1 ) * info.number + i - 1;
+
+          const double medium_i = -2. * M_PI * n[ik].imag() / info.lambda;
+          c[i].real() = -2. / delta2;
+          c[i].imag() = Pi4lz + medium_i;
+
+          /*
+           * absorption borders are formed here 
+           */
+          if ( i <= i_left )
+            c[i].imag() -= ( AA * K )
+                         * std::pow ( static_cast<double>(i_left - i) /
+                                      static_cast<double>(i_left),
+                                      band_pow );
+
+          if ( i >= i_right )
+            c[i].imag() -= ( AA * 2. * K )
+                         * std::pow ( static_cast<double>(i - i_right) /
+                                      static_cast<double>(info.number - i_right),
+                                      band_pow );
+          /*
+           * end absorption 
+           */
+
+        }
+
+
+        elim(info, alpha, beta, a, b, c, p, u);
+
+
+        for ( int i = 1; i <= info.number; ++i ) {
+          const int ikij = ( j - 2 ) * info.number + i - 1;
+          val[ikij] = u1[i];
+          u2[i] = u[i];
+        }
+      }
+
+      for ( int i = 1; i <= info.number; i++ ) {
+        const int ikij = ( info.number - 1 ) * info.number + i - 1;
+        val[ikij] = u2[i];
+      }
+
+      { int ik = 0;
+        for ( int i = 1; i <= info.number; ++i ) {
+          for ( int j = 1; j <= info.number; ++j ) {
+            register double fi = 0.5 * K * step_size_2 * ( n[ik].real() - 1. );
+            val[ik++] *= exp(I * fi);
+          }
+        }
+      }
+
+      /*
+       * Elimination in the j direction is here, halfstep 
+       */
+
+      for ( int i = 1; i <= info.number; ++i ) {
+        u2[i] = std::complex<double>(0.0, 0.0);
+      }
+
+      { int i = 0;
+        for ( int ii = 2; ii <= info.number - 2; ii += 2 ) {
+          i = ii;
+          for ( int j = 2; j <= info.number - 1; ++j ) {
+            const int ikij   = ( j - 1 ) * info.number + i - 1;
+            const int iki1j  = ( j - 1 ) * info.number + i;
+            const int iki_1j = ( j - 1 ) * info.number + i - 2;
+
+            const std::complex<double> & uij   = val[ikij];
+            const std::complex<double> & ui1j  = val[iki1j];
+            const std::complex<double> & ui_1j = val[iki_1j];
+
+            p[j] = -2. * uij;
+            p[j] = p[j] + ui1j;
+            p[j] = p[j] + ui_1j;
+            p[j] = ( -1. / delta2 ) * p[j];
+            p[j] = std::complex<double> ( 0., Pi4lz ) * uij + p[j];
+          }
+
+          for ( int j = 1; j <= info.number; ++j ) {
+            const int ik = ( j - 1 ) * info.number + i - 1;
+
+            const double medium_i = -2. * M_PI * n[ik].imag() / info.lambda;
+            c[j].real() = -2. / delta2;
+            c[j].imag() = Pi4lz + medium_i;
+
+            /*
+             * absorption borders are formed here 
+             */
+            if ( j <= i_left )
+              c[j].imag() -= ( AA * K )
+                           * std::pow ( static_cast<double>(i_left - j) /
+                                        static_cast<double>(i_left),
+                                        band_pow );
+
+            if ( j >= i_right )
+              c[j].imag() -= ( AA * K )
+                           * std::pow ( static_cast<double>(j - i_right) /
+                                        static_cast<double>(info.number - i_right),
+                                        band_pow );
+
+            /*
+             * end absorption 
+             */
+
+          }
+
+
+          elim(info, alpha, beta, a, b, c, p, u);
+
+
+          for ( int j = 1; j <= info.number; ++j ) {
+            const int iki_1j = ( j - 1 ) * info.number + i - 2;
+            val[iki_1j] = u2[j];
+            u1[j] = u[j];
+          }
+
+          i = ii + 1;
+          for ( int j = 2; j <= info.number - 1; ++j ) {
+            const int ikij   = ( j - 1 ) * info.number + i - 1;
+            const int iki1j  = ( j - 1 ) * info.number + i;
+            const int iki_1j = ( j - 1 ) * info.number + i - 2;
+
+            const std::complex<double> & uij = val[ikij];
+            const std::complex<double> & ui1j = val[iki1j];
+            const std::complex<double> & ui_1j = val[iki_1j];
+
+            p[j] = -2. * uij;
+            p[j] = p[j] + ui1j;
+            p[j] = p[j] + ui_1j;
+            p[j] = ( -1. / delta2 ) * p[j];
+            p[j] = std::complex<double> ( 0., Pi4lz ) * uij + p[j];
+          }
+
+          for ( int j = 1; j <= info.number; ++j ) {
+            const int ik = ( j - 1 ) * info.number + i - 1;
+
+            const double medium_i = -2. * M_PI * n[ik].imag() / info.lambda;
+            c[j].real() = -2. / delta2;
+            c[j].imag() = Pi4lz + medium_i;
+
+            /*
+             * absorption borders are formed here 
+             */
+            if ( j <= i_left )
+              c[j].imag() -= ( AA * K )
+                           * std::pow ( static_cast<double>(i_left - j) /
+                                        static_cast<double>(i_left),
+                                        band_pow );
+
+            if ( j >= i_right )
+              c[j].imag() -= ( AA * K )
+                           * std::pow ( static_cast<double>(j - i_right) /
+                                        static_cast<double>(info.number - i_right),
+                                        band_pow );
+
+            /*
+             * end absorption 
+             */
+
+          }
+
+
+          elim(info, alpha, beta, a, b, c, p, u);
+
+
+          for ( int j = 1; j <= info.number; ++j ) {
+            const int ikij = ( j - 1 ) * info.number + i - 2;
+            val[ikij] = u1[j];
+            u2[j] = u[j];
+          }
+        }
+
+        for ( int j = 1; j <= info.number; ++j ) {
+          const int ikij = ( j - 1 ) * info.number + i - 1;
+          val[ikij] = u2[j];
+        }
+      }
+
+      /*
+       * end j 
+       */
+
+      /***************************************************/
+
+
+      if ( X_file &&
+           ( (istep/dump_period) ==
+             static_cast<float>(istep)/static_cast<float>(dump_period)
+           )
+         ) {
+
+        /*
+         * writing the intensity into arrays 
+         */
+
+        { const int i = info.number / 2 + 1;
+          for ( int j = 1; j <= info.number; j += 1 ) {
+            const int ik1 = ( i - 1 ) * info.number + j - 1;
+            const int jj = j - 1;
+            int1[jj] = norm( val[ik1] );
+            phase1[jj] = arg(val[ik1]);
+          }
+        }
+
+        { const int j = info.number / 2 + 1;
+          const double dx = info.side_length / ( info.number - 1. );
+          for ( int i = 1; i <= info.number; i += 1 ) {
+            const int ik1 = ( i - 1 ) * info.number + j - 1;
+            const int jj = i - 1;
+            double cc = dx * ( i - info.number / 2 - 1 );
+
+            double int2   = norm( val[ik1] );
+            double phase2 =  arg( val[ik1] );
+            X_file << cc << '\t'
+                   << int1[jj] << '\t'
+                   << int2 << '\t'
+                   << phase1[jj] << '\t'
+                   << phase2 << '\t'
+                   << dist << '\n';
+          }
+        }
+
+        X_file << std::endl;
+      }
+    }
+
+
+    { int ik = 0;
+      for ( int i = 1; i <= info.number; ++i ) {
+        for ( int j = 1; j <= info.number; ++j ) {
+          register double fi = 0.25 * K * step_size_2 * ( n[ik].real() - 1. );
+          val[ik++] *= exp(I * fi);
+        }
+      }
+    }
+
+    delete[] n;
+    delete[] a;
+    delete[] b;
+    delete[] c;
+    delete[] u;
+    delete[] u1;
+    delete[] u2;
+    delete[] alpha;
+    delete[] beta;
+    delete[] p;
+
+    if ( X_file ) {
+      delete[] int1;
+      delete[] phase1;
+    }
+
+    return *this;
+  }
+  /* *** STUFF FOR STEPS ENDS HERE *** */
 
 
   void Field::cleanup() {

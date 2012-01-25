@@ -34,7 +34,7 @@ exe tilt          : tilt.cpp ;
 exe tor_lens      : tor_lens.cpp ;
 exe zernike       : zernike.cpp ;
 #exe steps1        : steps1.cpp ;
-#exe steps         : steps.cpp ;
+exe steps         : steps.cpp ;
 
 
 install convenient-copy
@@ -69,6 +69,6 @@ install convenient-copy
     tor_lens      
     zernike       
 #   steps1       
-#   steps        
+   steps        
     : <location>bin/
     ;
