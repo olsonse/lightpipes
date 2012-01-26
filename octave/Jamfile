@@ -35,33 +35,35 @@ oct LPSuperGaussScreen.oct   : LPSuperGaussScreen_obj ;
 oct LPTilt.oct               : LPTilt_obj ;
 oct LPToroidalLens.oct       : LPToroidalLens_obj ;
 oct LPZernike.oct            : LPZernike_obj ;
+oct LPSteps.oct              : LPSteps_obj ;
 
 install convenient-copy :
-  LPAxicon.oct             
-  LPBegin.oct              
-  LPCircAperture.oct       
-  LPCircScreen.oct         
-  LPConvert.oct            
-  LPForward.oct            
-  LPForvard.oct            
-  LPFresnel.oct            
-  LPGain.oct               
-  LPGaussAperture.oct      
-  LPGaussScreen.oct        
-  LPInterpol.oct           
-  LPLens.oct               
-  LPLensForvard.oct        
-  LPLensFresnel.oct        
-  LPNormal.oct             
-  LPPipFFT.oct             
-  LPRectAperture.oct       
-  LPRectScreen.oct         
-  LPStrehl.oct             
-  LPSuperGaussAperture.oct 
-  LPSuperGaussScreen.oct   
-  LPTilt.oct               
-  LPToroidalLens.oct       
-  LPZernike.oct            
+  LPAxicon.oct
+  LPBegin.oct
+  LPCircAperture.oct
+  LPCircScreen.oct
+  LPConvert.oct
+  LPForward.oct
+  LPForvard.oct
+  LPFresnel.oct
+  LPGain.oct
+  LPGaussAperture.oct
+  LPGaussScreen.oct
+  LPInterpol.oct
+  LPLens.oct
+  LPLensForvard.oct
+  LPLensFresnel.oct
+  LPNormal.oct
+  LPPipFFT.oct
+  LPRectAperture.oct
+  LPRectScreen.oct
+  LPStrehl.oct
+  LPSuperGaussAperture.oct
+  LPSuperGaussScreen.oct
+  LPTilt.oct
+  LPToroidalLens.oct
+  LPZernike.oct
+  LPSteps.oct
   : <location>oct-files ;
 
 
@@ -91,3 +93,4 @@ obj LPSuperGaussScreen_obj   : LPSuperGaussScreen.cpp ;
 obj LPTilt_obj               : LPTilt.cpp ;
 obj LPToroidalLens_obj       : LPToroidalLens.cpp ;
 obj LPZernike_obj            : LPZernike.cpp ;
+obj LPSteps_obj              : LPSteps.cpp ;
