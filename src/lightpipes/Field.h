@@ -115,6 +115,11 @@ namespace lightpipes {
     /** Destructor. */
     ~Field ();
 
+    /** Copy generator. */
+    Field copy() const {
+      return Field(*this);
+    }
+
     /** Write the Field to file (internal format). 
     * The internal format is 1. Field::Info, 2. complex<double> array of
     * length N*N.
