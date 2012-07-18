@@ -2,3 +2,4 @@ octave/oct-files/
 src/progs/bin/
 *.swp
 *.pyc
+*.so

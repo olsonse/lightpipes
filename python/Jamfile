@@ -1,0 +1,21 @@
+# Build file for /lightpipes/python
+
+import python ;
+
+if ! [ python.configured ] {
+  ECHO "notice:  no Python configured in user-config.jam" ;
+  ECHO "notice:  will use default configuration" ;
+  using python ;
+}
+
+lib boost_python : : <name>boost_python-py27 ;
+
+project /lightpipes/python
+  : requirements
+    <library>/lightpipes//lightpipes
+    <library>boost_python ;
+
+python-extension _lightpipes : lightpipes/_lightpipes.cpp ;
+
+path-constant DIR : . ;
+install convenient-copy : _lightpipes : <location>$(DIR)/lightpipes ;
