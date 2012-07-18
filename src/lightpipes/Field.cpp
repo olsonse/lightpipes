@@ -94,6 +94,7 @@ namespace lightpipes {
   Field::Field ( unsigned int number,
                  double side_length,
                  double lambda,
+                 std::complex<double> init_fill,
                  int fft_level,
                  double sph_coords_factor ) {
     val = NULL;
@@ -102,14 +103,15 @@ namespace lightpipes {
     info.lambda = lambda;
     info.fft_level = fft_level;
     info.sph_coords_factor = sph_coords_factor;
-    init();
+    init( init_fill );
   }
 
 
-  Field::Field (const Info & that_info) {
+  Field::Field ( const Info & that_info,
+                 std::complex<double> init_fill ) {
     val = NULL;
     info = that_info;
-    init();
+    init( init_fill );
   }
 
 
@@ -2294,23 +2296,12 @@ T inv_squares ( double x, double y, double dx,
                         const std::string & k_filename,
                         const std::string & X_filename,
                         const int & dump_period) throw (std::runtime_error) {
-    const double K = 2. * M_PI / info.lambda;
+    typedef std::complex<double> Complex;
 
-    std::complex<double> * n = new std::complex<double>[ SQR(info.number+2) ];
+    Complex * n = new Complex[ SQR(info.number+2) ];
     if ( n == NULL )
       throw std::runtime_error("Field::step: Allocation error for 'n'");
-    std::fill( n, n+SQR(info.number+2), std::complex<double>(1.0, 0.0) );
-
-    std::complex<double> * alpha= new std::complex<double>[ info.number+3 ];
-    std::complex<double> * beta = new std::complex<double>[ info.number+3 ];
-    std::complex<double> * a    = new std::complex<double>[ info.number+3 ];
-    std::complex<double> * b    = new std::complex<double>[ info.number+3 ];
-    std::complex<double> * c    = new std::complex<double>[ info.number+3 ];
-    std::complex<double> * p    = new std::complex<double>[ info.number+3 ];
-    std::complex<double> * u    = new std::complex<double>[ info.number+3 ];
-    std::complex<double> * u1   = new std::complex<double>[ info.number+3 ];
-    std::complex<double> * u2   = new std::complex<double>[ info.number+3 ];
-
+    std::fill( n, n+SQR(info.number+2), Complex(1.0, 0.0) );
 
     if ( n_filename != "" ) {
       std::ifstream n_file( n_filename.c_str() );
@@ -2352,6 +2343,40 @@ T inv_squares ( double x, double y, double dx,
         }
       }
     }
+
+    this->steps( step_size, N, n, X_filename, dump_period );
+    delete[] n;
+    return *this;
+  }
+
+  Field & Field::steps( const double & step_size,
+                        const int & N,
+                        const std::complex<double> * n,
+                        const std::string & X_filename,
+                        const int & dump_period) throw (std::runtime_error) {
+    typedef std::complex<double> Complex;
+    const double K = 2. * M_PI / info.lambda;
+
+    bool clear_n = false;
+    if ( n == NULL ) {
+      clear_n = true;
+      Complex * tmp = new Complex[ SQR(info.number+2) ];
+      if ( tmp == NULL )
+        throw std::runtime_error("Field::step: Allocation error for 'n'");
+      std::fill( tmp, tmp+SQR(info.number+2), Complex(1.0, 0.0) );
+      n = tmp;
+    }
+
+    Complex * alpha= new Complex[ info.number+3 ];
+    Complex * beta = new Complex[ info.number+3 ];
+    Complex * a    = new Complex[ info.number+3 ];
+    Complex * b    = new Complex[ info.number+3 ];
+    Complex * c    = new Complex[ info.number+3 ];
+    Complex * p    = new Complex[ info.number+3 ];
+    Complex * u    = new Complex[ info.number+3 ];
+    Complex * u1   = new Complex[ info.number+3 ];
+    Complex * u2   = new Complex[ info.number+3 ];
+
 
     std::ofstream X_file;
     double * int1 = NULL;
@@ -2396,8 +2421,8 @@ T inv_squares ( double x, double y, double dx,
 
 
     for ( int i = 1; i <= info.number; ++i ) {
-      u2[i] = std::complex<double>(0.0, 0.0);
-      a[i] = b[i] = std::complex<double>(-1.0 / delta2, 0.0);
+      u2[i] = Complex(0.0, 0.0);
+      a[i] = b[i] = Complex(-1.0 / delta2, 0.0);
     }
 
     double dist = 0.;
@@ -2428,15 +2453,15 @@ T inv_squares ( double x, double y, double dx,
           const int ikij1  = ( j     ) * info.number + i - 1;
           const int ikij_1 = ( j - 2 ) * info.number + i - 1;
 
-          const std::complex<double> & uij   = val[ikij];
-          const std::complex<double> & uij1  = val[ikij1];
-          const std::complex<double> & uij_1 = val[ikij_1];
+          const Complex & uij   = val[ikij];
+          const Complex & uij1  = val[ikij1];
+          const Complex & uij_1 = val[ikij_1];
 
           p[i] = -2. * uij;
           p[i] = p[i] + uij1;
           p[i] = p[i] + uij_1;
           p[i] = ( -1. / delta2 ) * p[i];
-          p[i] =  std::complex<double> ( 0., Pi4lz ) * uij +  p[i];
+          p[i] =  Complex ( 0., Pi4lz ) * uij +  p[i];
         }
 
         for ( int i = 1; i <= info.number; i++ ) {
@@ -2482,15 +2507,15 @@ T inv_squares ( double x, double y, double dx,
           const int ikij1  = ( j     ) * info.number + i - 1;
           const int ikij_1 = ( j - 2 ) * info.number + i - 1;
 
-          const std::complex<double> & uij   = val[ikij];
-          const std::complex<double> & uij1  = val[ikij1];
-          const std::complex<double> & uij_1 = val[ikij_1];
+          const Complex & uij   = val[ikij];
+          const Complex & uij1  = val[ikij1];
+          const Complex & uij_1 = val[ikij_1];
 
           p[i] = -2. * uij;
           p[i] = p[i] + uij1;
           p[i] = p[i] + uij_1;
           p[i] = ( -1. / delta2) * p[i];
-          p[i] = std::complex<double> ( 0., Pi4lz ) * uij + p[i];
+          p[i] = Complex ( 0., Pi4lz ) * uij + p[i];
         }
 
         for ( int i = 1; i <= info.number; ++i ) {
@@ -2550,7 +2575,7 @@ T inv_squares ( double x, double y, double dx,
        */
 
       for ( int i = 1; i <= info.number; ++i ) {
-        u2[i] = std::complex<double>(0.0, 0.0);
+        u2[i] = Complex(0.0, 0.0);
       }
 
       { int i = 0;
@@ -2561,15 +2586,15 @@ T inv_squares ( double x, double y, double dx,
             const int iki1j  = ( j - 1 ) * info.number + i;
             const int iki_1j = ( j - 1 ) * info.number + i - 2;
 
-            const std::complex<double> & uij   = val[ikij];
-            const std::complex<double> & ui1j  = val[iki1j];
-            const std::complex<double> & ui_1j = val[iki_1j];
+            const Complex & uij   = val[ikij];
+            const Complex & ui1j  = val[iki1j];
+            const Complex & ui_1j = val[iki_1j];
 
             p[j] = -2. * uij;
             p[j] = p[j] + ui1j;
             p[j] = p[j] + ui_1j;
             p[j] = ( -1. / delta2 ) * p[j];
-            p[j] = std::complex<double> ( 0., Pi4lz ) * uij + p[j];
+            p[j] = Complex ( 0., Pi4lz ) * uij + p[j];
           }
 
           for ( int j = 1; j <= info.number; ++j ) {
@@ -2616,15 +2641,15 @@ T inv_squares ( double x, double y, double dx,
             const int iki1j  = ( j - 1 ) * info.number + i;
             const int iki_1j = ( j - 1 ) * info.number + i - 2;
 
-            const std::complex<double> & uij = val[ikij];
-            const std::complex<double> & ui1j = val[iki1j];
-            const std::complex<double> & ui_1j = val[iki_1j];
+            const Complex & uij = val[ikij];
+            const Complex & ui1j = val[iki1j];
+            const Complex & ui_1j = val[iki_1j];
 
             p[j] = -2. * uij;
             p[j] = p[j] + ui1j;
             p[j] = p[j] + ui_1j;
             p[j] = ( -1. / delta2 ) * p[j];
-            p[j] = std::complex<double> ( 0., Pi4lz ) * uij + p[j];
+            p[j] = Complex ( 0., Pi4lz ) * uij + p[j];
           }
 
           for ( int j = 1; j <= info.number; ++j ) {
@@ -2679,7 +2704,7 @@ T inv_squares ( double x, double y, double dx,
       /***************************************************/
 
 
-      if ( X_file &&
+      if ( X_file.is_open() &&
            ( (istep/dump_period) ==
              static_cast<float>(istep)/static_cast<float>(dump_period)
            )
@@ -2730,7 +2755,8 @@ T inv_squares ( double x, double y, double dx,
       }
     }
 
-    delete[] n;
+    if (clear_n)
+      delete[] n;
     delete[] a;
     delete[] b;
     delete[] c;
@@ -2741,7 +2767,7 @@ T inv_squares ( double x, double y, double dx,
     delete[] beta;
     delete[] p;
 
-    if ( X_file ) {
+    if ( X_file.is_open() ) {
       delete[] int1;
       delete[] phase1;
     }
@@ -2758,7 +2784,7 @@ T inv_squares ( double x, double y, double dx,
     }
   }
 
-  void Field::init() {
+  void Field::init(std::complex<double> init_fill) {
     cleanup();
 
     size_t sz = SQR(info.number);
@@ -2767,7 +2793,7 @@ T inv_squares ( double x, double y, double dx,
     if (val == NULL)
       throw std::runtime_error("field allocation error");
 
-    std::fill(val, val+sz, std::complex<double>(0.0));
+    std::fill(val, val+sz, init_fill);
   }
 
 }/* namespace lightpipes */

@@ -103,11 +103,13 @@ namespace lightpipes {
     Field ( unsigned int number,
             double side_length,
             double lambda,
+            std::complex<double> init_fill = std::complex<double>(1.,0.),
             int fft_level = 0,
             double sph_coords_factor = 0.0 );
 
     /** Constructor with Field::Info initialization. */
-    Field (const Info & that_info);
+    Field (const Info & that_info,
+           std::complex<double> init_fill = std::complex<double>(1.,0.) );
 
     /** Copy constructor. */
     Field (const Field & that);
@@ -338,7 +340,7 @@ namespace lightpipes {
      * @param angle Angle of rotation of field in radians. 
      */
     Field & interpolate(const double & new_side_length = 0.0,
-                        const int    & new_number = 0.0,
+                        const int    & new_number = 0,
                         const double & x_shift = 0.0,
                         const double & y_shift = 0.0,
                         const double & angle = 0.0,
@@ -349,9 +351,18 @@ namespace lightpipes {
      *
      */
     Field & steps( const double & step_size,
-                   const int & N = 1,
-                   const std::string & n_filename = "",
+                   const int & number_steps,
+                   const std::string & n_filename,
                    const std::string & k_filename = "",
+                   const std::string & X_filename = "",
+                   const int & dump_period = 1 ) throw (std::runtime_error);
+
+    /** Propagate the field using finite-difference routine.
+     * @param n  Must be of length SQR(info.number)+2(?) if not NULL
+     */
+    Field & steps( const double & step_size,
+                   const int & number_steps = 1,
+                   const std::complex<double> * n = NULL,
                    const std::string & X_filename = "",
                    const int & dump_period = 1 ) throw (std::runtime_error);
 
@@ -394,7 +405,7 @@ namespace lightpipes {
 
   private:
     void cleanup();
-    void init();
+    void init(std::complex<double> init_fill);
   };
 
 
