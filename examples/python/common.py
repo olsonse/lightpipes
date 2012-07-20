@@ -10,13 +10,16 @@ class Propagate:
     self.im = None
     pylab.ion()
 
-  def __call__(self, F, z, dz):
+  def imshow( self, data ):
     if self.im:
-      self.im.set_array( (F.value * F.value.conj()).real )
+      self.im.set_data( data )
     else:
-      self.im = pylab.imshow( (F.value * F.value.conj()).real )
+      self.im = pylab.imshow( data )
+    pylab.draw()
+
+  def __call__(self, F, z, dz):
+    self.imshow( (F.value * F.value.conj()).real )
 
     for zi in np.arange(0, z+dz, dz):
       F.forvard(dz)
-      self.im.set_array( (F.value * F.value.conj()).real )
-      pylab.draw()
+      self.imshow( (F.value * F.value.conj()).real )
