@@ -8,6 +8,8 @@ import common
 from lightpipes import Field
 from pylab import *
 
+ion()
+
 m=1
 nm=1e-9*m
 mm=1e-3*m
@@ -35,6 +37,8 @@ choices = [
   "Astigmatism with: n=2, m=2, R=7mm, A=10",
   "No aberration",
 ]
+
+im = None
 
 while True:
   print """
@@ -68,6 +72,9 @@ while True:
   F.value[:] += F1.value
   Int = (F.value * F.value.conj()).real
 
-  imshow(Int)
+  if im:
+    im.set_array(Int)
+  else:
+    im = imshow(Int)
   title( choices[choice] )
-  show()
+  draw()
