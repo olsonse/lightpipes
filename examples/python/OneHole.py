@@ -19,9 +19,9 @@ R           = 1*mm
 z           = 25*cm
 
 F = Field(N,size,wavelength)
-F.circular_aperture(R, 0, 0)
+F.circular_aperture(R)
 F.rectangular_screen(R*2, R/8, 0, 0, -45)
-F.circular_screen(R/4, 0, 0)
+F.circular_screen(R/4)
 F.fresnel(z)
 
 imshow( abs(F.value)**2 ) # plot intensity

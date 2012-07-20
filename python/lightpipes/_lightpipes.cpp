@@ -78,6 +78,16 @@ namespace { // (anonymous) namespace
 
 
   BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
+    Lens, Field::lens, 1, 3)
+
+  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
+    TLens, Field::t_lens, 2, 4)
+
+  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
+    Axicon, Field::axicon, 1, 4)
+
+
+  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
     CircularAperture, Field::circular_aperture, 1, 3)
 
   BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
@@ -158,9 +168,15 @@ BOOST_PYTHON_MODULE(_lightpipes) {
     .def("fill",                        &Field::fill<double>, return_self<>())
     .def("fill",                        &Field::fill< std::complex<double> >,
                                                             return_self<>())
-    .def("lens",                        &Field::lens,       return_self<>() )
-    .def("t_lens",                      &Field::t_lens,     return_self<>() )
-    .def("axicon",                      &Field::axicon,     return_self<>() )
+    .def("lens",                        &Field::lens,
+      Lens( args("f","x0","y0"),
+                 "Defaults:  x0=0.0, y0=0.0" )            [ return_self<>() ] )
+    .def("t_lens",                      &Field::t_lens,
+      TLens( args("R","f","x0","y0"),
+                  "Defaults:  x0=0.0, y0=0.0" )           [ return_self<>() ] )
+    .def("axicon",                      &Field::axicon,
+      Axicon( args("r","n1","x0","y0"),
+                "Defaults:  n1=(1.5+0j), x0=0.0, y0=0.0" ) [ return_self<>() ] )
     .def("fresnel",                     &Field::fresnel,    return_self<>() )
     .def("forward",                     &Field::forward,    return_self<>() )
     .def("lens_forvard",                &Field::lens_forvard, return_self<>() )

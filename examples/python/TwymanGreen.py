@@ -33,7 +33,7 @@ Rz          = 0.005
 Az          = 25
 
 F1 = Field(N,size,wavelength)
-F1.circular_aperture(R, 0, 0)
+F1.circular_aperture(R)
 F1.forvard(z1)
 
 F2 = F1.copy()
@@ -47,7 +47,7 @@ F1 *= RBS;          F2 *= 1-RBS
 F = F1 + F2
 
 F.forvard(z4)
-F.interpolate(0.012, 250, 0, 0, 0, 1)
+F.interpolate(0.012, 250)
 
 imshow( abs(F.value)**2 ) # plot intensity
 title('Twyman Green interferometer with Zernike aberration')

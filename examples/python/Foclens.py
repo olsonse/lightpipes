@@ -24,8 +24,8 @@ f           = 50*cm
 n           = (1 + .1j)*ones( (N,N) )
 
 F = Field(N,size,wavelength)
-F.circular_aperture(R,0,0)
-F.lens(f,0,0)
+F.circular_aperture(R)
+F.lens(f)
 
 Icross = zeros( (N,N) )
 for l in xrange(N):

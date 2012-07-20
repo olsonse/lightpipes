@@ -31,17 +31,17 @@ randomize.phase(1,F)
 
 SR = dict()
 for l in xrange(10):
-  F.rectangular_aperture(w,w,0,0,0)
+  F.rectangular_aperture(w,w)
   F.l_amplify(alpha,Lgain,Isat)
   F.lens_fresnel(f1,L)
   F.l_amplify(alpha,Lgain,Isat)
   F.lens_fresnel(f2,L)
   SR[l]=F.get_strehl()
-  F.interpolate(size,N,0,0,0,1)
+  F.interpolate(size,N)
   print 'Round trip {l} Strehl ratio= {s}'.format(l=l,s=SR[l])
 
   F2 = F.copy()
-  F2.rectangular_screen(w,w,0,0,0)
+  F2.rectangular_screen(w,w)
 
   imshow( abs(F2.value)**2 ) # plot intensity
   show()
@@ -67,7 +67,7 @@ title('Intensity distribution just behind the outcoupler')
 z=1*m
 f=40*m
 ff = z*f / float(f-z)
-F2.lens(f,0,0)
+F2.lens(f)
 F2.lens_fresnel(ff,z)
 F2.spherical_to_normal_coords()
 

@@ -187,7 +187,9 @@ namespace lightpipes {
     /** Apply a lens.
      * f>0 for positive lens !!!!!  (Unlike the original lightpipes code)
      */
-    Field & lens ( const double & f, const double & x0, const double & y0 );
+    Field & lens ( const double & f,
+                   const double & x0 = 0.0,
+                   const double & y0 = 0.0 );
 
     /** Apply a toroidal lens.
      * f>0 for positive lens !!!!!  (Unlike the original lightpipes code)
@@ -200,8 +202,8 @@ namespace lightpipes {
      */
     Field & t_lens ( const double & R,
                      const double & f,
-                     const double & x0,
-                     const double & y0 );
+                     const double & x0 = 0.0,
+                     const double & y0 = 0.0 );
 
     /** Apply an axicon lens.
      * @param phi including angle of axicon (note that the sign of this value
@@ -211,9 +213,10 @@ namespace lightpipes {
      * @param y0 y-shift in position of center.
      */
     Field & axicon ( const double & phi,
-                     const std::complex<double> & n1,
-                     const double & x0,
-                     const double & y0 );
+                     const std::complex<double> & n1
+                       = std::complex<double>(1.5,0.0),
+                     const double & x0 = 0.0,
+                     const double & y0 = 0.0 );
 
     /** Propagates Field using convolution.
      * @param z

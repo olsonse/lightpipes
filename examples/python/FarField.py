@@ -22,9 +22,9 @@ f1          = 200*m
 f2          = -200*m
 
 F = Field(N,size,wavelength)
-F.circular_aperture(R, 0, 0)
-F.lens(f1, 0, 0)
-F.lens_forvard(f2, z )
+F.circular_aperture(R)
+F.lens(f1)
+F.lens_forvard(f2, z)
 
 imshow( abs(F.value)**2 ) # plot intensity
 show()
