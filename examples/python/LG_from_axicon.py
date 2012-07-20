@@ -17,9 +17,10 @@ N               = 512                   # Number of pixels
 side_length     = N* 15.*um             # physical size of SLM
 wavelength      = 780*nm                # Wavelength
 gaussian_size   = 1.00/sqrt(2)*mm       # 1/e Intensity width of beam; (note, it's not the 1/e^2)
+axicon_angle    = 175/180.*pi            # included angle of SLM
+axicon_n1       = 1.5                   # index of refraction of the axicon
 step_size       = 5.*mm                 # LPForvard step size
-f               = 20*cm                 # focal length of SLM lens
-l               = 8                     # azimuthal order of LG beam
+l               = 2                     # azimuthal order of LG beam
 
 ######## END Param ##############
 
@@ -41,9 +42,18 @@ propagate = Propagate()
 
 F = Field( N, side_length, wavelength )
 F.gaussian_aperture(gaussian_size)
-F.lens(f)
+F.axicon(axicon_angle, axicon_n1)
+#F4 = propagate(13.*cm, step_size,               F3,0,0,4);
+F.forvard(7.5*cm)
+F.axicon( axicon_angle, axicon_n1)
+
+print 'moving towards slm'
+#F.forvard(40*cm)
+propagate(F, z=40.*cm, dz=10*cm)
+
+print 'applying slm'
 F.value[:] *= lg
-propagate(F, z=f+cm, dz=.5*cm)
-#F.forvard(18.0*cm)
-#F5 = propagate(4.*cm,.5*cm,                F4,0,0,4)
-#F5 = propagate(13.*cm, step_size,               F4,0,0,4)
+propagate(F, z=50.*cm, dz=2*cm)
+print 'press enter to exit'
+raw_input()
+

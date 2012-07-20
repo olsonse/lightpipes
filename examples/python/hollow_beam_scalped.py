@@ -38,7 +38,7 @@ dx = (2/(N-1.))
 x = y = 3*r_[-1:(1+dx):dx]
 [xx, yy] = meshgrid(x,y)
 
-lg = lg.LG_xy( l=8, p=0, xx=xx, yy=yy, omega0=2/sqrt(l) )
+lg = lg.LG_xy( l=l, p=0, xx=xx, yy=yy, omega0=2/sqrt(l) )
 # normalize lg; we only want the phase information
 lg /= abs(lg)
 #imshow (x,y,arg(lg))
