@@ -2298,10 +2298,10 @@ T inv_squares ( double x, double y, double dx,
                         const int & dump_period) throw (std::runtime_error) {
     typedef std::complex<double> Complex;
 
-    Complex * n = new Complex[ SQR(info.number+2) ];
+    Complex * n = new Complex[ SQR(info.number) ];
     if ( n == NULL )
       throw std::runtime_error("Field::step: Allocation error for 'n'");
-    std::fill( n, n+SQR(info.number+2), Complex(1.0, 0.0) );
+    std::fill( n, n+SQR(info.number), Complex(1.0, 0.0) );
 
     if ( n_filename != "" ) {
       std::ifstream n_file( n_filename.c_str() );
@@ -2360,10 +2360,10 @@ T inv_squares ( double x, double y, double dx,
     bool clear_n = false;
     if ( n == NULL ) {
       clear_n = true;
-      Complex * tmp = new Complex[ SQR(info.number+2) ];
+      Complex * tmp = new Complex[ SQR(info.number) ];
       if ( tmp == NULL )
         throw std::runtime_error("Field::step: Allocation error for 'n'");
-      std::fill( tmp, tmp+SQR(info.number+2), Complex(1.0, 0.0) );
+      std::fill( tmp, tmp+SQR(info.number), Complex(1.0, 0.0) );
       n = tmp;
     }
 
@@ -2519,7 +2519,7 @@ T inv_squares ( double x, double y, double dx,
         }
 
         for ( int i = 1; i <= info.number; ++i ) {
-          int ik = ( j - 1 ) * info.number + i - 1;
+          const int ik = ( j - 1 ) * info.number + i - 1;
 
           const double medium_i = -2. * M_PI * n[ik].imag() / info.lambda;
           c[i].real() = -2. / delta2;

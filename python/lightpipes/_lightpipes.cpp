@@ -38,22 +38,35 @@ namespace { // (anonymous) namespace
     return PyArray_SimpleNewFromData(2, dims, PyArray_CDOUBLE, f.val);
   }
 
-  PyArrayObject * get_default_nk( const Field & f ) {
-    int dims[2] = {f.info.number, f.info.number};
-    return (PyArrayObject *) PyArray_FromDims(2,dims,PyArray_CDOUBLE);
+  numeric::array empty_array() {
+    int zero = 0;
+    return
+      extract< numeric::array >(
+        object( handle<>( PyArray_FromDims(0, &zero, PyArray_CDOUBLE) ) )
+      );
   }
 
   void steps_wrapper( Field & f,
                       const double & step_size,
                       const int & number_steps = 1,
-                      const PyArrayObject * n = NULL,
+                      const numeric::array & n = empty_array(),
                       const std::string & X_filename = "",
                       const int & dump_period = 1 ) {
-    if ( ! n )
-      n = get_default_nk(f);
+    typedef numeric::array A;
+    typedef std::complex<double> Complex;
+    Complex * n_data = NULL;
+    A tmp( empty_array() ); //keep in scope until end of function
 
-    typedef const std::complex<double> CC;
-    CC * n_data = reinterpret_cast<CC*>(n->data);
+    if ( ! PyArray_IsZeroDim( n.ptr() ) ) {
+      if ( PyArray_TYPE( n.ptr() ) != PyArray_CDOUBLE ) {
+        // PyArray_CDOUBLE == 'D'
+        tmp = static_cast<A>(static_cast<A>(n.copy()).astype('D'));
+        n_data = static_cast<Complex*>(PyArray_DATA( tmp.ptr() ));
+      } else {
+        n_data = static_cast<Complex*>(PyArray_DATA(n.ptr()));
+      }
+    }
+
     f.steps( step_size, number_steps, n_data, X_filename, dump_period );
   }
 
@@ -95,6 +108,7 @@ namespace { // (anonymous) namespace
 
 BOOST_PYTHON_MODULE(_lightpipes) {
   import_array(); // for importing numpy array stuff
+  numeric::array::set_module_and_type("numpy", "ndarray");
 
   class_<Field::Info>("Info")
     .def_readonly("number", &Field::Info::number)
@@ -198,11 +212,14 @@ BOOST_PYTHON_MODULE(_lightpipes) {
       )[ return_self<>() ] )
     .def("steps",                       steps_wrapper,
       Steps(args("step_size","N","n","X_filename","dump_period"),
-        "Defaults: N          =1 \n"
-        "          n_filename =''\n"
-        "          k_filename =''\n"
-        "          X_filename =''\n"
-        "          dump_period=1"
+        " step_size       \n"
+        "   Propagation distance to make for a single step\n"
+        " N          [=1] \n"
+        "   Number of steps of step_size to make\n"
+        " n [=ones(info.number,info.number) * (1+0j)]\n"
+        "   Complex index of refraction as a function of position\n"
+        " X_filename [='']\n"
+        " dump_period[=1]"
       )[ return_self<>() ]
     )
     .def("copy",                        &Field::copy)
