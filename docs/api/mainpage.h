@@ -1,6 +1,6 @@
 /** \mainpage A simple manual
 
-    The LightPipes C++/Octave is a computational diffractive optics package.
+    The LightPipes C++ is a computational diffractive optics package.
 
 
     - Spencer E. Olson
@@ -9,6 +9,7 @@
   - \subpage intro 
   - \subpage cpp "c++ Interface"
   - \subpage octave "Octave Interface"
+  - \subpage python "Python Interface"
   - \subpage cmdline "Command-line Interface"
 */
 
@@ -32,6 +33,14 @@
 
     This is the initial skeleton of documentation.  In this section, I
     describe the GNU/Octave interface to LightPipes.
+    
+    Make sure you have first read \ref intro "the introduction".
+*/
+
+/** \page python Python Interface
+
+    This is the initial skeleton of documentation.  In this section, I
+    describe the Python interface to LightPipes.
     
     Make sure you have first read \ref intro "the introduction".
 */
