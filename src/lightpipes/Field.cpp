@@ -1430,10 +1430,10 @@ double Zernike ( int n, int m, double rho, double phi ) throw (std::runtime_erro
             product = pow ( rho, ( double ) ( n - 2 * s ) );
         } /* else product = 1; */
 
-        product *= factorial ( n - s ) * int_sign;
-        product /= factorial ( s ) * factorial ( ( ( n + mm ) / 2 ) -
-                                                 s ) *
-            factorial ( ( ( n - mm ) / 2 ) - s );
+        product *= factorial( n - s ) * int_sign;
+        product /= factorial( s )
+                 * factorial( ( ( n + mm ) / 2 ) - s )
+                 * factorial( ( ( n - mm ) / 2 ) - s );
         sum += product;
         int_sign = -int_sign;
     }

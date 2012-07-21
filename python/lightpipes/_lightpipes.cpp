@@ -73,47 +73,6 @@ namespace { // (anonymous) namespace
   BOOST_PYTHON_FUNCTION_OVERLOADS(
     Steps, steps_wrapper, 2, 6)
 
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    Interpolate, Field::interpolate, 0, 6)
-
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    Lens, Field::lens, 1, 3)
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    TLens, Field::t_lens, 2, 4)
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    Axicon, Field::axicon, 1, 4)
-
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    CircularAperture, Field::circular_aperture, 1, 3)
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    CircularScreen, Field::circular_screen, 1, 3)
-
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    RectangularAperture, Field::rectangular_aperture, 1, 5)
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    RectangularScreen, Field::rectangular_screen, 1, 5)
-
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    GaussianAperture, Field::gaussian_aperture, 1, 4)
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    GaussianScreen, Field::gaussian_screen, 1, 4)
-
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    SuperGaussianAperture, Field::supergaussian_aperture, 2, 5)
-
-  BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-    SuperGaussianScreen, Field::supergaussian_screen, 2, 5)
-
 }// namespace (anonymous)
 
 BOOST_PYTHON_MODULE(_lightpipes) {
@@ -167,16 +126,14 @@ BOOST_PYTHON_MODULE(_lightpipes) {
     .def(self *= std::complex<double>())
     .def("fill",                        &Field::fill<double>, return_self<>())
     .def("fill",                        &Field::fill< std::complex<double> >,
-                                                            return_self<>())
+                                                            return_self<>() )
     .def("lens",                        &Field::lens,
-      Lens( args("f","x0","y0"),
-                 "Defaults:  x0=0.0, y0=0.0" )            [ return_self<>() ] )
+         ( arg("f"), arg("x0")=0.0, arg("y0")=0.0 ),        return_self<>() )
     .def("t_lens",                      &Field::t_lens,
-      TLens( args("R","f","x0","y0"),
-                  "Defaults:  x0=0.0, y0=0.0" )           [ return_self<>() ] )
+         (arg("R"),arg("f"),arg("x0")=0.0,arg("y0")=0.0),   return_self<>() )
     .def("axicon",                      &Field::axicon,
-      Axicon( args("r","n1","x0","y0"),
-                "Defaults:  n1=(1.5+0j), x0=0.0, y0=0.0" ) [ return_self<>() ] )
+         (arg("r"),arg("n1")=std::complex<double>(1.5,0.),
+          arg("x0")=0.0,arg("y0")=0.0 ),                    return_self<>() )
     .def("fresnel",                     &Field::fresnel,    return_self<>() )
     .def("forward",                     &Field::forward,    return_self<>() )
     .def("lens_forvard",                &Field::lens_forvard, return_self<>() )
@@ -185,29 +142,25 @@ BOOST_PYTHON_MODULE(_lightpipes) {
     .def("spherical_to_normal_coords",  &Field::spherical_to_normal_coords,
                                                             return_self<>() )
     .def("circular_aperture",           &Field::circular_aperture,
-      CircularAperture( args("r","x0","y0"),
-                        "Defaults:  x0=0.0, y0=0.0" )     [ return_self<>() ] )
+         (arg("r"),arg("x0")=0.0,arg("y0")=0.0),            return_self<>() )
     .def("circular_screen",             &Field::circular_screen,
-      CircularScreen( args("r","x0","y0"),
-                      "Defaults:  x0=0.0, y0=0.0" )       [ return_self<>() ] )
+         (arg("r"),arg("x0")=0.0,arg("y0")=0.0),            return_self<>() )
     .def("rectangular_aperture",        &Field::rectangular_aperture,
-      RectangularAperture( args("Lx","Ly","x0","y0","angle"),
-        "Defaults: Ly=-0.1, x0=0.0, y0=0.0, angle=0.0" )  [ return_self<>() ] )
+         (arg("Lx"),arg("Ly")=-0.1,
+          arg("x0")=0.0,arg("y0")=0.0,arg("angle")=0.0),    return_self<>() )
     .def("rectangular_screen",          &Field::rectangular_screen,
-      RectangularScreen( args("Lx","Ly","x0","y0","angle"),
-        "Defaults: Ly=-0.1, x0=0.0, y0=0.0, angle=0.0" )  [ return_self<>() ] )
+         (arg("Lx"),arg("Ly")=-0.1,
+          arg("x0")=0.0,arg("y0")=0.0,arg("angle")=0.0),    return_self<>() )
     .def("supergaussian_aperture",      &Field::supergaussian_aperture,
-      SuperGaussianAperture( args("w","n","x0","y0","A"),
-        "Defaults: x0=0.0, y0=0.0, A=1.0" )               [ return_self<>() ] )
+         (arg("w"),arg("n"),
+          arg("x0")=0.0,arg("y0")=0.0,arg("A")=1.0),        return_self<>() )
     .def("supergaussian_screen",        &Field::supergaussian_screen,
-      SuperGaussianScreen( args("w","n","x0","y0","A"),
-        "Defaults: x0=0.0, y0=0.0, A=1.0" )               [ return_self<>() ] )
+         (arg("w"),arg("n"),
+          arg("x0")=0.0, arg("y0")=0.0, arg("A")=1.0),      return_self<>() )
     .def("gaussian_aperture",           &Field::gaussian_aperture,
-      GaussianAperture( args("w","x0","y0","A"),
-        "Defaults: x0=0.0, y0=0.0, A=1.0" )               [ return_self<>() ] )
+         (arg("w"),arg("x0")=0.0,arg("y0")=0.0,arg("A")=1.0), return_self<>() )
     .def("gaussian_screen",             &Field::gaussian_screen,
-      GaussianScreen( args("w","x0","y0","A"),
-        "Defaults: x0=0.0, y0=0.0, A=1.0" )               [ return_self<>() ] )
+         (arg("w"),arg("x0")=0.0,arg("y0")=0.0,arg("A")=1.0), return_self<>() )
     .def("fft3",                        &Field::fft3,       return_self<>() )
     .def("tilt",                        &Field::tilt,       return_self<>() )
     .def("zernike",                     &Field::zernike,    return_self<>() )
@@ -217,15 +170,9 @@ BOOST_PYTHON_MODULE(_lightpipes) {
     .def("normalize",                   &Field::normalize,  return_self<>() )
     .def("l_amplify",                   &Field::l_amplify,  return_self<>() )
     .def("interpolate",                 &Field::interpolate,
-      Interpolate( args("new_side_length", "new_number",
-                        "x_shift", "y_shift", "angle", "magnif"),
-        "Defaults: new_side_length=0.0\n"
-        "          new_number     =0  \n"
-        "          x_shift        =0.0\n"
-        "          y_shift        =0.0\n"
-        "          angle          =0.0\n"
-        "          magnif         =1.0"
-      )[ return_self<>() ] )
+         (arg("new_side_length")=0.0, arg("new_number")=0,
+          arg("x_shift")=0.0, arg("y_shift")=0.0,
+          arg("angle")=0.0, arg("magnif")=1.0),             return_self<>() )
     .def("steps",                       steps_wrapper,
       Steps(args("step_size","N","n","X_filename","dump_period"),
         " step_size       \n"
