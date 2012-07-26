@@ -111,6 +111,7 @@ local binaries = [ path.glob-tree src/progs/bin : * ] ;
 # all octave stuff to install
 local octfiles = [ path.glob-tree octave/oct-files : * ] ;
 local mfiles   = [ path.glob-tree octave : *.m ] ;
+local pyfiles  = [ path.glob-tree python/lightpipes : * ] ;
 # the list of libraries to build and install
 local libraries = lightpipes ;
 # all headers to install
@@ -123,7 +124,8 @@ local manual = [ path.glob-tree manual : * ] ;
 
 # Complete install allowing --prefix and related command line options
 alias install
-  : install-code install-octfiles install-mfiles install-docs install-manual ;
+  : install-code install-octfiles install-mfiles install-python
+    install-docs install-manual ;
 explicit install ;
 
 # Complete install allowing --prefix and related command line options
@@ -157,6 +159,17 @@ package.install install-mfiles
     : $(mfiles)
     ;
 explicit install-mfiles ;
+
+# install oct-files allowing --prefix and related command line options
+package.install install-python
+    : $(install-properties)
+      <install-source-root>$(TOP)/python/lightpipes
+      <install-header-subdir>../lib/python/lightpipes
+    :
+    :
+    : $(pyfiles)
+    ;
+explicit install-python ;
 
 # install data allowing --prefix and related command line options
 package.install install-docs

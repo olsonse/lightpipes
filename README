@@ -2,8 +2,11 @@ lightpipes:  Light field propagation toolbox
     - Co-authored by Air Force Research Lab (U.S. Government)
     - See AUTHORS for contributors
 
-This version is a conversion of the original code to c++.  This also includes a
-set of tools loadable in octave. 
+This version is a conversion of the original code to c++.
+This version provides interface to the library from the following languages:
+  c++
+  python
+  Octave
 
 ----------------
 The description of the original LightPipes is available online at
@@ -13,15 +16,5 @@ http://okotech.com/pipes/
 
 Example scripts are available from the same place.
 
-To build the package on a Unix computer edit makefile and type
-make. The only thing to define is the calling sequence for a compiler
-to use. Gcc is highly recommended, cc is default.
-
-To build the package under MSDOS using DJGPP compiler (available from
-SIMTEL archive and its mirrors over the world) type
-
-make -f makedos
-
-With all questions contact Dr. Gleb Vdovin at gleb@okotech.com.
-
-
+Building the package requires bjam from the Boost.Build component of the Boost
+project.  The python bindings require Boost.Python.
