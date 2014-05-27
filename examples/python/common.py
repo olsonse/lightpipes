@@ -6,15 +6,17 @@ import numpy as np
 import pylab
 
 class Propagate:
-  def __init__(self):
+  def __init__(self, *args, **kwargs):
     self.im = None
+    self.args = args
+    self.kwargs = kwargs
     pylab.ion()
 
   def imshow( self, data ):
     if self.im:
       self.im.set_data( data )
     else:
-      self.im = pylab.imshow( data )
+      self.im = pylab.imshow( data, *self.args, **self.kwargs )
     pylab.draw()
 
   def __call__(self, F, z, dz):
