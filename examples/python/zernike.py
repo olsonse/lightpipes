@@ -17,16 +17,17 @@ from pylab import *
 
 m=1
 nm=1e-9*m
+um=1e-6*m
 mm=1e-3*m
 cm=1e-2*m
 
 ion()
 
-F = Field( 256, 0.01, 1e-6 )    \
-  .gaussian_aperture( 0.00225 ) \
-  .zernike( 2, 2, 0.0045, 20)   \
-  .zernike( 2, 0, 0.0045, -10)  \
-  .fresnel(1.55)                \
+F = Field( 256, side_length=1*cm, wavelength=1*um )    \
+  .gaussian_aperture( w=2.25*mm ) \
+  .zernike( 2, 2, 4.5*mm, 20)   \
+  .zernike( 2, 0, 4.5*mm, -10)  \
+  .fresnel(1.55*m)              \
   .interpolate( angle=pi/32 ) # example of rotating the grid
 
 imshow( (F.value * F.value.conj()).real )
