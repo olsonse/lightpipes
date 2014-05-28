@@ -319,6 +319,16 @@ namespace lightpipes {
 
     Field & tilt ( double tx, double ty );
 
+    /** Zernike polynomials.
+     * @param n
+     *  Radial order
+     * @param m
+     *  Azimuthal order
+     * @param R
+     *  Radius of amplitute spec
+     * @param A
+     *  Amplitude of abberation at r=R, in radians
+     */
     Field & zernike ( int n, int m, double R, double A );
 
     std::ostream & print_strehl (std::ostream & output);

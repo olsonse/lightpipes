@@ -1842,6 +1842,10 @@ Field & Field::axicon ( const double & phi, const std::complex<double> & n1, con
 
 
 
+template <class T>
+T int4 ( const double & x2, const double & dx,
+         const T & y1, const T & y2, const T & y3, const T & y4,
+         const double & xz );
 
 template <class T>
 T int16 ( double xc, double yc, double xp, double yp, double dx,

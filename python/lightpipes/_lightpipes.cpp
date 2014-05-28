@@ -94,12 +94,12 @@ BOOST_PYTHON_MODULE(_lightpipes) {
     "Field",
     init<unsigned int, double, double,
          optional< std::complex<double>, int, double > >(
-      args("number","side_length","lambda",
+      args("number","side_length","wavelength",
            "init","fft_level","sph_coords_factor"),
       " number      : Number of side-elements stored in field.      \n"
       "               Note:  sizeof(Field) = number^2.              \n"
       " side_length : Physical size of the side of the field.       \n"
-      " lambda      : Wavelength of the field.                      \n"
+      " wavelength  : Wavelength of the field.                      \n"
       " init        : Initial (constant) value of field             \n"
       "               [Default : 1.0 + 0j]                          \n"
       " fft_level   : FFT Status [Default : 0].                     \n"
@@ -134,11 +134,33 @@ BOOST_PYTHON_MODULE(_lightpipes) {
     .def("axicon",                      &Field::axicon,
          (arg("r"),arg("n1")=std::complex<double>(1.5,0.),
           arg("x0")=0.0,arg("y0")=0.0 ),                    return_self<>() )
-    .def("fresnel",                     &Field::fresnel,    return_self<>() )
+    .def("fresnel",                     &Field::fresnel,
+         (arg("z")),                                        return_self<>(),
+          "Propagates Field using convolution.\n"
+          " z\n"
+          "   Distance to propagate.\n")
     .def("forward",                     &Field::forward,    return_self<>() )
-    .def("lens_forvard",                &Field::lens_forvard, return_self<>() )
-    .def("lens_fresnel",                &Field::lens_fresnel, return_self<>() )
-    .def("forvard",                     &Field::forvard,    return_self<>() )
+    .def("lens_forvard",                &Field::lens_forvard,
+         (arg("f"),arg("z")),                               return_self<>(),
+         "Propagates Field in spherical coordinates using FFT.            \n"
+         " f                        \n"
+         "   Focal distance of lens that determines the curvature of the  \n"
+         "   coordinate system.     \n"
+         " z                        \n"
+         "   Propagation distance.  \n")
+    .def("lens_fresnel",                &Field::lens_fresnel,
+         (arg("f"),arg("z")),                               return_self<>(),
+         "Propagates Field in spherical coordinates.                      \n"
+         " f                        \n"
+         "   Focal distance of lens that determines the curvature of the  \n"
+         "   coordinate system.     \n"
+         " z                        \n"
+         "   Propagation distance.  \n")
+    .def("forvard",                     &Field::forvard,
+         (arg("z")),                                        return_self<>(),
+          "Propagates Field using FFT. \n"
+          " z\n"
+          "   Distance to propagate.\n")
     .def("spherical_to_normal_coords",  &Field::spherical_to_normal_coords,
                                                             return_self<>() )
     .def("circular_aperture",           &Field::circular_aperture,
@@ -163,7 +185,17 @@ BOOST_PYTHON_MODULE(_lightpipes) {
          (arg("w"),arg("x0")=0.0,arg("y0")=0.0,arg("A")=1.0), return_self<>() )
     .def("fft3",                        &Field::fft3,       return_self<>() )
     .def("tilt",                        &Field::tilt,       return_self<>() )
-    .def("zernike",                     &Field::zernike,    return_self<>() )
+    .def("zernike",                     &Field::zernike,
+         (arg("n"),arg("m"),arg("R"),arg("A")),             return_self<>(),
+          "Zernike polynomials.\n"
+          " n\n"
+          "   Radial order\n"
+          " m\n"
+          "   Azimuthal order\n"
+          " R\n"
+          "   Radius of amplitute spec\n"
+          " A\n"
+          "   Amplitude of abberation at r=R, in radians\n")
     .def("get_strehl",                  &Field::get_strehl                  )
     .def("pip_fft",                     &Field::pip_fft,    return_self<>() )
     .def("compatible",                  &Field::compatible                  )
