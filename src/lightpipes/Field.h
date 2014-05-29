@@ -219,14 +219,102 @@ namespace lightpipes {
                      const double & y0 = 0.0 );
 
     /** Propagates Field using convolution.
+     * Another possibility of a fast computer implementation of the operator
+     * \f$L^+\f$ is free from many of the drawbacks of the
+     * described spectral algorithm. The operator \f$L^+\f$ may
+     * be numerically implemented with direct summation of the Fresnel-Kirchoff
+     * diffraction integral:
+     *
+     * \f{equation}{
+     * U(x_1,y_1,z) = \frac{k}{2\pi i z} \int\int U(x,y,0) \exp\left\{ i k
+     * \frac{ \left(x - x_1\right)^2 + \left(y - y_1\right)^2 } { 2z } \right\}
+     * dx dy
+     * \f}
+     *
+     * with functions \f$U(x,y,0)\f$ and \f$U(x,y,z)\f$ defined on rectangular grids. This
+     * integral may be converted into a convolution form which can be
+     * efficiently computed using FFT [7, 8]. This method is free from many
+     * drawbacks of the spectral method given by the sequence
+     * \f$(3) \rightarrow (2) \rightarrow (4)\f$, although it
+     * is still very fast due to its use of FFT for computing of the integral
+     * sums.
+     *
+     * We'll explain this using two-dimensional example, following [7], p.100.
+     * Let the integral is defined in a finite interval
+     * \f$-L/2 \ldots L/2\f$:
+     *
+     * \f{equation}{
+     * U(x_1,z) = \sqrt{\frac{k}{2\pi i z}} \int_{-L/2}^{L/2} U(x,0) \exp
+     * \left\{ i k \frac{ (x-x_1)^2 } {2z} \right\}dx
+     * \f}
+     *
+     * Replacing functions \f$U(x)\f$ and \f$U(x_1)\f$ with step
+     * functions \f$U_j\f$ and \f$U_m\f$,
+     * defined in the sampling points of the grid with \f$j=0\ldots N\f$, and
+     * \f$m=0\ldots N\f$ we convert the integral to the form:
+     *
+     * \f{equation}{
+     * U_m = \sqrt{\frac{k}{2\pi i z}}\left( \sum_{j=1}^{N-1} U_j \int_{x_1 -
+     * 0.5}^{x_1 + 0.5} \exp\left\{i k \frac{(x_m - x)^2}{2 z} \right\} dx + U_0
+     * \int_{x_0}^{x_{0.5}} \exp\left\{i k \frac{(x_m - x)^2 }{2 z} \right\} dx
+     * + U_N \int_{x_N - 0.5}^{X_N} \exp \left\{ i k \frac{ (x_m - x)^2}{2
+     * z}\right\} dx \right)
+     * \f}
+     *
+     * Performing these integrals, we obtain:
+     *
+     * \f{equation}{
+     * U_m = \sum_{j=1}^{N-1} U_j K_{mj} + U_0 K_{m0} + U_N K_{mN}
+     * \f}
+     *
+     * where: \f$K_{m0}, K_{mj}, K_{mN}\f$ are analytically expressed with the help
+     * of Fresnel integrals, depending only onto the difference of indices. Sums
+     * \f$\sum_{j=1}^{N-1} U_j K_{mj}\f$ can be easily calculated for all
+     * indices \f$m\f$ as one convolution with the help of FFT.
+
+     * The Fresnel filter implements this algorithm for two-dimensional
+     * diffraction integrals. It is almost as fast as @ref forvard (still 2 to 5
+     * times slower), it uses <b>8 times more memory</b> (to perform the
+     * two-dimensional convolution) than @ref forvard and it allows for ``more
+     * honest'' calculation of Fresnel diffraction.  As it does not require any
+     * protection bands at the edges of the region, the model may be built in a
+     * smaller grid, therefore the resources consumed and time of execution are
+     * comparable or even better than that of @ref forvard. Fresnel does not
+     * accept negative propagation distance. When possible Fresnel should be
+     * used as the main propagation engine within LightPipes.
+     *
+     * Warning: @ref fresnel does not produce valid results if the distance of
+     * propagation is comparable with (or less than) the characteristic size of
+     * the aperture, at which the field is diffracted. In this case @ref forvard
+     * or @ref steps should be used.
+     *
      * @param z
      *     Distance to propagate.
+     *
+     * @see forvard, steps
      */
     Field & fresnel ( const double &z );
 
     /** Propagates Field using direct integration.
-     * Note that this operates on the input field structure.
-     * @returns a reference to the changed field.
+     *
+     * Direct calculation of the Fresnel-Kirchoff integrals is very inefficient
+     * in two-dimensional grids. The number of operations is proportional to
+     * \f$N^4\f$, where \f$N\f$ is the grid sampling. With direct integration we
+     * do not have any reflection at the grid boundary, so the size of the grid
+     * can just match the cross section of the field distribution.  Forward has
+     * following features:
+     *    - arbitrary sampling and size of square grid at the input plane;
+     *    - arbitrary sampling and size of square grid at the output plane, it
+     *      means we can propagate field from a grid containing for example 52x52
+     *      points corresponding to 4.9x4.9cm to a grid containing 42x42 points
+     *      and corresponding let's say 8.75x8.75 cm.
+     *
+     * The direct calculation of diffraction integral in the Fresnel
+     * approximation is used, thus forward can not be used to propagate the
+     * field to a short distances.  Use forvard or steps instead.
+     *
+     * forward is a <b><i>very</i></b> slow routine.
+     * @see forvard, fresnel, steps
      */
     Field & forward( const double & z,
                      const double & new_side_length,

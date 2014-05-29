@@ -139,7 +139,9 @@ BOOST_PYTHON_MODULE(_lightpipes) {
           "Propagates Field using convolution.\n"
           " z\n"
           "   Distance to propagate.\n")
-    .def("forward",                     &Field::forward,    return_self<>() )
+    .def("forward",                     &Field::forward,
+         (arg("z"),arg("new_side_length"),arg("new_number")),return_self<>(),
+         "Propagates Field using direct integration.\n")
     .def("lens_forvard",                &Field::lens_forvard,
          (arg("f"),arg("z")),                               return_self<>(),
          "Propagates Field in spherical coordinates using FFT.            \n"
@@ -207,6 +209,8 @@ BOOST_PYTHON_MODULE(_lightpipes) {
           arg("angle")=0.0, arg("magnif")=1.0),             return_self<>() )
     .def("steps",                       steps_wrapper,
       Steps(args("step_size","N","n","dump_filename","dump_period"),
+        " Propagate the field using finite-difference routine.\n"
+        "\n"
         " step_size       \n"
         "   Propagation distance to make for a single step\n"
         " N          [=1] \n"
