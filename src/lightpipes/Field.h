@@ -367,7 +367,7 @@ namespace lightpipes {
                    const int & number_steps,
                    const std::string & n_filename,
                    const std::string & k_filename = "",
-                   const std::string & X_filename = "",
+                   const std::string & dump_filename = "",
                    const int & dump_period = 1 ) throw (std::runtime_error);
 
     /** Propagate the field using finite-difference routine.
@@ -376,7 +376,7 @@ namespace lightpipes {
     Field & steps( const double & step_size,
                    const int & number_steps = 1,
                    const std::complex<double> * n = NULL,
-                   const std::string & X_filename = "",
+                   const std::string & dump_filename = "",
                    const int & dump_period = 1 ) throw (std::runtime_error);
 
     /* **** END FIELD PHYSICAL OPERATORS. ***** */

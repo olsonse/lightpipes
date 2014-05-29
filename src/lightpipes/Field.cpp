@@ -2298,7 +2298,7 @@ T inv_squares ( double x, double y, double dx,
                         const int & N,
                         const std::string & n_filename,
                         const std::string & k_filename,
-                        const std::string & X_filename,
+                        const std::string & dump_filename,
                         const int & dump_period) throw (std::runtime_error) {
     typedef std::complex<double> Complex;
 
@@ -2348,7 +2348,7 @@ T inv_squares ( double x, double y, double dx,
       }
     }
 
-    this->steps( step_size, N, n, X_filename, dump_period );
+    this->steps( step_size, N, n, dump_filename, dump_period );
     delete[] n;
     return *this;
   }
@@ -2356,7 +2356,7 @@ T inv_squares ( double x, double y, double dx,
   Field & Field::steps( const double & step_size,
                         const int & N,
                         const std::complex<double> * n,
-                        const std::string & X_filename,
+                        const std::string & dump_filename,
                         const int & dump_period) throw (std::runtime_error) {
     typedef std::complex<double> Complex;
     const double K = 2. * M_PI / info.lambda;
@@ -2382,11 +2382,11 @@ T inv_squares ( double x, double y, double dx,
     Complex * u2   = new Complex[ info.number+3 ];
 
 
-    std::ofstream X_file;
+    std::ofstream dump_file;
     double * int1 = NULL;
     double * phase1 = NULL;
-    if ( X_filename != "" ) {
-      X_file.open( X_filename.c_str() );
+    if ( dump_filename != "" ) {
+      dump_file.open( dump_filename.c_str() );
 
       int1 = new double[info.number + 2];
       if ( int1 == NULL )
@@ -2708,7 +2708,7 @@ T inv_squares ( double x, double y, double dx,
       /***************************************************/
 
 
-      if ( X_file.is_open() &&
+      if ( dump_file.is_open() &&
            ( (istep/dump_period) ==
              static_cast<float>(istep)/static_cast<float>(dump_period)
            )
@@ -2736,16 +2736,16 @@ T inv_squares ( double x, double y, double dx,
 
             double int2   = norm( val[ik1] );
             double phase2 =  arg( val[ik1] );
-            X_file << cc << '\t'
-                   << int1[jj] << '\t'
-                   << int2 << '\t'
-                   << phase1[jj] << '\t'
-                   << phase2 << '\t'
-                   << dist << '\n';
+            dump_file << cc << '\t'
+                      << int1[jj] << '\t'
+                      << int2 << '\t'
+                      << phase1[jj] << '\t'
+                      << phase2 << '\t'
+                      << dist << '\n';
           }
         }
 
-        X_file << std::endl;
+        dump_file << std::endl;
       }
     }
 
@@ -2771,7 +2771,7 @@ T inv_squares ( double x, double y, double dx,
     delete[] beta;
     delete[] p;
 
-    if ( X_file.is_open() ) {
+    if ( dump_file.is_open() ) {
       delete[] int1;
       delete[] phase1;
     }

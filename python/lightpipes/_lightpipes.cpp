@@ -50,7 +50,7 @@ namespace { // (anonymous) namespace
                       const double & step_size,
                       const int & number_steps = 1,
                       const numeric::array & n = empty_array(),
-                      const std::string & X_filename = "",
+                      const std::string & dump_filename = "",
                       const int & dump_period = 1 ) {
     typedef numeric::array A;
     typedef std::complex<double> Complex;
@@ -67,7 +67,7 @@ namespace { // (anonymous) namespace
       }
     }
 
-    f.steps( step_size, number_steps, n_data, X_filename, dump_period );
+    f.steps( step_size, number_steps, n_data, dump_filename, dump_period );
   }
 
   BOOST_PYTHON_FUNCTION_OVERLOADS(
@@ -206,14 +206,14 @@ BOOST_PYTHON_MODULE(_lightpipes) {
           arg("x_shift")=0.0, arg("y_shift")=0.0,
           arg("angle")=0.0, arg("magnif")=1.0),             return_self<>() )
     .def("steps",                       steps_wrapper,
-      Steps(args("step_size","N","n","X_filename","dump_period"),
+      Steps(args("step_size","N","n","dump_filename","dump_period"),
         " step_size       \n"
         "   Propagation distance to make for a single step\n"
         " N          [=1] \n"
         "   Number of steps of step_size to make\n"
         " n [=ones(info.number,info.number) * (1+0j)]\n"
         "   Complex index of refraction as a function of position\n"
-        " X_filename [='']\n"
+        " dump_filename [='']\n"
         " dump_period[=1]"
       )[ return_self<>() ]
     )
