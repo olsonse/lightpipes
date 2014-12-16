@@ -394,13 +394,13 @@ namespace lightpipes {
     Field & gaussian_aperture    ( const double & w,
                                    const double & x0 = 0.0, const double & y0 = 0.0,
                                    const double & A = 1.0 ) {
-      return supergaussian_aperture( w, 2, x0, y0, A );
+      return supergaussian_aperture( w, 1, x0, y0, A );
     }
 
     Field & gaussian_screen      ( const double & w,
                                    const double & x0 = 0.0, const double & y0 = 0.0,
                                    const double & A = 1.0 ) {
-      return supergaussian_screen( w, 2, x0, y0, A );
+      return supergaussian_screen( w, 1, x0, y0, A );
     }
 
     Field & fft3 ( int ind );
