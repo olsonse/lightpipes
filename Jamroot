@@ -91,6 +91,7 @@ lib lightpipes
 
 build-project src/progs ;
 build-project octave ;
+build-project python ;
 
 # installation configuration
 
