@@ -19,7 +19,7 @@ flags oct.oct FINDLIBS-SA <find-shared-library> ;
 flags oct.oct LIBRARIES <library-file> ;
 
 actions oct {
-  mkoctfile $(OPTIONS) $(>) -I$(INCLUDES) $(LINKFLAGS) -L$(LINKPATH) -l$(FINDLIBS-SA) -l$(FINDLIBS-ST) -l$(LIBRARIES) -o $(<)
+  CFLAGS="$(OPTIONS)" CXXFLAGS="$(OPTIONS)" mkoctfile $(>) -I$(INCLUDES) $(LINKFLAGS) -L$(LINKPATH) -l$(FINDLIBS-SA) -l$(FINDLIBS-ST) -l$(LIBRARIES) -o $(<)
 }
 
 
