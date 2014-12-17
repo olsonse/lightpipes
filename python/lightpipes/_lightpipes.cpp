@@ -78,6 +78,7 @@ namespace { // (anonymous) namespace
 BOOST_PYTHON_MODULE(_lightpipes) {
   import_array(); // for importing numpy array stuff
   numeric::array::set_module_and_type("numpy", "ndarray");
+  scope().attr("version") = LIGHTPIPES_VERSION;
 
   class_<Field::Info>("Info")
     .def_readonly("number", &Field::Info::number)
