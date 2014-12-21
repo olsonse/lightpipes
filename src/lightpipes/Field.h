@@ -45,17 +45,23 @@ namespace lightpipes {
   class Field {
     /* TYPEDEFS */
   public:
+    /** Type of pixel in Field. */
+    typedef std::complex< double > Pixel;
+    typedef std::pair<size_t,size_t> SzPair;
+
     /** Defines character of Field such as wavelength of light, spatial size,
      * spatial precision, etc. */
     struct Info {
       /* STORAGE MEMBERS */
       /** The number of side-elements stored in Field::val
-       * (sizeof(Field::val) = number^{2}.
+       * (sizeof(Field::val) = number.first * number.second.<br>
+       * number.first denotes the number of rows<br>
+       * number.second denotes the number of columns
        */
-      int number;
+      SzPair number;
 
       /** The physical size of the side of the Field view. */
-      double side_length;
+      std::pair<double,double> side_length;
 
       /** Wavelength of the Field. */
       double lambda;
@@ -78,6 +84,21 @@ namespace lightpipes {
        */
       bool compatible(const Info & that) const;
 
+      /** The number of pixels in the field. */
+      inline size_t size() const {
+        return number.first * number.second;
+      }
+
+      /** The number of pixels in the field. */
+      inline size_t mem_size() const {
+        return this->size() * sizeof(Pixel);
+      }
+
+      /** The number of pixels in the field. */
+      inline double phy_size() const {
+        return side_length.first * side_length.second;
+      }
+
       /** read the Field::Info data from file. */
       std::istream & read(std::istream & in);
 
@@ -93,23 +114,23 @@ namespace lightpipes {
     Info info;
 
     /** Array of Field values. */
-    std::complex < double > * val;
+    Pixel * val;
 
 
 
     /* FUNCTION MEMBERS */
   public:
     /** Constructor. */
-    Field ( unsigned int number,
-            double side_length,
+    Field ( const SzPair & number,
+            const std::pair<double,double> & side_length,
             double lambda,
-            std::complex<double> init_fill = std::complex<double>(1.,0.),
+            Pixel init_fill = Pixel(1.,0.),
             int fft_level = 0,
             double sph_coords_factor = 0.0 );
 
     /** Constructor with Field::Info initialization. */
     Field (const Info & that_info,
-           std::complex<double> init_fill = std::complex<double>(1.,0.) );
+           Pixel init_fill = Pixel(1.,0.) );
 
     /** Copy constructor. */
     Field (const Field & that);
@@ -134,21 +155,32 @@ namespace lightpipes {
     static Field * read(std::istream & in = std::cin) throw (std::runtime_error) ;
 
     /** Field index operator (non-const). */
-    std::complex<double> & operator[](const unsigned int i) { return val[i]; }
+    Pixel & operator[](const size_t i) { return val[i]; }
 
     /** Field index operator (const). */
-    const std::complex<double> & operator[](const unsigned int i) const { return val[i]; }
+    const Pixel & operator[](const size_t i) const { return val[i]; }
 
+  private:
     /** Field index operator (non-const) using column AND row indices. */
-    std::complex<double> & operator()(const unsigned int row,
-                                      const unsigned int col) {
-      return val[row*info.number + col];
+    Pixel & idx(const size_t row, const size_t col) {
+      return val[row*info.number.second + col];
     }
 
     /** Field index operator (const) using column AND row indices. */
-    const std::complex<double> & operator()(const unsigned int row,
-                                            const unsigned int col) const {
-      return val[row*info.number + col];
+    const Pixel & idx(const size_t row, const size_t col) const {
+      return val[row*info.number.second + col];
+    }
+
+
+  public:
+    /** Field index operator (non-const) using column AND row indices. */
+    Pixel & operator()(const size_t row, const size_t col) {
+      return idx(row,col);
+    }
+
+    /** Field index operator (const) using column AND row indices. */
+    const Pixel & operator()(const size_t row, const size_t col) const {
+      return idx(row,col);
     }
 
     /** Copy operator. */
@@ -157,26 +189,28 @@ namespace lightpipes {
     /** fill the field with a constant value operator. */
     template < typename T >
     Field & fill(const T & t) {
-      for (int i=1;i<=info.number; ++i){
-        for (int j=1;j<=info.number; ++j){
-          long ik1=(i-1)*info.number+j-1;
-          val[ik1] = t;
-        }
-      }
+      std::fill( val, val + info.size(), t );
+      return *this;
+    }
 
+    /** Multiply alternating field elements by (-1)^(row) */
+    Field & negate_alternate_elems() {
+      int ii = 1, ij = 1;
+      for ( int i = 0; i < info.number.first; ++i ) {
+        for ( int j = 0; j < info.number.second; ++j ) {
+          idx(i,j) *= ii * ij;
+          ij = -ij;
+        }
+        ii = -ii;
+      }
       return *this;
     }
 
     /** Scaling operator. */
     template <class T>
     Field & operator*= ( const T & input ) {
-      for (int i=1;i<=info.number; i++){
-        for (int j=1;j<=info.number; j++){
-          long ik1=(i-1)*info.number+j-1; 
-          val[ik1] *= input;
-        }
-      }
-
+      for (int i = info.size()-1; i >= 0; --i)
+        val[i] *= input;
       return *this;
     }
 
@@ -213,8 +247,7 @@ namespace lightpipes {
      * @param y0 y-shift in position of center.
      */
     Field & axicon ( const double & phi,
-                     const std::complex<double> & n1
-                       = std::complex<double>(1.5,0.0),
+                     const Pixel & n1 = Pixel(1.5,0.0),
                      const double & x0 = 0.0,
                      const double & y0 = 0.0 );
 
@@ -317,8 +350,8 @@ namespace lightpipes {
      * @see forvard, fresnel, steps
      */
     Field & forward( const double & z,
-                     const double & new_side_length,
-                     const int & new_number );
+                     const std::pair<double,double> & new_side_length,
+                     const SzPair & new_number );
 
     /** Propagates Field in spherical coordinates using FFT.
      * @param f
@@ -355,14 +388,32 @@ namespace lightpipes {
                              const double & x0 = 0.0,
                              const double & y0 = 0.0 );
 
+    /** Cut a rectangular aperture in the field.  zero all field outside of
+     * aperture.
+     * @param Lx  Size in x-direction
+     * @param Ly  Size in y-direction.  If Ly < 0, use Ly = Lx
+     * @param x0  x-coordinate of center of rectangle.
+     * @param y0  y-coordinate of center of rectangle.
+     * @param angle  angle of axes of rectangle.
+     * @return    Reference to this field structure.
+     */
     Field & rectangular_aperture ( const double & Lx,
-                                   const double & Ly = -0.1,
+                                         double   Ly = -0.1,
                                    const double & x0 = 0.0,
                                    const double & y0 = 0.0,
                                    const double & angle = 0.0 ); 
 
+    /** Mask a rectangular aperture in the field.  zero all field outside of
+     * aperture.
+     * @param Lx  Size in x-direction
+     * @param Ly  Size in y-direction.  If Ly < 0, use Ly = Lx
+     * @param x0  x-coordinate of center of rectangle.
+     * @param y0  y-coordinate of center of rectangle.
+     * @param angle  angle of axes of rectangle.
+     * @return    Reference to this field structure.
+     */
     Field & rectangular_screen   ( const double & Lx,
-                                   const double & Ly = -0.1,
+                                         double   Ly = -0.1,
                                    const double & x0 = 0.0,
                                    const double & y0 = 0.0,
                                    const double & angle = 0.0 ); 
@@ -419,9 +470,11 @@ namespace lightpipes {
      */
     Field & zernike ( int n, int m, double R, double A );
 
-    std::ostream & print_strehl (std::ostream & output);
+    std::ostream & print_strehl (std::ostream & output) const ;
 
-    double get_strehl ();
+    std::pair<double,double> get_strehl_and_energy () const ;
+
+    double get_strehl () const ;
 
     Field& pip_fft(const int&);
 
@@ -440,8 +493,8 @@ namespace lightpipes {
     /** Interpolate the field onto a new grid.
      * @param angle Angle of rotation of field in radians. 
      */
-    Field & interpolate(const double & new_side_length = 0.0,
-                        const int    & new_number = 0,
+    Field & interpolate(const std::pair<double,double> & new_side_length = 0.0,
+                        const SzPair & new_number = SzPair(0,0),
                         const double & x_shift = 0.0,
                         const double & y_shift = 0.0,
                         const double & angle = 0.0,
@@ -459,11 +512,11 @@ namespace lightpipes {
                    const int & dump_period = 1 ) throw (std::runtime_error);
 
     /** Propagate the field using finite-difference routine.
-     * @param n  Must be of length SQR(info.number)+2(?) if not NULL
+     * @param n  Must be of size info.number+2(?) if not NULL
      */
     Field & steps( const double & step_size,
                    const int & number_steps = 1,
-                   const std::complex<double> * n = NULL,
+                   const Pixel * n = NULL,
                    const std::string & dump_filename = "",
                    const int & dump_period = 1 ) throw (std::runtime_error);
 
@@ -478,7 +531,7 @@ namespace lightpipes {
 
     /** Print norm values of Field.  Calls print_field. */
     std::ostream & print_norm(std::ostream & output,
-                               int output_size = 0,
+                               SzPair output_size = SzPair(0,0),
                                const double & gamma = 2.0,
                                const int & max_val = 255,
                                const bool & ascii = false) {
@@ -487,7 +540,7 @@ namespace lightpipes {
 
     /** Print phase values of Field. Calls print_field. */
     std::ostream & print_phase(std::ostream & output,
-                               int output_size = 0,
+                               SzPair output_size = SzPair(0,0),
                                const double & gamma = 2.0,
                                const int & max_val = 255,
                                const bool & ascii = false) {
@@ -496,7 +549,7 @@ namespace lightpipes {
 
     /** Print either norm or phase values of Field. */
     std::ostream & print_field(std::ostream & output,
-                               int output_size = 0,
+                               SzPair output_size = SzPair(0,0),
                                const double & gamma = 2.0,
                                const int & max_val = 255,
                                const bool & ascii = false,
@@ -506,7 +559,7 @@ namespace lightpipes {
 
   private:
     void cleanup();
-    void init(std::complex<double> init_fill);
+    void init(Pixel init_fill);
   };
 
 
