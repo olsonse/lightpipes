@@ -162,9 +162,8 @@ namespace lightpipes {
   }/* Field::write */
 
 
-  size_t Field::base_init() {
-    size_t sz = SQR(info.number);
-    val = new std::complex<double>[sz];
+  void Field::base_init() {
+    val = new std::complex<double>[SQR(info.number)];
     if (val == NULL)
       throw std::runtime_error("field allocation error");
 
@@ -181,7 +180,6 @@ namespace lightpipes {
       reinterpret_cast<fftw_complex*>(val), // operate in place
       FFTW_BACKWARD, FFTW_ESTIMATE
     );
-    return sz;
   }
 
   Field & Field::operator= (const Field & that) {

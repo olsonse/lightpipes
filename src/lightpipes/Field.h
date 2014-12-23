@@ -511,7 +511,7 @@ namespace lightpipes {
 
   private:
     void cleanup();
-    size_t base_init();
+    void base_init();
     void init(std::complex<double> init_fill);
   };
 
