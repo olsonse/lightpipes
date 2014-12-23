@@ -1,9 +1,6 @@
 
 
 #include <lightpipes/Field.h>
-extern "C" {
-  #include <lightpipes/fftn.h>
-}
 
 #include <algorithm>
 #include <fstream>
@@ -165,18 +162,33 @@ namespace lightpipes {
   }/* Field::write */
 
 
+  size_t Field::base_init() {
+    size_t sz = SQR(info.number);
+    val = new std::complex<double>[sz];
+    if (val == NULL)
+      throw std::runtime_error("field allocation error");
+
+    fftw_configs[0] = fftw_plan_dft_2d(
+      info.number, info.number,
+      reinterpret_cast<fftw_complex*>(val),
+      reinterpret_cast<fftw_complex*>(val), // operate in place
+      FFTW_FORWARD, FFTW_ESTIMATE
+    );
+
+    fftw_configs[1] = fftw_plan_dft_2d(
+      info.number, info.number,
+      reinterpret_cast<fftw_complex*>(val),
+      reinterpret_cast<fftw_complex*>(val), // operate in place
+      FFTW_BACKWARD, FFTW_ESTIMATE
+    );
+    return sz;
+  }
+
   Field & Field::operator= (const Field & that) {
     cleanup();
     this->info = that.info;
-
-    size_t sz = SQR(info.number);
-
-    val = new std::complex<double>[sz];
-    if (val == NULL)
-        throw std::runtime_error("field allocation error");
-
-    std::copy( that.val, that.val+sz, val );
-
+    this->base_init();
+    std::copy( that.val, that.val+SQR(info.number), val );
     return *this;
   }
 
@@ -428,30 +440,8 @@ namespace lightpipes {
   }
 
   Field & Field::fft3 ( int direction ) {
-    int dims[2];
-    dims[0] = dims[1] = info.number;
-    /*
-     * fprintf(stderr,"%d %d \n", dims[0], dims[1]); 
-     */
-
-    int N2 = SQR(info.number);
-    double * Re = new double[N2];
-    double * Im = new double[N2];
-    for (int i = 0; i < N2; i++) {
-      Re[i] = val[i].real();
-      Im[i] = val[i].imag();
-    }
-
-    fftn ( 2, dims, Re, Im, direction, (double)info.number );
-
-    for (int i = 0; i < N2; i++) {
-      val[i] = std::complex<double>(Re[i],Im[i]);
-      //val[i].real() = Re[i];
-      //val[i].imag() = Im[i];
-    }
-
-    delete[] Re;
-    delete[] Im;
+    fftw_execute( fftw_configs[direction > 0 ? 0 : 1] );
+    (*this) *= 1./info.number; // normalize to sqrt(N*N)
     return *this;
   }
 
@@ -803,30 +793,18 @@ Field & Field::fresnel ( const double &z ) {
 
     int len = SQR(fn2);
 
-    double * F_R = new double[len];
-    if ( F_R == NULL ) {
+    std::complex<double> * F_RI = new std::complex<double>[len];
+    if ( F_RI == NULL ) {
         throw std:: runtime_error ( "Allocation error in Fresnel, use smaller grid" );
     }
 
-    double * F_I = new double[len];
-    if ( F_I == NULL ) {
+    std::complex<double> * K_RI = new std::complex<double>[len];
+    if ( K_RI == NULL ) {
         throw std:: runtime_error ( "Allocation error in Fresnel, use smaller grid" );
     }
 
-    double * K_R = new double[len];
-    if ( K_R == NULL ) {
-        throw std:: runtime_error ( "Allocation error in Fresnel, use smaller grid" );
-    }
-
-    double * K_I = new double[len];
-    if ( K_I == NULL ) {
-        throw std:: runtime_error ( "Allocation error in Fresnel, use smaller grid" );
-    }
-
-    std::fill( F_R, F_R+len, 0.0 );
-    std::fill( F_I, F_I+len, 0.0 );
-    std::fill( K_R, K_R+len, 0.0 );
-    std::fill( K_I, K_I+len, 0.0 );
+    std::fill( F_RI, F_RI+len, std::complex<double>(0.0) );
+    std::fill( K_RI, K_RI+len, std::complex<double>(0.0) );
 
     /*****************************************************/
 
@@ -891,20 +869,15 @@ Field & Field::fresnel ( const double &z ) {
             c2c1 = fc2 * fc1;
 
 
-            K_R[ik1] = 0.5 * ( c4s3 + s4c3 - c4s1 - s4c1 - c2s3 - s2c3 + c2s1 + s2c1 ) * iiij;
-            K_I[ik1] = 0.5 * ( -c4c3 + s4s3 + c4c1 - s4s1 + c2c3 - s2s3 - c2c1 + s2s1 ) * iiij;
+            K_RI[ik1] = 0.5 * ((double)iiij) * std::complex<double>(
+               c4s3 + s4c3 - c4s1 - s4c1 - c2s3 - s2c3 + c2s1 + s2c1,
+              -c4c3 + s4s3 + c4c1 - s4s1 + c2c3 - s2s3 - c2c1 + s2s1
+            );
             /*
              * Field staff 
              */
 
-            /*
-             * F_R[ik1]=(field.real[ik]-field.real[ik-1]+field.real[ik-info.number]-field.real[ik-info.number-1])*iiij*0.25;
-             * F_I[ik1]=(field.imaginary[ik]-field.imaginary[ik-1]+field.imaginary[ik-info.number] -
-             * field.imaginary[ik-info.number-1])*0.25*iiij; 
-             */
-
-            F_R[ik1] = ( val[ik].real() ) * iiij;
-            F_I[ik1] = ( val[ik].imag() ) * iiij;
+            F_RI[ik1] = val[ik] * (double)iiij;
 
             ik++;
             ij = -ij;
@@ -912,10 +885,29 @@ Field & Field::fresnel ( const double &z ) {
         ii = -ii;
     }
 
-    int dims[2] = {fn2, fn2};
+    fftw_plan fft_plan;
 
-    fftn ( 2, dims, K_R, K_I, 1, ( double ) fn2 );
-    fftn ( 2, dims, F_R, F_I, 1, ( double ) fn2 );
+    /// FFTN REPLACEMENT 1
+    fft_plan = fftw_plan_dft_2d(
+      fn2, fn2,
+      reinterpret_cast<fftw_complex*>(K_RI),
+      reinterpret_cast<fftw_complex*>(K_RI), // operate in place
+      FFTW_FORWARD, FFTW_ESTIMATE
+    );
+    fftw_execute( fft_plan );
+    for ( long i = fn2*fn2 - 1; i >= 0; --i ) K_RI[i] *= 1./fn2;
+    fftw_destroy_plan(fft_plan);
+
+    /// FFTN REPLACEMENT 2
+    fft_plan = fftw_plan_dft_2d(
+      fn2, fn2,
+      reinterpret_cast<fftw_complex*>(F_RI),
+      reinterpret_cast<fftw_complex*>(F_RI), // operate in place
+      FFTW_FORWARD, FFTW_ESTIMATE
+    );
+    fftw_execute( fft_plan );
+    for ( long i = fn2*fn2 - 1; i >= 0; --i ) F_RI[i] *= 1./fn2;
+    fftw_destroy_plan(fft_plan);
 
     ik = 0;
     ii = ij = 1;
@@ -924,19 +916,27 @@ Field & Field::fresnel ( const double &z ) {
         for ( int j = 1; j <= fn2; j++ ) {
             int iiij = ii * ij;
 
-            double cc = K_R[ik] * F_R[ik] - K_I[ik] * F_I[ik];
-            F_I[ik] = ( K_R[ik] * F_I[ik] + F_R[ik] * K_I[ik] ) * iiij;
-            F_R[ik] = cc * iiij;
+            F_RI[ik] = ((double)iiij) * std::complex<double>(
+              K_RI[ik].real() * F_RI[ik].real() - K_RI[ik].imag() * F_RI[ik].imag(),
+              K_RI[ik].real() * F_RI[ik].imag() + F_RI[ik].real() * K_RI[ik].imag()
+            );
             ik++;
             ij = -ij;
         }
         ii = -ii;
     }
 
-    delete[] K_R;
-    delete[] K_I;
+    delete[] K_RI;
 
-    fftn ( 2, dims, F_R, F_I, -1, 1. );
+    /// FFTN REPLACEMENT 3
+    fft_plan = fftw_plan_dft_2d(
+      fn2, fn2,
+      reinterpret_cast<fftw_complex*>(F_RI),
+      reinterpret_cast<fftw_complex*>(F_RI), // operate in place
+      FFTW_BACKWARD, FFTW_ESTIMATE
+    );
+    fftw_execute( fft_plan ); // don't normalize
+    fftw_destroy_plan(fft_plan);
 
     ik = 0;
     ii = ij = 1;
@@ -949,23 +949,18 @@ Field & Field::fresnel ( const double &z ) {
             long ik4 = ( i - 1 ) * fn2 + j - 2;
             int iiij = ii * ij;
 
-            double Fr = 0.25 * ( F_R[ik1] - F_R[ik2] + F_R[ik3] - F_R[ik4] ) * iiij;
-            double Fi = 0.25 * ( F_I[ik1] - F_I[ik2] + F_I[ik3] - F_I[ik4] ) * iiij;
+            val[ik] = 0.25 * iiij * std::complex<double>(
+              F_RI[ik1].real() - F_RI[ik2].real() + F_RI[ik3].real() - F_RI[ik4].real(),
+              F_RI[ik1].imag() - F_RI[ik2].imag() + F_RI[ik3].imag() - F_RI[ik4].imag()
+            );
 
-            val[ik] = std::complex<double>(Fr,Fi);
-
-            /*
-             * field.real[ik]=F_R[ik1]*iiij;
-             * field.imaginary[ik]=F_I[ik1]*iiij; 
-             */
             ik++;
             ij = -ij;
         }
         ii = -ii;
     }
 
-    delete[] F_R;
-    delete[] F_I;
+    delete[] F_RI;
 
     return *this;
 }
@@ -2785,19 +2780,16 @@ T inv_squares ( double x, double y, double dx,
     if (val) {
       delete[] val;
       val = NULL;
+
+      fftw_destroy_plan(fftw_configs[0]);
+      fftw_destroy_plan(fftw_configs[1]);
     }
   }
 
   void Field::init(std::complex<double> init_fill) {
     cleanup();
-
-    size_t sz = SQR(info.number);
-
-    val = new std::complex<double>[sz];
-    if (val == NULL)
-      throw std::runtime_error("field allocation error");
-
-    std::fill(val, val+sz, init_fill);
+    this->base_init();
+    std::fill(val, val+SQR(info.number), init_fill);
   }
 
 }/* namespace lightpipes */

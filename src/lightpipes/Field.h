@@ -12,6 +12,8 @@
 #ifndef lightpipies_Field_h
 #define lightpipies_Field_h
 
+#include <fftw3.h>
+
 #include <iostream>
 #include <stdexcept>
 #include <complex>
@@ -94,6 +96,9 @@ namespace lightpipes {
 
     /** Array of Field values. */
     std::complex < double > * val;
+
+    /** FFTW3 Plan */
+    fftw_plan fftw_configs[2];
 
 
 
@@ -506,6 +511,7 @@ namespace lightpipes {
 
   private:
     void cleanup();
+    size_t base_init();
     void init(std::complex<double> init_fill);
   };
 
