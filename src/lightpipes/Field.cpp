@@ -97,8 +97,8 @@ namespace lightpipes {
   double p1evl ( double x, double coef[], int N );
 
 
-  Field::Field ( const std::pair<size_t,size_t> & number,
-                 const std::pair<double,double> & side_length,
+  Field::Field ( const Pair<size_t> & number,
+                 const Pair<double> & side_length,
                  double lambda,
                  std::complex<double> init_fill,
                  int fft_level,
@@ -181,7 +181,7 @@ namespace lightpipes {
     if (!compatible(that))
       throw std::runtime_error("cannot add fields that are not compatible");
 
-    for ( int i = info.size()-1; i >= 0; --i ) {
+    for ( long i = info.size()-1; i >= 0; --i ) {
       val[i] += that.val[i];
     }
 
@@ -194,16 +194,16 @@ namespace lightpipes {
     double r2 = SQR(r);
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
     /*
      * Cutting the aperture 
      */
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
       double x2  = SQR((i - i2) * dx - x0);
-      for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
         if ( (x2 + SQR((j - j2) * dy - y0)) > r2 )
           idx(i,j) = 0.0;
       }
@@ -219,12 +219,12 @@ namespace lightpipes {
     double K = M_2PI / info.lambda;
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
       double x2 = SQR((i - i2) * dx - x0);
-      for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
         double y = (j - j2) * dy - y0;
         double fi = -0.5 * K * ( x2 + SQR(y) ) / f;
         idx(i,j) *= exp(I * fi);
@@ -241,12 +241,12 @@ namespace lightpipes {
     double K = M_2PI / info.lambda;
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
       double x2 = SQR((i - i2) * dx - x0);
-      for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
         double y = (j - j2) * dy - y0;
         double fi = -0.5 * K * SQR( R - sqrt ( x2 + SQR(y) ) ) / f;
         idx(i,j) *= exp(I * fi);
@@ -283,7 +283,7 @@ namespace lightpipes {
     info.sph_coords_factor = -1. / ( z - f );
 
     if ( z1 >= 0. ) {
-      for ( int i = sz - 1; i >= 0; --i )
+      for ( long i = sz - 1; i >= 0; --i )
         val[i] /= ampl_scale;
     } else {
       Pixel * f1 = new Pixel[sz];
@@ -293,9 +293,9 @@ namespace lightpipes {
 
       std::fill(f1, f1+sz, Pixel(0.0));
 
-      for ( int i = 0; i < info.number.first; ++i ) {
+      for ( size_t i = 0; i < info.number.first; ++i ) {
         size_t i_i = info.number.first - i + 1;
-        for ( int j = 0; j < info.number.second; ++j ) {
+        for ( size_t j = 0; j < info.number.second; ++j ) {
           size_t j_j = info.number.second - j + 1;
           f1[i*info.number.second + j] = idx(i_i,j_j) / ampl_scale;
         }
@@ -319,12 +319,12 @@ namespace lightpipes {
      * Spatial filter, (c) Gleb Vdovin 1986: 
      */
     { double z_abs = abs( z ) * info.lambda / 2.;
-      int i2 = info.number.first / 2;
-      int j2 = info.number.second / 2;
-      int sign = (z >= 0.) ? 1 : -1;
+      double i2 = std::floor(info.number.first / 2);
+      double j2 = std::floor(info.number.second / 2);
+      double sign = (z >= 0.) ? 1. : -1.;
 
-      for ( int i = 0; i < info.number.first; ++i ) {
-        for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t i = 0; i < info.number.first; ++i ) {
+        for ( size_t j = 0; j < info.number.second; ++j ) {
           double sw = SQR( (i - i2) / info.side_length.first )
                     + SQR( (j - j2) / info.side_length.second );
           // seems that z_abs * sw is the number of (-)2*pi phase wrappings...?
@@ -370,16 +370,16 @@ namespace lightpipes {
 
     double dx = info.side_length.first / ( info.number.first );
     double dy = info.side_length.second / ( info.number.second );
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
     /*
      * Cutting the aperture 
      */
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
         double x = (i - i2) * dx - x0;
-        for ( int j = 0; j < info.number.second; ++j ) {
+        for ( size_t j = 0; j < info.number.second; ++j ) {
             double y = (j - j2) * dy - y0;
             if ( SQR(x) + SQR(y) <= r2 ) {
                 idx(i,j) = 0.0;
@@ -399,8 +399,8 @@ namespace lightpipes {
 
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
     double cc = cos ( angle );
     double ss = sin ( angle );
@@ -409,9 +409,9 @@ namespace lightpipes {
      * Cutting the aperture 
      */
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
       double xx = (i - i2) * dx - x0;
-      for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
         double yy = (j - j2) * dy - y0;
 
         double x =  xx * cc + yy * ss;
@@ -434,8 +434,8 @@ namespace lightpipes {
 
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
     double cc = cos ( angle );
     double ss = sin ( angle );
@@ -444,10 +444,10 @@ namespace lightpipes {
      * Cutting the aperture 
      */
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
       double xx = (i - i2) * dx - x0;
-      for ( int j = 0; j < info.number.second; ++j ) {
-        double yy = (j - i2) * dy - y0;
+      for ( size_t j = 0; j < info.number.second; ++j ) {
+        double yy = (j - j2) * dy - y0;
 
         double x =  xx * cc + yy * ss;
         double y = -xx * ss + yy * cc;
@@ -468,15 +468,15 @@ namespace lightpipes {
     using std::sqrt; using std::pow; using std::abs; using std::exp;
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
     double w2_inv = 1./ (SQR(w) * 2.);
-    double Asqrt = std:sqrt ( abs(A) );
+    double Asqrt = sqrt( abs(A) );
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
         double x2 = SQR( (i - i2) * dx - x0 );
-        for ( int j = 0; j < info.number.second; ++j ) {
+        for ( size_t j = 0; j < info.number.second; ++j ) {
             double y = (j - j2) * dy - y0;
             double parg = pow(( x2 + SQR(y) ) * w2_inv, n);
             double cc = Asqrt * exp( - parg );
@@ -499,14 +499,14 @@ namespace lightpipes {
     using std::sqrt; using std::pow; using std::abs; using std::exp;
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
     double w2_inv = 1./SQR(w);
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
         double x2 = SQR( (i - i2) * dx - x0 );
-        for ( int j = 0; j < info.number.second; ++j ) {
+        for ( size_t j = 0; j < info.number.second; ++j ) {
             double y = (j - j2) * dy - y0;
             double parg = pow(( x2 + SQR(y) ) * w2_inv, n);
             double cc = sqrt( abs( 1. - A * exp ( -parg ) ) );
@@ -550,8 +550,8 @@ namespace lightpipes {
 
 
     double ampl_scale_inv = 1./ ampl_scale;
-    for ( int i = 0; i < info.number.first; ++i ) {
-      for ( int j = 0; j < info.number.second; ++j ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
         idx(i,j) *= ampl_scale_inv;
       }
     }
@@ -569,9 +569,10 @@ namespace lightpipes {
 
 
   Field & Field::forward( const double & z,
-                          const std::pair<double,double> & new_side_length,
-                          const std::pair<size_t,size_t> & new_number ) {
+                          const Pair<double> & new_side_length,
+                          const Pair<size_t> & new_number ) {
     throw std::runtime_error("not fixed for NxM yet");
+#if 0
     double  dx_new, dx_old, x_new, y_new;
 
     int i, j, i_old, j_old;
@@ -692,10 +693,12 @@ namespace lightpipes {
     (*this) = (*fieldPtr);
     delete fieldPtr;
     return *this;
+#endif
   }
 
   Field & Field::fresnel ( const double &z ) {
     throw std::runtime_error("not fixed for NxM yet");
+#if 0
     int ii, ij;
 
     /*
@@ -875,6 +878,7 @@ namespace lightpipes {
     delete[] F_I;
 
     return *this;
+#endif
   }
 
 
@@ -1245,12 +1249,12 @@ namespace lightpipes {
     double K = 2. * M_PI / info.lambda;
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    int i2 = info.number.second / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
       double x = (i - i2) * dx;
-      for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
         double y = (j - j2) * dy;
         double fi = -( tx * x + ty * y ) * K;
         idx(i,j) *= exp(I * fi);
@@ -1343,12 +1347,12 @@ namespace lightpipes {
     using std::sqrt; using std::arg; using std::exp;
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
       double x = (i - i2) * dx;
-      for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
         double y = (j - j2) * dy;
         double rho = sqrt( SQR(x) + SQR(y) ) / R;
         double phi = arg( std::complex<double>(x, y) );
@@ -1367,9 +1371,9 @@ namespace lightpipes {
      * Calculating the power 
      */
     double sum = 0., sum1r = 0., sum1i = 0., sum2 = 0.;
-    for ( int i = 0; i < info.number.first; ++i ) {
-      for ( int j = 0; j < info.number.second; ++j ) {
-        Pixel & px = idx(i,j);
+    for ( size_t i = 0; i < info.number.first; ++i ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
+        const Pixel & px = idx(i,j);
         double s_p = norm(px);
         sum2  += s_p;
         sum   += sqrt( s_p );
@@ -1393,14 +1397,12 @@ namespace lightpipes {
     using std::norm;
     double dx = info.side_length.first / info.number.first;
     double dy = info.side_length.second / info.number.second;
-    double dx2 = SQR(dx);
-    double dy2 = SQR(dy);
-    int i2 = info.number.first / 2;
-    int j2 = info.number.second / 2;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
-    { std::pair<double,double> strehl_energy = get_strehl_and_energy();
+    { Pair<double> strehl_energy = get_strehl_and_energy();
       output << "Strehl: ratio= " << strehl_energy.first
-             << " energy= " << (strehl_energy.second * dx2)
+             << " energy= " << (strehl_energy.second * (dx*dy))
              << std::endl;
     }
 
@@ -1408,9 +1410,9 @@ namespace lightpipes {
      * Calculating the center of gravity: 
      */
     double sum = 0., sum1r = 0., sum1i = 0.;
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
       double y = (i - i2) * dx;
-      for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
         double x = (j - j2) * dy;
         double sum2 = norm( idx(i,j) );
         sum1r += sum2 * x;
@@ -1430,17 +1432,17 @@ namespace lightpipes {
     double sum1x = 0., sum1y = 0.;
 
     sum1r = 0.;
-    for ( int i = 0; i < info.number.first; ++i ) {
-        double y = (i - i2) * dx;
-        double y_y_c = y - y_c;
-        for ( int j = 0; j < info.number.second; ++j ) {
-            double x = (j - j2) * dy;
-            double x_x_c = x - x_c;
-            double intens = norm( idx(i,j) );
-            sum1r += intens * ( SQR(x_x_c) + SQR(y_y_c) );
-            sum1x += intens * SQR(x_x_c);
-            sum1y += intens * SQR(y_y_c);
-        }
+    for ( size_t i = 0; i < info.number.first; ++i ) {
+      double y = (i - i2) * dx;
+      double y_y_c = y - y_c;
+      for ( size_t j = 0; j < info.number.second; ++j ) {
+        double x = (j - j2) * dy;
+        double x_x_c = x - x_c;
+        double intens = norm( idx(i,j) );
+        sum1r += intens * ( SQR(x_x_c) + SQR(y_y_c) );
+        sum1x += intens * SQR(x_x_c);
+        sum1y += intens * SQR(y_y_c);
+      }
     }
 
     output << "Standard deviation:  "
@@ -1466,7 +1468,7 @@ namespace lightpipes {
   }
 
   std::ostream & Field::print_field(std::ostream  & output,
-                                    Field::SzPair   output_size /* = 0 */,
+                                    Pair<size_t>    output_size /* = 0 */,
                                     const double  & gamma /* = 2.0 */,
                                     const int     & max_val /* = 255 */,
                                     const bool    & ascii /* = false */,
@@ -1478,7 +1480,7 @@ namespace lightpipes {
     if (output_size.second == 0 || output_size.second > info.number.second)
       output_size.second = info.number.second;
 
-    int istep = 1, jstep = 1;
+    size_t istep = 1, jstep = 1;
 
     if ( info.number.first / output_size.first > 1 ) {
       istep = info.number.first / output_size.first;
@@ -1507,7 +1509,7 @@ namespace lightpipes {
      * max_val when writing to file. */
     double max_px = M_PI;
     if (output_norm) {
-      for ( int i = info.size()-1; i >= 0; --i ) {
+      for ( long i = info.size()-1; i >= 0; --i ) {
         double sum = norm( val[i] );
         if ( sum > max_px ) max_px = sum;
       }
@@ -1515,22 +1517,22 @@ namespace lightpipes {
 
     /* now write pixel (set) values out to file. */
     int i_i = 1;
-    for ( int i = 0; i <= info.number.first - istep; i += istep ) {
-      for ( int j = 0; j <= info.number.second - jstep; j += jstep ) {
+    for ( size_t i = 0; i <= info.number.first - istep; i += istep ) {
+      for ( size_t j = 0; j <= info.number.second - jstep; j += jstep ) {
         /* determine the average intensity/phase in the next pixel set. */
 
         double aval = 0.0;
         if (output_norm) {
           double tot = 0;
-          for ( int ii = i; ii < i + istep; ++ii )
-            for ( int jj = j; jj < j + jstep; ++jj )
+          for ( size_t ii = i; ii < i + istep; ++ii )
+            for ( size_t jj = j; jj < j + jstep; ++jj )
               tot += norm( idx(ii,jj) );
 
           aval = tot / (istep * jstep);
         } else {
           Pixel tot = 0;
-          for ( int ii = i; ii < i + istep; ++ii )
-            for ( int jj = j; jj < j + jstep; ++jj )
+          for ( size_t ii = i; ii < i + istep; ++ii )
+            for ( size_t jj = j; jj < j + jstep; ++jj )
               tot += idx(ii,jj);
 
           aval = arg(tot);
@@ -1569,7 +1571,7 @@ namespace lightpipes {
      * Calculating the power 
      */
     double sum = 0;
-    for ( int i = info.size()-1; i >= 0; --i )
+    for ( long i = info.size()-1; i >= 0; --i )
       sum += norm( val[i] );
     sum *= info.side_length.first  / info.number.first
          * info.side_length.second / info.number.second;
@@ -1584,7 +1586,7 @@ namespace lightpipes {
      * Normalizing the power 
      */
     sum = sqrt( 1. / sum );
-    for ( int i = info.size()-1; i >= 0; --i )
+    for ( long i = info.size()-1; i >= 0; --i )
       val[i] *= sum;
 
     return *this;
@@ -1594,7 +1596,7 @@ namespace lightpipes {
                            const double & length,
                            const double & i_sat) {
     using std::norm; using std::exp;
-    for ( int i = info.size()-1; i >= 0; --i ) {
+    for ( long i = info.size()-1; i >= 0; --i ) {
       Pixel & px = val[i];
       double intensity = norm( px );
       double ss = exp( length * ( gain / ( 1. + ( intensity / i_sat ) ) ) );
@@ -1611,15 +1613,15 @@ namespace lightpipes {
     using std::tan; using std::abs; using std::sqrt; using std::exp;
     double KtanB = (M_2PI / info.lambda) * tan( 0.5 * (M_PI - abs(phi)) );
     std::complex<double> epsilon = 1.0 - n1;
-    double dx    = info.side_length.first  / info.number.first;
-    double dy    = info.side_length.second / info.number.second;
-    int    i2    = info.number.first  / 2;
-    int    j2    = info.number.second / 2;
+    double dx = info.side_length.first  / info.number.first;
+    double dy = info.side_length.second / info.number.second;
+    double i2 = std::floor(info.number.first / 2);
+    double j2 = std::floor(info.number.second / 2);
 
-    for ( int i = 0; i < info.number.first; ++i ) {
+    for ( size_t i = 0; i < info.number.first; ++i ) {
       double x2 = SQR((i - i2) * dx - x0);
 
-      for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t j = 0; j < info.number.second; ++j ) {
         double r = sqrt(x2 + SQR((j - j2) * dy - y0));
         std::complex<double> fi = KtanB * ( epsilon*r );
         idx(i,j) *= exp(I * fi);
@@ -1777,8 +1779,8 @@ namespace lightpipes {
 
 
 
-  Field & Field::interpolate(const std::pair<double,double> & new_side_length /* = 0.0 */,
-                             const SzPair & new_number /* = 0.0 */,
+  Field & Field::interpolate(const Pair<double> & new_side_length /* = 0.0 */,
+                             const Pair<size_t> & new_number /* = 0.0 */,
                              const double & x_shift /* = 0.0 */,
                              const double & y_shift /* = 0.0 */,
                              const double & angle /* = 0.0 */,
@@ -1798,6 +1800,7 @@ namespace lightpipes {
     SquareMatrix<std::complex<double>,4> z; z.zero();
 
     throw std::runtime_error("not fixed for NxM yet");
+#if 0
     long n_old_max = info.number * ( info.number - 1 ) - 1;
 
     double dx_new = new_field.info.side_length / ( new_field.info.number - 1. );
@@ -2051,6 +2054,7 @@ namespace lightpipes {
     *this = new_field;
 
     return *this;
+#endif
   }
 
   /* *** STUFF FOR INTERPOLATE ENDS HERE *** */
@@ -2065,6 +2069,7 @@ namespace lightpipes {
                 const std::complex<double> * p,
                       std::complex<double> * u ) {
       throw std::runtime_error("not fixed for NxM yet");
+#if 0
       /*
        * initial condition, everything is going to be zero at the edge 
        */
@@ -2093,6 +2098,7 @@ namespace lightpipes {
       for ( int i = info.number - 1; i >= 1; --i ) {
         u[i] = ( alpha[i + 1] * u[i + 1] ) + beta[i + 1];
       }
+#endif
     }
   }
 
@@ -2105,6 +2111,7 @@ namespace lightpipes {
                         const int & dump_period)
                         throw (std::runtime_error) {
     throw std::runtime_error("not fixed for NxM yet");
+#if 0
     typedef std::complex<double> Complex;
 
     Complex * n = new Complex[ SQR(info.number) ];
@@ -2156,6 +2163,7 @@ namespace lightpipes {
     this->steps( step_size, N, n, dump_filename, dump_period );
     delete[] n;
     return *this;
+#endif
   }
 
   Field & Field::steps( const double & step_size,
@@ -2165,6 +2173,7 @@ namespace lightpipes {
                         const int & dump_period)
                         throw (std::runtime_error) {
     throw std::runtime_error("not fixed for NxM yet");
+#if 0
     typedef std::complex<double> Complex;
     const double K = 2. * M_PI / info.lambda;
 
@@ -2584,6 +2593,7 @@ namespace lightpipes {
     }
 
     return *this;
+#endif
   }
   /* *** STUFF FOR STEPS ENDS HERE *** */
 
@@ -2598,7 +2608,8 @@ namespace lightpipes {
   void Field::init(Field::Pixel init_fill) {
     cleanup();
 
-    val = new Pixel[info.size()](init_fill);
+    val = new Pixel[info.size()];
+    std::fill( val, val + info.size(), init_fill );
     if (val == NULL)
       throw std::runtime_error("field allocation error");
   }

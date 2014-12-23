@@ -9,8 +9,10 @@
 using lightpipes::Field;
 
 Field::Info & mapToInfo(const Octave_map & ov_info, Field::Info & info) {
-    info.number                 = ov_info.contents("number")(0).int_value();
-    info.side_length           = ov_info.contents("side_length")(0).double_value();;
+    info.number.first           = ov_info.contents("number_x")(0).int_value();
+    info.number.second          = ov_info.contents("number_y")(0).int_value();
+    info.side_length.first      = ov_info.contents("side_length_x")(0).double_value();;
+    info.side_length.second     = ov_info.contents("side_length_y")(0).double_value();;
     info.lambda                 = ov_info.contents("lambda")(0).double_value();;
     info.fft_level              = ov_info.contents("fft_level")(0).int_value();;
     info.sph_coords_factor      = ov_info.contents("sph_coords_factor")(0).double_value();;
@@ -19,8 +21,10 @@ Field::Info & mapToInfo(const Octave_map & ov_info, Field::Info & info) {
 
 Octave_map infoToMap(const Field::Info & info) {
     Octave_map ov_info;
-    ov_info.assign("number", info.number);
-    ov_info.assign("side_length", info.side_length);
+    ov_info.assign("number_x", info.number.first);
+    ov_info.assign("number_y", info.number.second);
+    ov_info.assign("side_length_x", info.side_length.first);
+    ov_info.assign("side_length_y", info.side_length.second);
     ov_info.assign("lambda", info.lambda);
     ov_info.assign("fft_level", info.fft_level);
     ov_info.assign("sph_coords_factor", info.sph_coords_factor);
@@ -28,8 +32,10 @@ Octave_map infoToMap(const Field::Info & info) {
 }
 
 bool mapIsValidInfo( std::ostream & errout, const Octave_map & ov_info ) {
-    if ( !ov_info.contains("number") ||
-         !ov_info.contains("side_length") ||
+    if ( !ov_info.contains("number_x") ||
+         !ov_info.contains("number_y") ||
+         !ov_info.contains("side_length_x") ||
+         !ov_info.contains("side_length_y") ||
          !ov_info.contains("lambda") ||
          !ov_info.contains("fft_level") ||
          !ov_info.contains("sph_coords_factor") ) {
@@ -65,7 +71,7 @@ Field * mapToField( const Octave_map  & Fmap ) {
 }
 
 ComplexMatrix fieldToCMatrix( const Field & field ) {
-    ComplexMatrix F(field.info.number, field.info.number);
+    ComplexMatrix F(field.info.number.first, field.info.number.second);
 
     int ij = 0;
     for (int i = 0; i < F.rows(); i++) {

@@ -20,12 +20,8 @@ void error_print ( char * arr = NULL);
 
 int main ( int argc, char *argv[] ) {
 
-    int n_grid,
-        i,
-        j;
-    long ik;
-    double side_length,
-        lambda;
+    int n_grid;
+    double side_length, lambda;
 
     /*
      * Processing the command line argument 

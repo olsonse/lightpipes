@@ -45,15 +45,8 @@ DEFUN_DLD (LPBegin, args, nargout,
     int n_grid = 256;
     if (args.length() == 3) n_grid = args(2).int_value();
 
+    /* Initializes the field to (1,0) */
     Field field(n_grid, side_length, lambda);
-
-    /* Initialize the field to (1,0) */
-    {
-        int N2 = lightpipes::SQR(field.info.number);
-        for ( int j = 0; j < N2; j++ ) {
-            field[j] = std::complex<double>(1.,0.);
-        }
-    }
 
     return octave_value(fieldToMap(field));
 }

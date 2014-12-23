@@ -29,6 +29,24 @@ namespace lightpipes {
   template < typename T> T SQR(const T & t) { return t*t; }
 
 
+  template < typename T1, typename T2=T1 >
+  struct Pair : std::pair<T1,T2> {
+    typedef std::pair<T1,T2> super;
+    Pair( const std::pair<T1,T2> & that ) {
+      (*this) = static_cast<const Pair&>(that);
+    }
+    Pair( const Pair & that ) {
+      (*this) = that;
+    }
+    Pair( const T1 & i, const T2 & j ) : super(i,j) { }
+    Pair( const T1 & i = T1(0) ) : super(i,i) { }
+  };
+
+  template < typename T1, typename T2 >
+  std::ostream & operator<<( std::ostream & out, const Pair<T1,T2> & p ) {
+    return out << '(' << p.first << ',' << p.second << ')';
+  }
+
 
 #ifdef _DJGPP_
   extern void setmode ( int, int );
@@ -47,7 +65,6 @@ namespace lightpipes {
   public:
     /** Type of pixel in Field. */
     typedef std::complex< double > Pixel;
-    typedef std::pair<size_t,size_t> SzPair;
 
     /** Defines character of Field such as wavelength of light, spatial size,
      * spatial precision, etc. */
@@ -58,10 +75,10 @@ namespace lightpipes {
        * number.first denotes the number of rows<br>
        * number.second denotes the number of columns
        */
-      SzPair number;
+      Pair<size_t> number;
 
       /** The physical size of the side of the Field view. */
-      std::pair<double,double> side_length;
+      Pair<double> side_length;
 
       /** Wavelength of the Field. */
       double lambda;
@@ -121,8 +138,8 @@ namespace lightpipes {
     /* FUNCTION MEMBERS */
   public:
     /** Constructor. */
-    Field ( const SzPair & number,
-            const std::pair<double,double> & side_length,
+    Field ( const Pair<size_t> & number,
+            const Pair<double> & side_length,
             double lambda,
             Pixel init_fill = Pixel(1.,0.),
             int fft_level = 0,
@@ -196,8 +213,8 @@ namespace lightpipes {
     /** Multiply alternating field elements by (-1)^(row) */
     Field & negate_alternate_elems() {
       int ii = 1, ij = 1;
-      for ( int i = 0; i < info.number.first; ++i ) {
-        for ( int j = 0; j < info.number.second; ++j ) {
+      for ( size_t i = 0; i < info.number.first; ++i ) {
+        for ( size_t j = 0; j < info.number.second; ++j ) {
           idx(i,j) *= ii * ij;
           ij = -ij;
         }
@@ -209,7 +226,7 @@ namespace lightpipes {
     /** Scaling operator. */
     template <class T>
     Field & operator*= ( const T & input ) {
-      for (int i = info.size()-1; i >= 0; --i)
+      for (long i = info.size()-1; i >= 0; --i)
         val[i] *= input;
       return *this;
     }
@@ -350,8 +367,8 @@ namespace lightpipes {
      * @see forvard, fresnel, steps
      */
     Field & forward( const double & z,
-                     const std::pair<double,double> & new_side_length,
-                     const SzPair & new_number );
+                     const Pair<double> & new_side_length,
+                     const Pair<size_t> & new_number );
 
     /** Propagates Field in spherical coordinates using FFT.
      * @param f
@@ -493,8 +510,8 @@ namespace lightpipes {
     /** Interpolate the field onto a new grid.
      * @param angle Angle of rotation of field in radians. 
      */
-    Field & interpolate(const std::pair<double,double> & new_side_length = 0.0,
-                        const SzPair & new_number = SzPair(0,0),
+    Field & interpolate(const Pair<double> & new_side_length = 0.0,
+                        const Pair<size_t> & new_number = 0,
                         const double & x_shift = 0.0,
                         const double & y_shift = 0.0,
                         const double & angle = 0.0,
@@ -531,7 +548,7 @@ namespace lightpipes {
 
     /** Print norm values of Field.  Calls print_field. */
     std::ostream & print_norm(std::ostream & output,
-                               SzPair output_size = SzPair(0,0),
+                               Pair<size_t> output_size = 0,
                                const double & gamma = 2.0,
                                const int & max_val = 255,
                                const bool & ascii = false) {
@@ -540,7 +557,7 @@ namespace lightpipes {
 
     /** Print phase values of Field. Calls print_field. */
     std::ostream & print_phase(std::ostream & output,
-                               SzPair output_size = SzPair(0,0),
+                               Pair<size_t> output_size = 0,
                                const double & gamma = 2.0,
                                const int & max_val = 255,
                                const bool & ascii = false) {
@@ -549,7 +566,7 @@ namespace lightpipes {
 
     /** Print either norm or phase values of Field. */
     std::ostream & print_field(std::ostream & output,
-                               SzPair output_size = SzPair(0,0),
+                               Pair<size_t> output_size = 0,
                                const double & gamma = 2.0,
                                const int & max_val = 255,
                                const bool & ascii = false,

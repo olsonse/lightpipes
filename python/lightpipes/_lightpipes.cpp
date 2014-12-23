@@ -8,14 +8,16 @@
 #include <sstream>
 #include <iostream>
 
+#include <cassert>
+
 using namespace boost::python;
 
 namespace lightpipes {
   std::ostream & operator<< ( std::ostream & out, const Field::Info & i ) {
     out << "Info(number=" << i.number << ", "
-             "side_length= " << i.side_length << ", "
-             "wavelength= " << i.lambda << ", "
-             "fft_level= " << i.fft_level << ", "
+             "side_length=" << i.side_length << ", "
+             "wavelength=" << i.lambda << ", "
+             "fft_level=" << i.fft_level << ", "
              "sph_coords_factor= " << i.sph_coords_factor << ")";
     return out;
   }
@@ -34,7 +36,9 @@ namespace { // (anonymous) namespace
 
 
   PyObject * make_ndarray_wrapper( Field & f ) {
-    npy_intp dims[2] = {f.info.number, f.info.number};
+    assert( f.info.number.first <= (2uL<<(8*sizeof(f.info.number.first)-1))-1 );
+    assert( f.info.number.second <= (2uL<<(8*sizeof(f.info.number.second)-1))-1 );
+    npy_long dims[2] = {(long)f.info.number.first, (long)f.info.number.second};
     return PyArray_SimpleNewFromData(2, dims, PyArray_CDOUBLE, f.val);
   }
 
@@ -73,12 +77,53 @@ namespace { // (anonymous) namespace
   BOOST_PYTHON_FUNCTION_OVERLOADS(
     Steps, steps_wrapper, 2, 6)
 
+
+  template<class T1, class T2=T1>
+  struct PairToTupleConverter {
+    static PyObject* convert(const Pair<T1, T2>& pair) {
+      return incref(make_tuple(pair.first, pair.second).ptr());
+    }
+  };
+
+  template<class T1, class T2=T1>
+  struct StdPairToTupleConverter {
+    static PyObject* convert(const std::pair<T1, T2>& pair) {
+      return incref(make_tuple(pair.first, pair.second).ptr());
+    }
+  };
+
 }// namespace (anonymous)
+
+#define class_Pair(type,name) \
+  class_< Pair<type> >(name) \
+    .def(init< type, optional< type > >( \
+           args("first","second"), \
+           " first : first component of pair \n" \
+           " second: second component of pair \n" \
+           "         [Default : <first>]\n" )) \
+    .def_readonly("first",  &Pair<type>::first) \
+    .def_readonly("second", &Pair<type>::second) \
+    .def( "__str__", to_string< Pair<type> > ) \
+    .def( "__repr__", to_string< Pair<type> > )
 
 BOOST_PYTHON_MODULE(_lightpipes) {
   import_array(); // for importing numpy array stuff
   numeric::array::set_module_and_type("numpy", "ndarray");
   scope().attr("version") = LIGHTPIPES_VERSION;
+
+  //to_python_converter<Pair<size_t>, PairToTupleConverter<size_t> >();
+  //to_python_converter<Pair<double>, PairToTupleConverter<double> >();
+  //to_python_converter<std::pair<size_t,size_t>,
+  //  StdPairToTupleConverter<size_t,size_t> >();
+  //to_python_converter<std::pair<double,double>,
+  //  StdPairToTupleConverter<double,double> >();
+
+  class_Pair(int,"IntPair");
+  class_Pair(unsigned int,"UIntPair");
+  class_Pair(long,"LongPair");
+  class_Pair(size_t,"SizePair");
+  class_Pair(double,"DoublePair");
+
 
   class_<Field::Info>("Info")
     .def_readonly("number", &Field::Info::number)
@@ -93,7 +138,7 @@ BOOST_PYTHON_MODULE(_lightpipes) {
 
   class_<Field>(
     "Field",
-    init<unsigned int, double, double,
+    init<Pair<size_t>, Pair<double>, double,
          optional< std::complex<double>, int, double > >(
       args("number","side_length","wavelength",
            "init","fft_level","sph_coords_factor"),
