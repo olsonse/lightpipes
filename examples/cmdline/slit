@@ -1,7 +1,7 @@
-#!/bin/bash
-#	(C) Gleb Vdovin 1993-1996
-#	This file is a part of LightPipes distribution
-#	
+#!/bin/sh
+# (C) Gleb Vdovin 1993-1996
+# This file is a part of LightPipes distribution
+#
 
 #model of a screen 
        begin 0.007 0.55e-6  1024 > beam
