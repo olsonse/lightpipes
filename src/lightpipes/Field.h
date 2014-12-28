@@ -581,7 +581,7 @@ namespace lightpipes {
 
   private:
     void cleanup();
-    size_t base_init();
+    void base_init();
     void init(Pixel init_fill);
   };
 
