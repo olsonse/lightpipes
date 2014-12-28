@@ -1,0 +1,18 @@
+#!/bin/csh -f
+#	(C) Gleb Vdovin 1993-1995
+#	This file is a part of LightPipes.1.0  distribution
+#	
+#	synthesis of a Fresne lens:
+
+#spherical beam
+begin 0.015 5e-7  | circ_ap 0.005 | lens 5 0.0025 > foo1
+
+#a beam with a plane wavefront
+begin 0.015 5e-7  | circ_ap 0.005 >foo2
+b_mix foo1 < foo2 >foo3
+
+#show the pattern:
+show foo3
+
+# deleting the temp files
+rm foo foo1 foo2 foo3

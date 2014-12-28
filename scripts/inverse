@@ -1,0 +1,67 @@
+#!/bin/csh -f
+#	(C) Gleb Vdovin 1993-1996
+#	This file is a part of LightPipes distribution
+#	Here we form two intensity distributions	
+#	and then reconstruct phase in the near and far field
+#	using these distributions
+
+ 	
+
+# num_iter should be larger than 100, to achieve convergency 
+@ num_iter= 100
+
+
+# 	initial distribution is formed here:
+#	model of a screen with two round holes
+       
+begin 0.005 0.25e-6  > beam
+
+#Two circular apertures:
+       rect_ap 0.0001 0.0025  -0.0005 < beam > beam1
+       rect_ap 0.0001 0.0025  0.0005 0 15 < beam > beam2
+#Mixing the beams, rewriting the initial beam:
+       b_mix beam1 < beam2  | file_int int_near same > field_near
+
+
+
+#	result of diffraction is here:
+
+forvard 1.7 			< field_near  > field_far
+file_int int_far same  	< field_far > /dev/null
+
+
+begin 0.005 0.25e-6  | fil_ter int subs int_near > ref_file
+
+
+
+random 6.28 < field_near | forvard 0.2 > f_far1
+
+#	num_iter  iterations to reconstruct the phase
+
+
+@ i=0
+while( $i < $num_iter)
+	echo $i
+	fil_ter int subs int_far < f_far1 | forvard -0.2 > f_near1
+	fil_ter int subs int_near < f_near1 | forvard 0.2 > f_far1	
+	@ i += 1
+end
+
+
+#	use "show" to see how f_near1 and f_far1 look like
+	
+show f_far1
+show f_near1
+
+
+
+
+
+
+
+
+
+
+
+
+

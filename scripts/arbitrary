@@ -1,0 +1,46 @@
+#!/bin/csh -f
+
+#	(C) Gleb Vdovin 1993-1995
+#	This file is a part of LightPipes.1.0
+# 	LightPipes.1.0 script: demonstration of amplitude and 
+#	phase filtering
+
+#	Here a shifted Gaussian distribution 
+#	aberrated with coma is formed	
+
+begin 0.1 1e-6 256 | gauss 0.02 0.02 0.01 | Zernike 3 1 0.02 1 > field1
+
+#	Intensity and phase are saved in files in and pha
+#	Note the command line argument  64 (!) -
+#	the default is 128 or 256
+
+file_int in same < field1 |file_pha pha same >/dev/null
+
+#	Here we form a new beam with a uniform 
+#	phase and intensity:
+
+begin 0.1 1e-6 256 > field2
+
+#	Here we filter it through the saved intensity and phase filters:
+#	The field in file field3 has Gaussian intensity 
+#	and uniform phase
+
+fil_ter int subs in  < field2 > field3 
+
+#	The field in file field4 has uniform intensity
+#	and aberrated phase
+
+fil_ter pha subst pha < field2 > field4
+
+#	The field in a file field5 has the same distribution
+#	of the complex amplitude as the initial beam field1
+
+fil_ter pha subs pha <field2 | fil_ter int subs in > field5
+
+#	End, all the files have to be erased:
+
+rm field1 field2 field3 field4 field5
+
+
+
+

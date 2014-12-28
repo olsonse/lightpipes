@@ -1,0 +1,36 @@
+#!/bin/csh -f
+#	(C) Gleb Vdovin 1993-1996
+#	This file is a LightPipes  distribution
+#	Nodel of a laser with unstable resonator 
+#	and active medium with gain 1e-4 mm^{-1}
+#	length of 1e4 mm and I_sat of 1W/(mm^2)
+#
+#	all dimensions are in mm here
+#	
+	
+begin 7. 3e-4  >field1
+
+#	40 iterations inside the resonator
+@ i=0
+while( $i < 40)
+#	reflection from the convex mirror and propagation 
+	rect_ap 5.48 < field1 | l_amplif 1e-4 1e4 1 | lens_fresn -1e4  1e4 > field2
+#	reflection from the concave mirror and propagation
+	rect_ap 10.96 < field2 | l_amplif 1e-4 1e4 1 | lens_fresn 2e4  1e4\
+| Strehl y > field1
+	cp field1 field_out
+	interpol 7. < field1 > field2 
+	mv field2 field1
+	@ i += 1
+end
+# output of the resonator is screened by the output mirror:
+# the output 
+echo 'Output beam:'
+cat field_out | convert y | rect_screen 5.48 | file_ps res_out.ps same | Strehl y > field1
+#before screening with the output mirror
+show field_out
+#after screning with the output mirror
+show field1
+
+# removing the temp files
+rm field1 field_out

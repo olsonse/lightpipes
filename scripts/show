@@ -1,0 +1,5 @@
+#!/bin/csh -f
+
+file_ps tmp <$1 >/dev/null
+ghostview tmp
+rm tmp

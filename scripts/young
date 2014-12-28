@@ -1,0 +1,36 @@
+#!/bin/csh -f
+#	(C) Gleb Vdovin 1993-1995
+#	This file is a part of LightPipes.1.0 distribution
+#	
+
+#model of a screen with two round holes
+        begin 0.005 0.55e-6 150> beam
+
+#Two circular apertures:
+       circ_ap 0.00012 -0.0005 < beam > beam1
+       circ_ap 0.00012 0.0005  < beam > beam2
+
+#Mixing two beams, rewriting initial beam:
+       b_mix beam1 < beam2 > beam
+
+#interpolation and Postscript Picture in0r.ps
+        cat beam | file_ps young0.ps  > beam1
+echo "Screen with holes:"
+
+show beam1
+
+
+#propagation 0.75 m and second file in1r.ps
+        forvard 0.75 < beam  | file_ps young1.ps ame > beam2
+echo "Result of the interference, spectral method:"
+show beam2
+
+#propagation 0.75 m and second file in1r.ps
+        Fresnel 0.75 < beam  | file_ps young1.ps ame > beam2
+echo "Result of the interference, FFT convolution:"
+show beam2
+
+#removing all beam files
+        rm beam beam1 beam2
+
+#all done

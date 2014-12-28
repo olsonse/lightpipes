@@ -1,1 +1,19 @@
-Lightpipes/c++
+The description of LightPipes is available online at
+
+http://xs4all.nl/~oko/pipes/
+http://okotech.com/pipes/
+
+Example scripts are available from the same place.
+
+To build the package on a Unix computer edit makefile and type
+make. The only thing to define is the calling sequence for a compiler
+to use. Gcc is highly recommended, cc is default.
+
+To build the package under MSDOS using DJGPP compiler (available from
+SIMTEL archive and its mirrors over the world) type
+
+make -f makedos
+
+With all questions contact Dr. Gleb Vdovin at gleb@okotech.com.
+
+

@@ -1,0 +1,168 @@
+compile = gcc -O4 -Wall -D_DJGPP_  
+ad=coff2exe
+
+#-----------
+
+all: begin circ_ap rect_ap file_int file_pha forvard tilt gauss \
+b_split b_mix lens absorber normal cros_out lens_forvard \
+interpol convert circ_screen rect_screen strehl \
+file_ps   zernike forward  fresnel l_amplif \
+lens_fresn pip_fft gauss_screen fil_ter
+
+clean: 
+	del begin 
+	del circ_ap 
+	del rect_ap 
+	del file_int 
+	del file_pha 
+	del forvard 
+	del tilt 
+	del gauss 
+	del b_split 
+	del b_mix 
+	del lens 
+	del absorber 
+	del normal 
+	del cros_out 
+	del lens_forvard 
+	del interpol 
+	del convert 
+	del circ_screen 
+	del rect_screen 
+	del strehl 
+	del file_ps   
+	del zernike 
+	del forward   
+	del fil_ter
+	del fresnel 
+	del l_amplif 
+	del lens_fresn 
+	del pip_fft 
+	del gauss_screen
+
+begin:  begin.c pipes.h
+	$(compile) -o begin  begin.c -lm
+	$(ad) begin
+
+circ_ap: circ_ap.c pipes.h
+	$(compile) -o circ_ap circ_ap.c -lm
+	$(ad) circ_ap
+      
+rect_ap: rect_ap.c pipes.h
+	$(compile) -o rect_ap rect_ap.c -lm
+	$(ad) rect_ap
+      
+file_int: file_int.c pipes.h
+	$(compile) -o file_int  file_int.c -lm
+	$(ad) file_int
+      
+file_pha: file_pha.c pipes.h
+	$(compile) -o file_pha  file_pha.c -lm
+	$(ad) file_pha
+      
+forvard: forvard.c fftn.c pipes.h fft_prop.c
+	$(compile) -o forvard  forvard.c fftn.c -lm
+	$(ad) forvard
+      
+tilt: tilt.c pipes.h
+	$(compile) -o tilt  tilt.c -lm
+	$(ad) tilt
+      
+gauss: gauss.c pipes.h
+	$(compile) -o gauss gauss.c -lm
+	$(ad) gauss
+      
+b_split: b_split.c pipes.h
+	$(compile) -o b_split b_split.c -lm
+	$(ad) b_split
+      
+b_mix: b_mix.c pipes.h
+	$(compile) -o b_mix b_mix.c -lm
+	$(ad) b_mix
+      
+lens: lens.c pipes.h
+	$(compile) -o lens lens.c -lm
+	$(ad) lens
+      
+absorber: absorber.c pipes.h
+	$(compile) -o absorber absorber.c -lm
+	$(ad) absorber
+      
+normal: normal.c pipes.h
+	$(compile) -o normal normal.c -lm
+	$(ad) normal
+      
+cros_out: cros_out.c pipes.h
+	$(compile) -o cros_out cros_out.c -lm
+	$(ad) cros_out
+      
+lens_forvard: lens_forvard.c fftn.c pipes.h fft_prop.c
+	$(compile) -o lens_forvard lens_forvard.c fftn.c -lm
+	$(ad) lens_forvard
+      
+interpol: interpol.c pipes.h
+	$(compile) -o interpol interpol.c -lm
+	$(ad) interpol
+      
+convert: convert.c pipes.h
+	$(compile) -o convert convert.c -lm
+	$(ad) convert
+      
+circ_screen: circ_screen.c pipes.h
+	$(compile) -o circ_screen circ_screen.c -lm
+	$(ad) circ_screen
+      
+rect_screen: rect_screen.c pipes.h
+	$(compile) -o rect_screen rect_screen.c -lm
+	$(ad) rect_screen
+      
+strehl: strehl.c pipes.h
+	$(compile) -o strehl strehl.c -lm
+	$(ad) strehl
+      
+file_ps: file_ps.c pipes.h
+	$(compile) -o file_ps file_ps.c -lm
+	$(ad) file_ps
+      
+
+zernike: zernike.c pipes.h
+	$(compile) -o zernike zernike.c -lm
+	$(ad) zernike
+      
+forward: forward.c pipes.h
+	$(compile) -o forward forward.c -lm
+	$(ad) forward
+      
+fil_ter: fil_ter.c pipes.h
+	$(compile) -o fil_ter fil_ter.c -lm
+	$(ad) fil_ter
+      
+      
+fresnel: fresnel.c frsn_prop.c pipes.h fftn.c
+	$(compile) -o fresnel fresnel.c  fftn.c -lm
+	$(ad) fresnel
+      
+l_amplif: l_amplif.c pipes.h
+	$(compile) -o l_amplif l_amplif.c -lm
+	$(ad) l_amplif
+      
+lens_fresn: lens_fresn.c frsn_prop.c pipes.h fftn.c
+	$(compile) -o lens_fresn lens_fresn.c  fftn.c -lm
+	$(ad) lens_fresn
+
+pip_fft: pip_fft.c fftn.c pipes.h
+	$(compile) -o pip_fft  pip_fft.c  fftn.c -lm
+	$(ad) pip_fft
+      
+gauss_screen: gauss_screen.c pipes.h
+	$(compile) -o gauss_screen  gauss_screen.c  -lm
+	$(ad) gauss_screen
+      
+
+
+
+
+
+
+
+

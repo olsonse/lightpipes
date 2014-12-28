@@ -1,0 +1,23 @@
+#!/bin/csh -f
+
+#demonstration of a simple spatial (focal-plane filter)
+
+# 	importing the intensity mask:
+begin 1e-2 5e-7 100 | fil_ter int subs reg.pgm i > foo
+ cat foo |  forvard 1 > foo1
+
+show foo
+
+mv foo1 foo
+
+#	lens, focal filter - pinhole 0.0015 radius - free space...
+lens 1 < foo | forvard 1 | circ_ap 0.001 | forvard 1 > foo1
+
+#	lens free space, output.
+
+lens 1 < foo1 | forvard 1 | file_ps filtered_l.ps 100 4 > foo
+show foo
+rm foo foo1
+
+
+#	all done

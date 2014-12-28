@@ -1,0 +1,2051 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<!--Converted with LaTeX2HTML 96.1 (Feb 5, 1996) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds -->
+<HTML>
+<HEAD>
+<TITLE>LightPipes: beam propagation toolbox</TITLE>
+<META NAME="description" CONTENT="LightPipes: beam propagation toolbox">
+<META NAME="keywords" CONTENT="betaman">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<LINK REL=STYLESHEET HREF="betaman.css">
+</HEAD>
+<BODY LANG="EN">
+ <H1 ALIGN=CENTER>LightPipes:  beam propagation toolbox</H1>
+<P ALIGN=CENTER><STRONG><I>Gleb Vdovin</I> <BR> 
+OKO Technologies<BR> Reinier de Graafweg 300, 2625 DJ Delft, 
+The Netherlands<BR> Phone:
+31-15-2569361, email: <TT>
+oko@xs4all.nl</TT><BR> &#169;1993-1999,  Gleb Vdovin</STRONG></P><P>
+<P>
+<P><H2><A NAME="SECTION00010000000000000000">Contents</A></H2>
+<UL> 
+<LI> <A NAME="tex2html37" HREF="#SECTION00020000000000000000">Command line interface</A>
+<UL> 
+<LI> <A NAME="tex2html38" HREF="#SECTION00020010000000000000">Abstract:</A>
+<LI> <A NAME="tex2html39" HREF="#SECTION00021000000000000000">Warranty</A>
+<LI> <A NAME="tex2html40" HREF="#SECTION00022000000000000000">Availability</A>
+<LI> <A NAME="tex2html41" HREF="#SECTION00023000000000000000">New features</A>
+<LI> <A NAME="tex2html42" HREF="#SECTION00024000000000000000">Installation</A>
+</UL> 
+<LI> <A NAME="tex2html43" HREF="#SECTION00030000000000000000">First steps</A>
+<UL> 
+<LI> <A NAME="tex2html44" HREF="#SECTION00030100000000000000">Prompt help</A>
+<LI> <A NAME="tex2html45" HREF="#SECTION00031000000000000000">Simple models</A>
+<LI> <A NAME="tex2html46" HREF="#SECTION00032000000000000000">Dimensions of data structures</A>
+<LI> <A NAME="tex2html47" HREF="#SECTION00033000000000000000">Apertures and screens</A>
+<LI> <A NAME="tex2html48" HREF="#SECTION00034000000000000000">Examples for apertures and screens</A>
+<LI> <A NAME="tex2html49" HREF="#SECTION00035000000000000000">Graphic output</A>
+</UL> 
+<LI> <A NAME="tex2html50" HREF="#SECTION00040000000000000000">Propagation.</A>
+<UL> 
+<LI> <A NAME="tex2html51" HREF="#SECTION00041000000000000000">FFT propagation (spectral method).</A>
+<LI> <A NAME="tex2html52" HREF="#SECTION00042000000000000000">Direct integration as a convolution: FFT approach</A>
+<LI> <A NAME="tex2html53" HREF="#SECTION00043000000000000000">Direct integration</A>
+<LI> <A NAME="tex2html54" HREF="#SECTION00044000000000000000">Finite difference method.</A>
+<LI> <A NAME="tex2html55" HREF="#SECTION00045000000000000000">Splitting and mixing beams</A>
+<LI> <A NAME="tex2html56" HREF="#SECTION00046000000000000000">Interpolation</A>
+<UL> 
+<LI> <A NAME="tex2html57" HREF="#SECTION00046010000000000000">Examples of transformations:</A>
+</UL> 
+<LI> <A NAME="tex2html58" HREF="#SECTION00047000000000000000">Phase filters</A>
+<LI> <A NAME="tex2html59" HREF="#SECTION00048000000000000000">Zernike polynomials</A>
+<LI> <A NAME="tex2html60" HREF="#SECTION00049000000000000000">Spherical coordinates</A>
+<LI> <A NAME="tex2html61" HREF="#SECTION000410000000000000000">User defined phase and intensity filters</A>
+<LI> <A NAME="tex2html62" HREF="#SECTION000411000000000000000">Random filters</A>
+<LI> <A NAME="tex2html63" HREF="#SECTION000412000000000000000">FFT and spatial filters</A>
+<LI> <A NAME="tex2html64" HREF="#SECTION000413000000000000000">Service routines</A>
+<LI> <A NAME="tex2html65" HREF="#SECTION000414000000000000000">Laser amplifiers</A>
+<LI> <A NAME="tex2html66" HREF="#SECTION000415000000000000000">Diagnostics: Strehl, the output power and the center of gravity</A>
+</UL> 
+<LI> <A NAME="tex2html67" HREF="#SECTION00050000000000000000">Example models</A>
+<UL> 
+<LI> <A NAME="tex2html68" HREF="#SECTION00051000000000000000">Shearing interferometer</A>
+<LI> <A NAME="tex2html69" HREF="#SECTION00052000000000000000">Rotational shear interferometer</A>
+<LI> <A NAME="tex2html70" HREF="#SECTION00053000000000000000">Radial shearing interferometer</A>
+<LI> <A NAME="tex2html71" HREF="#SECTION00054000000000000000">Twyman-Green interferometer</A>
+<LI> <A NAME="tex2html72" HREF="#SECTION00055000000000000000">Unstable laser resonator</A>
+<LI> <A NAME="tex2html73" HREF="#SECTION00056000000000000000">Laser with unstable resonator in spherical coordinates. </A>
+<LI> <A NAME="tex2html74" HREF="#SECTION00057000000000000000">Propagation in lens-like/absorptive medium</A>
+<LI> <A NAME="tex2html75" HREF="#SECTION00058000000000000000">Inverse problem: reconstructing the phase from measured intensities</A>
+<LI> <A NAME="tex2html76" HREF="#SECTION00059000000000000000">Optical information processing</A>
+<LI> <A NAME="tex2html77" HREF="#SECTION000510000000000000000">Generation and reconstruction of interferograms</A>
+</UL> 
+<LI> <A NAME="tex2html78" HREF="#SECTION00060000000000000000">LightPipes: port to MSDOS</A>
+<LI> <A NAME="tex2html79" HREF="#SECTION00070000000000000000">Command reference</A>
+<LI> <A NAME="tex2html80" HREF="#SECTION00080000000000000000">References</A>
+</UL>
+<P>
+<H1><A NAME="SECTION00020000000000000000">Command line interface</A></H1>
+<P>
+<H4><A NAME="SECTION00020010000000000000">Abstract:</A></H4>
+<P>
+	<TT>LightPipes</TT> is a portable set of Unix-style tools written
+in <B>C</B>.  It is designed to model the propagation of light in
+coherent optical devices in scalar approximation. The toolbox is based
+on efficient propagation algorithms, providing extended possibilities
+of beam manipulation. Simulations of interferometers, holographic
+setups, laser resonators, lasers, Fourier optics, waveguides are
+possible.  The source code is portable, it can be compiled on any
+low-end workstation or a decent PC under Unix, MSDOS or OS2. The MSDOS
+binary is reported to run also in DOS box under OS2 and W95.
+<P>
+The toolbox consists of a number of filters. Each filter represents an
+optical element or a step in the light propagation.  The components of
+a model can be connected via Unix system pipes in any order in (any)
+shell environment to form the model of an optical system. The syntax
+depends on the shell used.
+<P>
+All filters share a huge data structure, containing sampled
+two-dimensional distribution of the scalar complex amplitude of
+light.  These structures can be saved and retrieved to/from the disk
+at any step of computation. The number of light beams treated
+simultaneously is limited only by the disk space available.  Tools to
+generate presentation quality Postscript density plots and to export
+portable gray-map files (PGM graphic format with magic number P2 or
+P5), surface wireframes (Xplot or Gnuplot required) and contour plots
+(Gnuplot required) are included.
+<P>
+C shell syntax is used for all examples in this manual.  A good
+reference for the syntax of C shell is given in &nbsp;[<A HREF="betaman.html#Cshell">1</A>]. Any
+other shell environment or script language can be used with <TT>
+LightPipes</TT> as far as binary system pipes are supported.
+<P>
+The package is far from being perfect, there are more powerful and
+flexible (also much more expensive) programs around.  <TT>LightPipes</TT>
+is written with the idea of maximum functionality with minimum of
+coding effort.  The development was based on the tradeoff concept
+``first 10% of coding effort give 90% of the functionality''.
+<P>
+<H2><A NAME="SECTION00021000000000000000">Warranty</A></H2>
+<P>
+<B>There is no warranty for the program, to the extent permitted by
+applicable law.  Except when otherwise stated in writing, the copyright
+holders and/or other parties provide the program &quot;as is&quot; without
+warranty of any kind, either expressed or implied, including, but not
+limited to, the implied warranties of merchantability and fitness for
+a particular purpose.  The entire risk as to the quality and
+performance of the program is with you.  Should the program prove
+defective, you assume the cost of all necessary servicing, repair or
+correction.</B>
+<P>
+<H2><A NAME="SECTION00022000000000000000">Availability</A></H2>
+<P>
+<TT>LightPipes</TT> beam propagation toolbox is copyright &#169;
+(1993-1999) Gleb Vdovin. This manual (also &#169;&nbsp;Gleb Vdovin)
+may be freely distributed and copied as a whole.  
+
+<P>
+Unix/DOS source of LightPipes is distributed under GNU public license. Contact: Dr. Gleb Vdovin, OKO technologies, Reinier de Graafweg 300, 2625 DJ Delft, The Netherlands, gleb@okotech.com, http://www.okotech.com, +31-62-2794647 voice, +31-15-2574233 fax.
+ 
+<P>
+<H2><A NAME="SECTION00023000000000000000">New features</A></H2>
+<P>
+<TT>LightPipes.1.2</TT> introduces finite-difference propagation routine
+<TT>steps</TT> and a better (cubic two-dimensional) interpolation
+procedure <TT>interpol</TT>. The old linear interpolation procedure
+remains with a new name <TT>interp1</TT>. <TT>Steps</TT> can be used to
+model waveguides with complex three-dimensional distribution of
+refraction/absorption.  The new distribution also includes more tools
+operating on intensity/phase distributions. These service filters are
+not considered to be the part of <TT>LightPipes</TT>, though they extend
+the package possibilities. Tools are distributed ``as is'' free with
+source. These sources can be used as templates for customization.
+<P>
+More bugs were fixed, for example now <TT>lens_forvard </TT> can
+correctly propagate behind the focus.
+<P>
+<H2><A NAME="SECTION00024000000000000000">Installation</A></H2>
+<P>
+Install the executables into a directory included into your search
+path, or link them to <TT>/bin</TT>. For MSDOS distribution use <TT>
+pkunzip -d</TT> to create the  directory tree.
+<P>
+There is a set of tools, to deal with intensity and phase
+distributions exported by <TT>LightPipes</TT>. These tools are freeware
+distributed with sources.  There is no manual for tools. To build
+tools, type <TT>make tools</TT> at the command line. You may write your
+own tools by modifying existing sources.
+<P>
+To build the full package from the source, put all source files into
+an empty directory.  Be sure the name of the directory is included
+into your search path. Edit the makefile: define the C compiler
+installed in your system. Gnu C compiler (<TT>gcc -O2 -Wall</TT>) is the
+development compiler, chosen for its portability, high quality and
+availability on the net. Other C compilers will also work but there is
+no guarantee. Very probably the package compiled with the native
+compiler will work a bit faster.  Type <TT>make</TT>. To build MSDOS
+binaries with DJGPP (version 1.12) type <TT>make -f makedos</TT>. DJGPP
+is available from numerous Simtel mirrors, directory <TT>vendors</TT>.
+In the case of trouble first consult your system administrator, then
+send email to oko@xs4all.nl (valid in 1996 and perhaps later). To use
+<TT>LightPipes</TT> from other directory, include the directory
+containing <TT>LightPipes</TT> executables into your search path, or link
+all executables to a directory which is included into your search
+path, for example to <TT>/home/joe/bin</TT>.
+<P>
+<H1><A NAME="SECTION00030000000000000000">First steps</A></H1>
+<P>
+<H3><A NAME="SECTION00030100000000000000">Prompt help</A></H3>
+<P>
+Any <TT>LightPipes</TT> filter invoked with no command line arguments
+prints short syntax description to <TT>stderr</TT>.
+<P>
+The package is under development, the behavior and names of commands
+can be different from described here.  Some features can be missed in
+this description. In all these cases please refer to the prompt help
+printed by the command itself. This message is supposed to reflect the
+very last modifications.
+<P>
+Incidentally some commands of your system may have the same names as
+the <TT>LightPipes</TT> filters (like, for example, <TT>begin</TT>). <TT>
+LightPipes</TT> filter causing the problem may be renamed.  There are also
+other ways:
+<P>
+<OL><LI> Redefine the PATH environment to make shell search the LightPipes
+directory first.<LI> Use the full name of a command: like <TT>./begin</TT> or <TT>
+/home/joe/LightPipes/begin</TT>.
+<P>
+</OL><H2><A NAME="SECTION00031000000000000000">Simple models</A></H2>
+<P>
+The simplest way to invoke <TT>LightPipes</TT> is to type the commands at
+the system (Unix/MSDOS/OS2) prompt. All examples from this manual may
+be executed in interactive mode, i.e. you type the command at the
+system prompt and the computer executes it. It's a serious advantage,
+allowing for building simple models in usual shell environment.
+Sometimes the chain of piped commands is too long to be printed in one
+line, or doesn't fit into the line buffer. Long lines can be broken,
+like here:
+<PRE>program_a | program_b | program_c &gt; /dev/null</PRE>
+which is equivalent to:
+<PRE>program_a &gt; foo
+program_b &lt; foo  &gt; foo1
+program_c &lt; foo1 &gt; /dev/null
+rm foo foo1</PRE>
+In the last example the temporary files <TT>foo</TT> and <TT>foo1</TT> were
+created to store the field distribution between executions of
+commands. After executions, the temporary files should be deleted
+(with Unix command <TT>rm</TT>). Fifos (named pipes) may be used instead
+of files. Before being used, the fifo must be created with a command
+<TT>mkfifo</TT>. Fifos are faster, consume more memory, they are not
+supported by some systems and, if you write to the fifo, the next
+command must read it immediately. There are too many rules about
+fifos, writing to a file is much more flexible and reliable operation.
+<P>
+Other way to use <TT>LightPipes</TT> is to put commands in a shell
+script.  Simple (C-shell) script has the following structure:
+<P>
+<PRE>#!/bin/csh -f 
+.......................  
+.......................
+LightPipes program ....
+.......................</PRE> 
+File containing a script must be readable and executable under Unix.
+<P>
+  To begin with, the data structure for <TT>LightPipes</TT> must be
+created: we type command <TT>begin</TT> at the shell prompt.  Invoked
+with no arguments <TT>begin</TT> prints to the screen the help message:
+<PRE>begin forms the initial data structure for use by all following programs
+
+USAGE: begin B C [A],  where:
+
+A is the grid dimension, grid of AxA points will be formed (if omitted, A=256)
+B is the grid size, the real size of the grid will be put as BxB [units you use]
+C is the wavelength in [units you use]</PRE>
+Three parameters: 
+<UL><LI> 
+the grid size in meters, inches, microns, light years or any other
+units (calculations are carried out in a square grid),<LI> 
+the wavelength - in the same units as the size<LI> 
+the grid sampling
+</UL>
+must be defined.
+<P>
+Obligatory for <TT>begin</TT> are only the size and the wavelength, the
+grid is 256x256 points by default (or smaller in the demo version).
+For example:
+<P>
+<PRE>begin 0.01 1e-6 128 &gt; /dev/null</PRE>
+defines a plane wave with a unity amplitude and wavelength of
+ <IMG WIDTH=23 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1703" SRC="img4.gif"  >  in 128x128 square grid with a size of 1x1cm.
+<P>
+The standard input and the standard output channels are used to pass
+huge binary data structures, containing the field complex amplitude,
+between filters. The redirection to <TT>dev/null</TT> is used in a Unix
+environment to prevent the binary output to the screen. Redirection to
+files also works:
+<PRE>begin 0.01 1e-6  &gt; first_pipes_file</PRE>
+In the last example the field structure generated by the program <TT>
+begin</TT> is written to the file <BR><TT>first_pipes_file</TT>. <TT>
+Begin</TT> is the first block in any <TT>LightPipes</TT> program, it
+generates the basic structure and accepts no piped input. All other
+<TT>LightPipes</TT> programs accept piped input and can be connected by
+system pipes in any order.
+<P>
+	The field structures in <TT>LightPipes</TT> may be defined <I>
+only</I> in square arrays. It is not always optimal, sometimes much more
+memory is used than necessary. The default structure produced by <TT>
+begin</TT> (256x256 points) is 1MB large, and it is so, even if only in a
+one-dimensional array of of 256x1 points is of the interest. This
+approach simplifies coding and will not be changed in future.
+<P>
+<TT>Begin</TT> allocates memory for a square array of complex numbers,
+fills it with values corresponding to a uniform distribution of
+intensity and phase (plane wave) and redirects the header (containing
+information about sampling/wavelength) and the formed structure to the
+standard output in binary, computer-dependent format. Binary files
+written by <TT>LightPipes</TT> are not portable in general, because two
+different types of data presentation (big/little endian) exist. Binary
+files can be moved between computers with similar endians, thus
+PC/Linux -&gt; HP is forbidden.  If the output is not redirected to a
+file or to <TT>/dev/null</TT>, it fills the screen with garbage and may
+cause other problems.
+<P>
+<TT>LightPipes</TT> can be started with different  grid samplings, for example
+<PRE>begin 0.01 1e-6  500 &gt;second_pipes_file</PRE>
+will create 4Mb file containing  500x500  structure.
+<P>
+These examples illustrate the amount of RAM needed to run <TT>
+LightPipes</TT>.  More than one megabyte is needed for 256x256 grid, 4MB
+for 512x512 , 16MB for 1024x1024 and a really large system is
+necessary for 2048x2048. These numbers may be slightly different for
+different computers. Some filters allocate additional memory (up to 8
+times of the basic data structure in the worst case), rising further
+the memory requirements.
+<P>
+If RAM is not sufficient, the system will swap to the hard-disk,
+slowing down not only your job, but the whole computer.  The 512x512
+size is safe for the majority of Unix systems.
+<P>
+The data structure of the demo version is restricted to less than 1MB,
+thus the demo is very fast and runs on any computer.
+<P>
+<H2><A NAME="SECTION00032000000000000000">Dimensions of data structures</A></H2>
+<P>
+LightPipes works with any even sampling, i.e. 300, 196, 578...
+<PRE>&gt;begin 1 1 99 | rect_ap 1 &gt; /dev/null
+&gt;Sorry, number of points must be even, stopping</PRE>
+illustrates this feature. Program <B>does not</B> work with odd
+samplings.
+<P>
+<H2><A NAME="SECTION00033000000000000000">Apertures and screens</A></H2>
+<P>
+ The simplest component to model is an aperture.  There are three
+types:
+<OL><LI> circular aperture: <TT>circ_ap</TT><LI> rectangular aperture <TT>rect_ap</TT><LI> Gaussian diaphragm <TT>gauss</TT>.
+</OL>
+<P>
+<TT>circ_ap</TT> filters the field through a circular aperture of radius
+<I>R</I> given as the first command line argument. Two optional arguments
+define the decentering of the aperture in  <I>X</I> and <I>Y</I> directions.
+<P>
+<TT>rect_ap</TT> filters the field through a square or rectangular
+aperture. The first command line argument defines the side length of
+the (square) aperture, the second is the length of the second side of
+a rectangle, third and fourth are shifts in <I>x</I> and <I>y</I> directions and
+the last argument is the rotation of the aperture. Only the first
+argument is obligatory (centered square aperture).
+<P>
+<TT>gauss</TT> filters the field through a Gaussian intensity filter.
+The transmitted intensity is given by:
+<P> <IMG WIDTH=500 HEIGHT=15 ALIGN=BOTTOM ALT="equation87" SRC="img5.gif"  > <P>
+where <I>R</I> is the radius of the Gaussian aperture and <I>A</I> is the
+maximum transmission. This filter can be used to model gauss beams:
+<TT>begin</TT> followed by <TT>Gauss</TT> produces a finite grid
+approximation of a gauss beam.
+<P>
+There are three commands describing screens: <TT>circ_screen</TT> for a
+circular screen (inversion of the circular aperture), <TT>
+rect_screen</TT> is the inversion of the rectangular aperture and <TT>
+gauss_screen</TT> is the inversion of the <TT>gauss</TT>. The syntax for
+screens is exactly the same as for apertures. The <TT>gauss_screen</TT>
+is complementary to <TT>gauss</TT>, so that the sum of transmitted (<TT>
+gauss</TT> and ``reflected'' <TT>gauss_screen</TT> intensity equals to the
+incident intensity. These two filters are useful for modeling of gauss
+apodized output couplers. <TT>gauss</TT> should be used to model the beam
+reflected back into the resonator by an apodized mirror while <TT>
+gauss_screen</TT> will produce the output beam which is filtered through
+the apodized mirror.
+<P>
+<H2><A NAME="SECTION00034000000000000000">Examples for apertures and screens</A></H2>
+<P>
+	Here are examples of simple <TT>LightPipes</TT> scripts
+demonstrating the usage of apertures and screens:
+<OL><LI> 
+<PRE>begin 0.01 1e-6  | circ_ap 0.0025 | file_ps out1.ps  &gt; /dev/null</PRE><LI>
+<PRE>begin 0.01 1e-6  &gt; foo
+circ_ap 0.0025 0.001 0.002 &lt; foo | file_ps out2.ps &gt; /dev/null</PRE><LI>
+<PRE>begin 0.01 1e-6   | circ_ap 0.0035 &gt; foo
+rect_screen 0.002&lt;foo | file_ps out3.ps &gt; /dev/null</PRE><LI> 
+<PRE>begin 0.01 1e-6  | gauss 0.004 &gt;foo
+rect_screen 0.001 0.001 -0.0015 -0.002 &lt; foo &gt; foo1
+rect_screen 0.001 0.0035 -0.002 0.0025 45 &lt; foo1 &gt; foo2
+circ_screen 0.0005  0.0025 -0.003 &lt; foo2 &gt; foo3
+circ_screen 0.0007   0.001 0.0015 &lt; foo3 | file_ps out4.ps 128 &gt; /dev/null
+rm foo foo1 foo2 foo3</PRE>
+
+<P>
+</OL>
+<P>
+The resulting intensity distributions are shown in Fig.&nbsp;<A HREF="betaman.html#circcent">1</A>.
+<P>
+<P><A NAME="117">&#160;</A><A NAME="circcent">&#160;</A> <IMG WIDTH=420 HEIGHT=102 ALIGN=BOTTOM ALT="figure112" SRC="img6.gif"  > <BR>
+<STRONG>Figure 1:</STRONG> Intensity distributions produced by  four examples (from
+left to right) and saved to postscript files
+out[1...4].ps<BR>
+<P>
+<P>
+When a script runs at the background - and it is frequently the case,
+the following trick shows to the screen the intensity distribution of
+your beam:
+<P>
+<PRE>#!/bin/csh -f
+cat $1 | file_ps temp_ps &gt; /dev/null
+ghostview temp_ps
+# uncomment this if ghostview executable is called gv:
+# gv temp_ps
+rm temp_ps</PRE>
+<P>
+It's named ``show'' and that's exactly what it does. You can use it in
+your scripts to view the intensity distributions. You need <TT>
+ghostview</TT> installed to run this script.
+<P>
+<H2><A NAME="SECTION00035000000000000000">Graphic output</A></H2>
+<P>
+	In the previous example a new operator <TT>file_ps</TT> was
+introduced. <TT>file_ps</TT> is one of two <TT>LightPipes</TT> programs
+providing the possibility to output graphics. It writes the intensity
+distribution (density plot) into a postscript file. The program
+accepts three command-line arguments: the filename, the grid dimension
+and the value of contrast correction constant  <IMG WIDTH=7 HEIGHT=13 ALIGN=MIDDLE ALT="tex2html_wrap_inline1721" SRC="img7.gif"  > . The dimension
+and  <IMG WIDTH=7 HEIGHT=13 ALIGN=MIDDLE ALT="tex2html_wrap_inline1721" SRC="img7.gif"  >  are optional, defaults are 128x128 (different in the
+demo) and  <IMG WIDTH=30 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1725" SRC="img8.gif"  >  (it increases slightly the brightness in
+low-intensity regions, showing the distribution in a more natural
+way). The postscript output of the previous example
+(Fig.&nbsp;<A HREF="betaman.html#circcent">1</A>) is 128x128 and occupies approximately 32K on
+disk (different in demo). When  <IMG WIDTH=11 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1727" SRC="img9.gif"  >  sampling is used in calculations,
+the sampling of postscript graph must be also  <IMG WIDTH=11 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1727" SRC="img9.gif"  > 
+i.e. 32,64,128,256,512....  The filter does not report a wrong
+sampling, instead it adjusts automathically the sampling to nearest
+sensible value.
+<P>
+The second program which outputs graphics is <TT>file_pgm</TT>.
+<PRE>file_pgm writes intensity into *.pgm file F
+
+USAGE: file_pgm F [N, G, MAX], where F is the output filename,
+optional parameter N is the grid size, N=128 if omitted in command line
+G is the $\gamma$ parameter, [0.1...10], higher G gives better
+contrast in low intensities, default G=2.0
+MAX is the number of gray levels, default MAX=255
+
+Output file F can be processed with netpbm package</PRE>
+<P>
+Files (intensity distributions) produced with <TT>file_pgm</TT> can be
+imported by a popular X graphical program <TT>XV</TT>, which saves to
+many other formats and allows for different conversions. <TT>Pgm</TT>
+stays for ``portable graymap'' and can be converted to other formats
+with <TT>netpbm</TT> or <TT>pbmplus</TT> packages. Files (intensity
+distributions) produced with <TT>file_pgm</TT> can also be imported by
+<TT>LightPipes</TT> using <TT>fil_ter</TT>. The  <IMG WIDTH=7 HEIGHT=13 ALIGN=MIDDLE ALT="tex2html_wrap_inline1721" SRC="img7.gif"  >  parameter for
+files that are saved for further use by <TT>LightPipes</TT> has to be set
+to 1 (as mentioned before, the default is 2).
+<P>
+There are possibilities of graphical interface to <TT>gnuplot</TT>:
+<UL><LI> <TT>file_int</TT><LI> <TT>file_pha</TT><LI> <TT>cros_out</TT>
+</UL>
+<P>
+	<TT>file_int</TT> writes the intensity distribution into a file
+which may be plotted with <TT>gnuplot</TT> graphical package. One command
+line argument is necessary: the output filename. Default grid size is
+64x64, you may change the default dimension with the second command
+line argument. <TT>file_pha</TT> is similar to <TT>file_int</TT>, it
+writes wrapped phase distribution.  Surface plots are not always
+acceptable - sometimes two-dimensional plots of the cross section of
+the light beam are of interest. It is especially actual for wrapped
+phase plots, which look awful in three dimensions.  The command <TT>
+cros_out</TT> writes into a file the X and Y cross sections of the field
+distributions.  For example the program:
+<PRE>begin 0.04 1e-6 | gauss 0.01 0.003 -0.002 &gt; foo
+cat foo | file_int in | file_pha pha 128 | cros_out out &gt;/dev/null
+rm foo</PRE>
+will form decentered Gaussian intensity distribution in a 256x256 grid
+and save the intensity distribution in a 64x64 file <TT>in</TT>, the
+phase distribution in file <TT>pha</TT> and cross sections in file <TT>
+cros_out</TT>. File <TT>in</TT> is 64x64 (by default), file <TT>pha</TT> is
+saved in a grid having 128x128 points. The number of points in the
+output file is governed by rules, described already for the postscript
+output.
+<P>
+<TT>Gnuplot</TT> has to be installed on your system to plot the
+distributions: If it's installed, type
+<P>
+<PRE> gnuplot</PRE>
+<P>
+and you will get on your screen something like:
+<P>
+<PRE> 
+        G N U P L O T
+        Linux version 3.5
+        patchlevel 3.50.1.17, 27 Aug 93
+        last modified Fri Aug 27 05:21:33 GMT 1993 
+        Copyright(C) 1986 - 1993   Colin Kelley, Thomas Williams 
+        Send comments and requests for help to info-gnuplot@dartmouth.edu
+        Send bugs, suggestions and mods to bug-gnuplot@dartmouth.edu
+Terminal type set to 'x11'
+gnuplot&gt;</PRE>
+<P>
+At the <TT>gnuplot</TT> prompt type: 
+<PRE>gnuplot&gt; set hidden
+gnuplot&gt; splot 'in' with lines
+gnuplot&gt; splot 'pha' with lines
+gnuplot&gt; plot  'out' using 1:2 with li,  'out' using 1:3 with li
+gnuplot&gt; plot  'out' using 1:4 with li,  'out' using 1:5 with li</PRE>
+<P>
+The first operator plots the intensity plot, second- the phase plot,
+the third and the fourth plot the Y intensity cross-sections and the Y
+phase cross-section. The graphic output is shown in Fig.&nbsp;<A HREF="betaman.html#circ1">2</A>.
+<P>
+<P><A NAME="835">&#160;</A><A NAME="circ1">&#160;</A> <IMG WIDTH=429 HEIGHT=100 ALIGN=BOTTOM ALT="figure155" SRC="img10.gif"  > <BR>
+<STRONG>Figure 2:</STRONG> Graphs produced with <TT>gnuplot</TT>: Surface plot intensity, surface plot phase and intensity cross sections<BR>
+<P>
+<P>
+Files saved with <TT>file_pha</TT> and <TT>file_int</TT> can also be
+imported with <TT>fil_ter</TT>, which automatically recognizes <TT>pgm</TT>
+and <TT>gnuplot</TT> formats.
+<P>
+<H1><A NAME="SECTION00040000000000000000">Propagation.</A></H1>
+<P>
+There are six (four different algorithms, two of these four allow for
+coordinate conversions) different possibilities for modeling the light
+propagation in <TT>LightPipes</TT>.
+<P>
+<H2><A NAME="SECTION00041000000000000000">FFT propagation (spectral method).</A></H2>
+<P>
+Let us consider the wave function <I>U</I> in two planes: <I>U</I>(<I>x</I>,<I>y</I>,0) and
+<I>U</I>(<I>x</I>,<I>y</I>,<I>z</I>). Suppose then that <I>U</I>(<I>x</I>,<I>y</I>,<I>z</I>) is the result of propagation
+of <I>U</I>(<I>x</I>,<I>y</I>,0) to the distance <I>z</I>, with the Fourier transforms of
+these two (initial and propagated ) wave functions given by  <IMG WIDTH=52 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1745" SRC="img11.gif"  >  and  <IMG WIDTH=53 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1747" SRC="img12.gif"  >  correspondently. In the Fresnel
+approximation, the Fourier transform of the diffracted wave function
+is related to the Fourier transform of the initial function via the
+frequency transfer characteristic of the free space  <IMG WIDTH=56 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1749" SRC="img13.gif"  > , given by&nbsp;[<A HREF="betaman.html#Goodman">4</A>, <A HREF="betaman.html#Southwell">5</A>]:
+<P>
+<P><A NAME="transfer">&#160;</A> <IMG WIDTH=500 HEIGHT=31 ALIGN=BOTTOM ALT="equation171" SRC="img14.gif"  > <P>      
+where
+<P><A NAME="up">&#160;</A> <IMG WIDTH=500 HEIGHT=27 ALIGN=BOTTOM ALT="equation177" SRC="img15.gif"  > <P>
+<P><A NAME="down">&#160;</A> <IMG WIDTH=500 HEIGHT=27 ALIGN=BOTTOM ALT="equation183" SRC="img16.gif"  > <P>
+<P>
+Expressions (<A HREF="betaman.html#transfer">2</A>, <A HREF="betaman.html#up">3</A>, <A HREF="betaman.html#down">4</A>) provide a
+symmetrical relation between the initial and diffracted wave functions
+in the Fresnel approximation. Applied in the order
+(<A HREF="betaman.html#up">3</A>)&nbsp; <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1751" SRC="img17.gif"  > &nbsp;(<A HREF="betaman.html#transfer">2</A>) <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1753" SRC="img17.gif"  > &nbsp;(<A HREF="betaman.html#down">4</A>)
+they result in the diffracted wave function, while being applied in
+the reversed order they allow for reconstruction of the initial wave
+function from the result of diffraction. We shall denote the forward
+and the reversed propagation operations defined by expressions
+(<A HREF="betaman.html#transfer">2</A>, <A HREF="betaman.html#up">3</A> and <A HREF="betaman.html#down">4</A>) with operators  <IMG WIDTH=15 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1755" SRC="img19.gif"  >  and
+ <IMG WIDTH=15 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1757" SRC="img20.gif"  >  respectively.
+<P>
+The described algorithm can be implemented numerically using Fast
+Fourier Transform (FFT)&nbsp;[<A HREF="betaman.html#Southwell">5</A>, <A HREF="betaman.html#siegman2">6</A>] on a finite
+rectangular grid with periodic border conditions. It results in a
+model of beam propagation inside a rectangular waveguide with
+reflective walls. To approximate a free-space propagation, wide empty
+guard bands have to be formed around the wave function defined on a
+grid. To eliminate the influence of the finite rectangular data
+window, Gaussian amplitude windowing in the frequency domain should be
+applied - see&nbsp;[<A HREF="betaman.html#Southwell">5</A>, <A HREF="betaman.html#siegman2">6</A>] for extensive analysis of
+these computational aspects.
+<P>
+The simplest and fastest <TT>LightPipes</TT> command for propagation is
+<TT>forvard</TT>.  It implements the spectral method described by
+(<A HREF="betaman.html#transfer">2</A>,&nbsp;<A HREF="betaman.html#up">3</A>,&nbsp;<A HREF="betaman.html#down">4</A>). The syntax is simple, for
+example if you want to filter your field through 1cm circular aperture
+and then propagate the beam 1m forward, you type:
+<P>
+<PRE>begin 0.02 1e-6 |circ_ap 0.005 |forvard 1 &gt; foo 
+file_int in &lt; foo |cros_out out |file_ps out5.ps 128 &gt;/dev/null 
+rm foo</PRE>
+<P>
+<P><A NAME="209">&#160;</A><A NAME="circcent2">&#160;</A> <IMG WIDTH=397 HEIGHT=131 ALIGN=BOTTOM ALT="figure205" SRC="img21.gif"  > <BR>
+<STRONG>Figure 3:</STRONG> The result of the propagation: density, surface and cross section
+intensity plots <BR>
+<P>
+<P>
+We see the diffraction effects, intensity distribution is not uniform
+anymore.
+<P>
+ The algorithm is very fast in comparison with direct calculation of
+diffraction integrals. Features to be taken into account:
+<P>
+<UL><LI> 
+The algorithm realizes a model of light beam propagation inside a
+      square waveguide with reflecting walls positioned at the grid
+      edges.  To approximate a free space propagation, the intensity
+      near the walls must be negligible small.  Thus the grid edges
+      must be far enough from the propagating beam.  Neglecting these
+      conditions will cause interference of the propagating beam with
+      waves reflected from the waveguide walls.<LI> 
+As a consequence of the previous feature, we must be extremely careful
+      propagating the plane wave to a distance comparable with
+       <IMG WIDTH=29 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1759" SRC="img22.gif"  >  where D is diameter (or a characteristic size) of
+      the beam, and  <IMG WIDTH=7 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1761" SRC="img23.gif"  >  is the wavelength.  To propagate the
+      beam to the far field (or just far enough) we have to choose the
+      size of our grid much larger than the beam itself, in other
+      words we define the field in a grid filled mainly with
+      zeros. The grid must be even larger when the beam is aberrated
+      - the divergent beams sooner reach the region border.
+</UL>
+Due to these two  reasons the  operator 
+<PRE>begin 0.02 1e-6 | rect_ap 0.02 | forvard 1 &gt; out</PRE>
+makes no sense. The cross section of the beam (argument of <TT>
+      rect_ap</TT>) equals to the section of the grid (the first argument
+      of begin), so we have a model of light propagation in a
+      waveguide but not in a free space. One have to put
+<PRE> begin 0.04 1e-6 | rect_ap 0.02 | forvard 1 &gt; out</PRE>
+      for propagation in the near field, and may be
+<PRE>begin 0.2 1e-6 512  | rect_ap 0.02 | forvard 400 &gt; out</PRE>
+for far field propagation.  Comparing the result of previous example
+    with the result of
+<PRE>begin 0.06  1e-6 512  | rect_ap 0.02 | forvard 400 &gt; out</PRE>
+we see the difference.
+<P>
+Described FFT algorithm has its drawbacks. The positive message is
+that it is very fast, works pretty well if properly used, is simple in
+implementation and does not require any allocation of extra memory. In
+<TT>LightPipes.1.1</TT> and later a negative argument may be supplied to
+<TT>forvard</TT>. It means that the program will perform ``propagation
+back'' or in other words it will reconstruct the initial field from
+the one diffracted. For example :
+<P>
+<PRE>#!/bin/csh -f
+# initial uniform distribution:
+begin .1 1e-6 |circ_ap 0.025|file_ps ini.ps&gt; foo
+#diffraction 30 m
+forvard 30 &lt;foo |file_ps diffr30.ps &gt;foo1
+#reconstruction of the initial field: 
+forvard -30 &lt; foo1 | file_ps diffr_back.ps &gt;/dev/null
+rm foo foo1</PRE>
+The result produced by this script is shown in Fig.&nbsp;<A HREF="betaman.html#reversed">4</A>.
+<P>
+<P><A NAME="222">&#160;</A><A NAME="reversed">&#160;</A> <IMG WIDTH=402 HEIGHT=131 ALIGN=BOTTOM ALT="figure218" SRC="img24.gif"  > <BR>
+<STRONG>Figure 4:</STRONG> The initial field, the field propagated to the near field and the
+field propagated back (from left to right)<BR>
+<P><H2><A NAME="SECTION00042000000000000000">Direct integration as a convolution: FFT approach</A></H2>
+<P>
+ Another possibility of a fast computer implementation of the operator
+ <IMG WIDTH=15 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1755" SRC="img19.gif"  >  is free from many of the drawbacks of the described spectral
+algorithm. The operator  <IMG WIDTH=15 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1755" SRC="img19.gif"  >  may be numerically implemented with
+direct summation of the Fresnel-Kirchoff diffraction integral:
+<P>
+<P><A NAME="fresn">&#160;</A> <IMG WIDTH=500 HEIGHT=28 ALIGN=BOTTOM ALT="eqnarray226" SRC="img25.gif"  > <P>
+with functions <I>U</I>(<I>x</I>,<I>y</I>,0) and <I>U</I>(<I>x</I>,<I>y</I>,<I>z</I>) defined on rectangular
+grids. This integral may be converted into a convolution form which
+can be efficiently computed using FFT&nbsp;[<A HREF="betaman.html#Elkin">7</A>, <A HREF="betaman.html#Baracat">8</A>]. This
+method is free from many drawbacks of the spectral method given by the
+sequence
+(<A HREF="betaman.html#up">3</A>)&nbsp; <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1751" SRC="img17.gif"  > &nbsp;(<A HREF="betaman.html#transfer">2</A>) <IMG WIDTH=11 HEIGHT=8 ALIGN=BOTTOM ALT="tex2html_wrap_inline1753" SRC="img17.gif"  > &nbsp;(<A HREF="betaman.html#down">4</A>),
+although it is still very fast due to its use of FFT for computing of
+the integral sums.
+<P>
+We'll explain this using two-dimensional example,
+following&nbsp;[<A HREF="betaman.html#Elkin">7</A>], p.100. Let the integral is defined in a finite
+interval  <IMG WIDTH=68 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1775" SRC="img26.gif"  > :
+<P>
+<P><A NAME="td">&#160;</A> <IMG WIDTH=500 HEIGHT=35 ALIGN=BOTTOM ALT="eqnarray240" SRC="img27.gif"  > <P>
+<P>
+Replacing functions <I>U</I>(<I>x</I>) and  <IMG WIDTH=30 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1779" SRC="img28.gif"  >  with step functions  <IMG WIDTH=11 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1781" SRC="img29.gif"  >  and
+ <IMG WIDTH=15 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1783" SRC="img30.gif"  > , defined in the sampling points of the grid with  <IMG WIDTH=58 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1785" SRC="img31.gif"  > ,
+and  <IMG WIDTH=63 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1787" SRC="img32.gif"  >  we convert the integral&nbsp;<A HREF="betaman.html#td">5</A> to the form:
+<P>
+<P><A NAME="ssum">&#160;</A> <IMG WIDTH=500 HEIGHT=75 ALIGN=BOTTOM ALT="eqnarray251" SRC="img33.gif"  > <P>
+<P>
+Taking integrals in <A HREF="betaman.html#ssum">5</A> we obtain:
+<P><A NAME="sshort">&#160;</A> <IMG WIDTH=500 HEIGHT=38 ALIGN=BOTTOM ALT="eqnarray274" SRC="img34.gif"  > <P>
+<P>
+where:  <IMG WIDTH=94 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1789" SRC="img35.gif"  >  are analytically expressed with the
+help of Fresnel integrals, depending only onto the difference of
+indices. Sums  <IMG WIDTH=72 HEIGHT=25 ALIGN=MIDDLE ALT="tex2html_wrap_inline1791" SRC="img36.gif"  >  can be easily calculated
+for all indices <I>m</I> as one convolution with the help of FFT.
+<P>
+Filter <TT>Fresnel</TT>, defined starting from version <TT>1.1</TT>,
+implements this algorithm for two-dimensional diffraction
+integrals. It is almost as fast as <TT>forvard</TT> (still 2 to 5 times
+slower), it uses <B>8 times more memory</B> (to perform the
+two-dimensional convolution) than <TT>forvard</TT> and it allows for
+``more honest'' calculation of Fresnel diffraction. As it does not
+require any protection bands at the edges of the region, the model may
+be built in a smaller grid, therefore the resources consumed and time
+of execution are comparable or even better than that of <TT>forvard</TT>.
+<TT>Fresnel</TT> does not accept negative propagation distance.
+When possible <TT>Fresnel</TT> has to be used as the main propagation
+engine within <TT>LightPipes</TT>.
+<P>
+<B>Warning:</B> <TT>Fresnel</TT> does not produce valid results if the
+distance of propagation is comparable with (or less than) the
+characteristic size of the aperture, at which the field is
+diffracted. In this case <TT>forvard</TT> or <TT>steps</TT> should be used.
+<P>
+<H2><A NAME="SECTION00043000000000000000">Direct integration</A></H2>
+<P>
+	Direct calculation of the Fresnel-Kirchoff integrals is <I>
+very</I> inefficient in two-dimensional grids. The number of operations
+is proportional to  <IMG WIDTH=16 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1795" SRC="img37.gif"  > , where <I>N</I> is the grid sampling. With direct
+integration we do not have any reflection at the grid boundary, so the
+size of the grid can just match the cross section of the field
+distribution. <TT>LightPipes</TT> include a program <TT>forward</TT>
+realizing direct integration. <TT>Forward</TT> has following features:
+<UL><LI> 
+arbitrary sampling and size of square grid at the input plane;<LI> 
+arbitrary sampling and size of square grid at the output plane, it
+means we can propagate field from a grid containing for example 52x52
+points corresponding to 4.9x4.9cm to a grid containing 42x42 points
+and corresponding let's say 8.75x8.75 cm.
+</UL>
+<P>
+The direct calculation of diffraction integral in the Fresnel
+approximation is used, thus <TT>forward</TT> can not be used to propagate
+the field to a short distances. Use <TT>forvard</TT> of <TT>steps</TT>
+instead.
+<P>
+<TT>Forward</TT> is a <B>very</B> slow program.
+<P>
+<H2><A NAME="SECTION00044000000000000000">Finite difference method.</A></H2>
+<P>
+	It can be shown that the propagation of the field <I>U</I> in a
+ medium with complex refractive coefficient <I>A</I>, is described by the
+ differential equation:
+<P><A NAME="Elk">&#160;</A> <IMG WIDTH=500 HEIGHT=30 ALIGN=BOTTOM ALT="eqnarray318" SRC="img38.gif"  > <P>
+To solve this equation, we re-write it as a system of finite
+difference equations:
+<P><A NAME="Elk1">&#160;</A> <IMG WIDTH=500 HEIGHT=35 ALIGN=BOTTOM ALT="eqnarray327" SRC="img39.gif"  > <P>
+Collecting terms we obtain the standard three-diagonal system of
+linear equations, solution of which describes the complex amplitude of
+the light field in the layer  <IMG WIDTH=45 HEIGHT=18 ALIGN=MIDDLE ALT="tex2html_wrap_inline1803" SRC="img40.gif"  >  as a function of the field
+defined in the layer <I>Z</I>:
+<P><A NAME="Elk2">&#160;</A> <IMG WIDTH=500 HEIGHT=18 ALIGN=BOTTOM ALT="eqnarray353" SRC="img41.gif"  > <P>
+where (we put  <IMG WIDTH=85 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1807" SRC="img42.gif"  > )
+<P> <IMG WIDTH=500 HEIGHT=25 ALIGN=BOTTOM ALT="equation362" SRC="img43.gif"  > <P>
+<P> <IMG WIDTH=500 HEIGHT=26 ALIGN=BOTTOM ALT="equation366" SRC="img44.gif"  > <P>
+<P> <IMG WIDTH=500 HEIGHT=30 ALIGN=BOTTOM ALT="equation374" SRC="img45.gif"  > <P>
+<P>
+The three-diagonal system of linear equations&nbsp;(<A HREF="betaman.html#Elk2">9</A>) is solved
+by standard elimination (double sweep) method, described for example
+in&nbsp;[<A HREF="betaman.html#samar">11</A>].  This scheme is absolutely stable (this variant is
+explicit with respect to the index <I>i</I> and implicit with respect to
+the index <I>j</I>).  One step of propagation is divided into two
+sub-steps: the first sub-step applies the described procedure to all
+rows of the matrix, the second sub-step changes the direction of
+elimination and the procedure is applied to all columns of the matrix.
+<P>
+The main advantage of this approach is the possibility to take into
+account uniformly diffraction, absorption (amplification) and
+refraction. For example, the model of a waveguide with complex
+three-dimensional distribution of refraction index and absorption
+coefficient (both are defined as real and imaginary components of the
+(three-dimensional in general) matrix  <IMG WIDTH=19 HEIGHT=24 ALIGN=MIDDLE ALT="tex2html_wrap_inline1813" SRC="img46.gif"  > ) can be built easily.
+<P>
+It works also much faster than all described previously algorithms on
+one step of propagation, though to obtain a good result at a
+considerable distance, many steps should be done. As the scheme is
+absolutely stable (at least for free-space propagation), there is no
+stability limitation on the step size in the direction <I>Z</I>. Large
+steps cause high-frequency errors, therefore the number of steps
+should be determined by trial (increase the number of steps in a probe
+model till the result stabilizes), especially for  strong
+variations of refraction and absorption inside the propagation path.
+<P>
+Zero amplitude boundary conditions are commonly used for the described
+system. This, again, creates the problem of the wave reflection at the
+grid boundary. The influence of these reflections in many cases can be
+reduced by introducing an additional absorbing layer in the proximity
+of the boundary, with the absorption smoothly (to reduce the
+reflection at the absorption gradient) increasing towards the
+boundary.
+<P>
+In <TT>LightPipes</TT> version 1.2 the refraction term is not included
+into the propagation formulas, instead the phase of the field is
+modified at each step according to the distribution of the refractive
+coefficient. This ``zero-order'' approximation happened to be much
+more stable numerically than the direct inclusion of refraction terms
+into propagation formulas. It does not take into account the change of
+the wavelength in the medium, it does not model backscattering and
+reflections back on interfaces between different media. Perhaps there
+are other details to be mentioned.
+<P>
+The described algorithm is implemented in a filter <TT>steps</TT>.  <TT>
+Steps</TT> accepts 6 arguments, first - the step size, second- the number
+of steps, third and fourth - files containing absorption and
+refraction coefficients to be imported and the last two arguments are
+the filename where field cross-sections are saved after each N steps,
+where N is the last argument. All filenames are optional.
+<P>
+The format of imported datafiles is the same as exported for using in
+<TT>gnuplot</TT>. The format of the datafile into which cross sections of
+the field are saved at every N-th step is similar to the file
+generated by <TT>cros_out</TT>. It has one more column, correspondent
+to Z coordinate. Cross sections correspondent to different values of Z
+are divided by an empty line.
+<P>
+For example:
+<PRE>begin 0.004 0.63e-6  | circ_ap 0.0015 | lens 0.5 |\
+steps 0.01 75 void void steps_out &gt; /dev/null 
+
+steps: void refractive coefficient file, skipping
+steps: void absorption coefficient file, skipping</PRE>
+<P>
+produces file <TT>steps_out</TT> which can be used to plot the radial
+intensity distribution in propagating beam, for example with <TT>
+gnuplot</TT>:
+<P>
+<PRE>set parametric
+splot 'steps_out' using 1:6:2 with lines</PRE>
+<P>
+<P><A NAME="399">&#160;</A><A NAME="long">&#160;</A> <IMG WIDTH=353 HEIGHT=228 ALIGN=BOTTOM ALT="figure397" SRC="img47.gif"  > <BR>
+<STRONG>Figure 5:</STRONG> Steps output for a simple lens.<BR>
+<P>
+<P>
+<TT>Steps</TT> has built-in absorption layer along the grid boundaries
+(to prevent reflections), occupying 10% of grid from each side. <TT>
+Steps</TT> can import absorption/refraction coefficients defined in the
+format similar to exported by <TT>file_int</TT>.  <TT>Steps</TT> is the
+only filter in <TT>LightPipes</TT> allowing for modeling of
+(three-dimensional) waveguide devices.
+<P>
+Like <TT>forvard</TT>, <TT>Steps</TT> can inversely propagate the field, for
+example the sequence <TT>...|steps 0.1 1 | steps -0.1 1 |...</TT> doesn't
+change anything in the field distribution. Author has tested this
+reversibility also for propagation in absorptive/refractive media,
+examples will follow.
+<P>
+<TT>Steps</TT> implements scalar approximation, it is not applicable for
+ modeling of waveguide devices in the vector approximation, where two
+ components of the field should be taken into account.
+<P>
+<H2><A NAME="SECTION00045000000000000000">Splitting and mixing beams</A></H2>
+<P>
+There are two commands in <TT>LightPipes</TT>, useful to model
+interferometers. With <TT>b_split</TT> we split the field structure
+(amplitude division) - one part will be written to the disk file,
+another will be passed to <TT>stdout</TT>. There is similar Unix command
+<TT>tee</TT>, writing two copies of any input - one to a file and the
+second to <TT>stdout</TT>.  <TT>B_split</TT> works only with <TT>
+LightPipes</TT> data structures and provides the possibility of amplitude
+division, preserving the sum of intensities of the two splitted beams.
+The two obtained files could be processed separately and then mixed
+again with a program <TT>b_mix</TT>. Consider a simple model of an
+interferometer consisting of two apertures:
+<P>
+<P><A NAME="422">&#160;</A><A NAME="interf1">&#160;</A> <IMG WIDTH=282 HEIGHT=128 ALIGN=BOTTOM ALT="figure420" SRC="img48.gif"  > <BR>
+<STRONG>Figure 6:</STRONG> A simple interferometer<BR>
+<P>
+<P>
+<PRE>#/bin/csh -f
+#model of a screen with two round pinholes
+       begin 0.005 0.55e-6 512 &gt; beam
+       circ_ap 0.00012 -0.0005 &lt; beam &gt; beam1
+       circ_ap 0.00012 0.0005  &lt; beam &gt; beam2
+#Mixing two beams, rewriting initial beam:
+        b_mix beam1 &lt; beam2 &gt; beam
+#intensity in the plane of pinholes: young0.ps
+        cat beam | file_ps young0.ps 128 &gt;/dev/null
+#propagation 0.75 m forward and second postscript file young1.ps
+        forvard 0.75 &lt; beam  | file_ps young1.ps 128  &gt;/dev/null
+#removing all temp  files
+        rm beam beam1 beam2
+#all done</PRE>
+<P>
+In this script we have formed two beams (plane waves) each containing
+one ``shifted'' hole. After mixing these two beams we have a screen
+with two holes: a Young's interferometer.  After execution of this
+script, two intensity distributions are stored in files <TT>
+young0.ps</TT> and <TT>young1.ps</TT>. The result of the interference is
+shown in (Fig&nbsp;<A HREF="betaman.html#interf2">7</A>):
+<P>
+<P><A NAME="431">&#160;</A><A NAME="interf2">&#160;</A> <IMG WIDTH=295 HEIGHT=146 ALIGN=BOTTOM ALT="figure428" SRC="img49.gif"  > <BR>
+<STRONG>Figure 7:</STRONG> Intensity distributions in the plane of the screen and 75cm
+behind the screen<BR>
+<P>
+<P>
+	We can ``play'' with the interferometer model, moving the
+pinholes and changing their sizes and shapes. The following script
+models the interference of a plane wave diffracted at three round
+apertures:
+<PRE>#!/bin/csh -f
+#model of a screen with three round holes
+
+        begin 0.005 0.55e-6 512 &gt; beam
+#Three circular apertures:
+       circ_ap 0.00012 -0.0005 -0.00025&lt; beam &gt; beam1
+       circ_ap 0.00012 0.0005  -0.00025&lt; beam &gt; beam2
+       circ_ap 0.00012 0.       0.00025&lt; beam &gt; beam3
+#Mixing three beams, rewriting initial beam:
+       b_mix beam1 &lt; beam2 | b_mix beam3 &gt; beam
+#writing  Postscript Picture 
+        cat beam | file_ps young2.ps 128 &gt;/dev/null
+#propagation 0.75 m and second file 
+        forvard 0.75 &lt; beam  | file_ps young3.ps 128  &gt;/dev/null
+#removing all beam files
+        rm beam beam1 beam2 beam3
+#all done</PRE>
+<P><A NAME="437">&#160;</A><A NAME="interf3">&#160;</A> <IMG WIDTH=295 HEIGHT=146 ALIGN=BOTTOM ALT="figure434" SRC="img50.gif"  > <BR>
+<STRONG>Figure 8:</STRONG> Intensity distributions in the plane of the screen and 75cm
+behind the screen<BR>
+<P>
+<P>
+The next interferometer is more interesting:
+<P>
+<PRE>#!/bin/csh -f
+
+#model of a screen with two slits, one  tilted
+        begin 0.005 0.55e-6 512 &gt; beam
+
+#Two slits one tilted :
+       rect_ap 0.0001 0.0025  -0.0005 &lt; beam &gt; beam1
+       rect_ap 0.0001 0.0025  0.0005 0 15 &lt; beam &gt; beam2
+#Mixing two beams, rewriting the initial beam:
+       b_mix beam1 &lt; beam2  &gt; beam
+#writing  Postscript Picture of the screen with slits
+        cat beam | file_ps slit0.ps 128 &gt;/dev/null
+#propagation 0.75 m and second file slit1.ps
+        forvard 0.75 &lt; beam  | file_ps slit1.ps 128  &gt;/dev/null
+#removing all beam files
+        rm beam beam1 beam2 
+
+#all done</PRE>
+<P><A NAME="443">&#160;</A><A NAME="interf4">&#160;</A> <IMG WIDTH=295 HEIGHT=146 ALIGN=BOTTOM ALT="figure440" SRC="img51.gif"  > <BR>
+<STRONG>Figure 9:</STRONG> Intensity distributions in the plane of the screen and 75cm
+behind the screen<BR>
+<P>
+In the last example the intensity distribution is modulated by the
+wave, reflected from the grid edge, though it gives a good impression
+about the general character of the interference pattern. To obtain a
+better result, the calculations can be conducted in a larger grid or
+with another numerical method.
+<P>
+  This example uses direct integration algorithm (the input and output
+have different scales and samplings):
+<P>
+<PRE>#!/bin/csh -f
+
+#model of a screen with two slits, one of them tilted
+#note  the number of points and the size of the grid 
+        begin 0.0026 0.55e-6 64 &gt; beam
+#Two slits one tilted, the slits are as high as the grid:
+       rect_ap 0.0001 0.0025  -0.0005 &lt; beam &gt; beam1
+       rect_ap 0.0001 0.0025  0.0005 0 15 &lt; beam &gt; beam2
+#Mixing two beams, rewriting the initial beam:
+       b_mix beam1 &lt; beam2  &gt; beam
+#writing  postscript file of the screen with slits
+        cat beam | file_ps slit2.ps 64 &gt;/dev/null
+#propagation 0.75 m into different grid, writing  second file slit1.ps
+        forward 0.75 0.005 64 &lt; beam  | file_ps slit3.ps 64  &gt;/dev/null
+#removing all beam files
+        rm beam beam1 beam2</PRE>
+This example uses approximately 25 times less memory than the previous
+FFT, calculation takes from minutes to tens of minutes, depending on
+the floating-point efficiency.
+<P>
+<P><A NAME="449">&#160;</A><A NAME="interf5">&#160;</A> <IMG WIDTH=295 HEIGHT=146 ALIGN=BOTTOM ALT="figure446" SRC="img52.gif"  > <BR>
+<STRONG>Figure 10:</STRONG> Intensity distributions in plane of the screen and 75 cm
+after the screen, note that input and output have different
+scales, input grid is 2.6x2.6mm, output is 5x5mm<BR>
+<P><H2><A NAME="SECTION00046000000000000000">Interpolation</A></H2>
+<P>
+<TT>Interpol</TT> is the tool to manipulate the size and the dimension of
+the grid and to change the shift, rotation and the scale of the field
+distribution. It accepts six command line arguments, the first is the
+new size of the grid, the second and others are optional. The second
+argument gives the new sampling, the third and fourth determine shifts
+in X and Y directions, the fifth gives the field rotation (after
+shifting). The last argument defines the magnification, its action is
+equivalent to passing the beam through afocal system with
+magnification <I>M</I> (without diffraction, but <B>preserving the
+integral intensity</B>). For example if the field was propagated with FFT
+algorithm <TT>forvard</TT>, then the grid contains empty borders which
+are not necessary for further processing.  Other way around, after
+<TT>forward</TT> we have to add some empty borders to continue with <TT>
+forvard</TT>. <TT>Interpol</TT> is useful for interpolating into grids with
+different size and samplings. Of course, it is not wise to interpolate
+a grid of 512x512 points into a grid of 4x4, and then back to 512x512,
+because all information about the initial field will be lost. The same
+is true for interpolating a distribution defined in the square of 1x1m
+to 1x1mm and back. When interpolating into a grid with larger size,
+for example from 1x1 to 2x2, the program puts zeros into added
+regions.
+<P>
+In <TT>LightPipes1.2</TT> a better (and slower) interpolation routine
+(12-point two-dimensional cubic interpolation) is introduced. Linear
+interpolation remains with the name <TT>interp1</TT>.
+<P>
+<H4><A NAME="SECTION00046010000000000000">Examples of transformations:</A></H4>
+<P>
+<UL><LI>
+<TT>interpol 1</TT> - interpolate to a new grid with size 1<LI>
+<TT>interpol 1 128</TT> - interpolate to a new grid with size 1 and
+number of points 128<LI>
+<TT>interpol same same</TT> - don't change anything<LI>
+<TT>interpol 1 128 0.2</TT> - interpolate to a new grid with size 1 and
+number of points 128, then shift in X direction by 0.2<LI>
+<TT>interpol 1 128 0.2 0.3</TT> - interpolate to a new grid with size 1
+and number of points 128, then shift in X direction by 0.2 and in Y
+direction by 0.3<LI>
+<TT>interpol 1 128 0.2 0.3 23</TT> - interpolate to a new grid with size
+1 and number of points 128, then and shift in X direction by 0.2 and
+in Y direction by 0.3, then rotate by  <IMG WIDTH=16 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1819" SRC="img53.gif"  > .<LI>
+<TT>interpol same same 128 0.2 0.3 23 1.3</TT> - interpolate into a new
+grid with size and sampling both inherited from the previous filter,
+shift in X direction by 0.2 and in Y direction by 0.3, then rotate
+ <IMG WIDTH=16 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1819" SRC="img53.gif"  >  and then magnify the field with a ratio of 1.3<LI>
+<TT>interpol same same 0. 0. 0. 1.3</TT> - inherit size and sampling,
+magnify (afocal) the field with a ratio of 1.3
+</UL>
+The following example (Fig.&nbsp;<A HREF="betaman.html#grids">11</A>)  illustrates the usage of <TT>
+interpol</TT> for transition from a fine grid used by <TT>forvard</TT> (near
+field) to the coarse grid used by <TT>forward</TT> (far field).
+<PRE>#!/bin/csh -f
+#starting with forvard (near field)
+begin 0.01 1e-6 | rect_ap 0.005 | forvard 0.2 &gt;foo
+#continuing with forward (far field)
+file_ps int1.ps &lt;foo |interpol 0.0075 64|forward 400 0.4&gt;foo1
+file_ps int2.ps &lt;foo1| file_int in |cros_out cros &gt;/dev/null
+rm foo foo1</PRE>
+<P><A NAME="481">&#160;</A><A NAME="grids">&#160;</A> <IMG WIDTH=432 HEIGHT=87 ALIGN=BOTTOM ALT="figure476" SRC="img54.gif"  > <BR>
+<STRONG>Figure 11:</STRONG> Intensity distributions in the near field, in the far field, far
+field surface plot and far field cross section (from left to right)
+<BR>
+<P><H2><A NAME="SECTION00047000000000000000">Phase filters</A></H2>
+<P>
+There are four phase filters available in <TT>LightPipes</TT> - wavefront
+<TT>tilt</TT>, the quadratic phase corrector <TT>lens</TT>, a general
+aberration in the form of a Zernike polynomial, and a user defined
+filter. To illustrate the usage of these filters let's consider the
+following examples:
+<P>
+<PRE>begin 0.04 1e-6   | rect_ap 0.02 | lens 8 | cros_out outpha  &gt; out
+file_ps lens1.ps  &lt; out  | forvard 4 |file_ps lens2.ps &gt;/dev/null</PRE>
+<P>
+The first sequence of operators forms the initial structure, filters
+the field through the rectangular aperture and then filters the field
+through the positive lens with an optical power of 0.125D (the focal
+distance of 1&nbsp;/&nbsp;0.125=8m). With the second command we propagate the
+field 4 m forvard. As 4m is exactly the half of the focal distance,
+the cross section of the beam must be reduces twice.
+<P>
+<P><A NAME="492">&#160;</A><A NAME="lens1">&#160;</A> <IMG WIDTH=411 HEIGHT=132 ALIGN=BOTTOM ALT="figure488" SRC="img55.gif"  > <BR>
+<STRONG>Figure 12:</STRONG> The phase distribution after passing the lens, intensity in the plane of
+the lens and at the distance equal to the half of the focal
+distance. (from left to right) <BR>
+<P>
+We have to be very careful, propagating the field to the distance
+which is close to the focal distance of a positive lens- the
+near-focal intensity and phase distributions are localized in the
+central region of the grid occupying only few sampling intervals. This
+leads to the major loss of information about the field distribution.
+The problem is solved by applying the coordinate system which is tied
+to the divergent or convergent light beam. The tools to do this will
+be described later.
+<P>
+	The lens may be decentered, <TT>lens 8 0.01 0.01</TT> produces a
+lens with a focal distance of 1/0.125, shifted by 0.01 in X and Y
+directions. When the lens is shifted, only the phase mask
+correspondent to the lens is shifted, not the aperture of the lens or
+light beam itself.
+<P>
+The wavefront tilt is illustrated by following examples:
+<P>
+<PRE>begin 0.04 1e-6   | rect_ap 0.02 | tilt 1e-4 -1e-4 |forvard 8  &gt; foo
+cros_out out &lt;foo &gt;/dev/null</PRE>
+<P>
+The result is shown in Fig.&nbsp;<A HREF="betaman.html#lens2">13</A>.
+<P><A NAME="500">&#160;</A><A NAME="lens2">&#160;</A> <IMG WIDTH=363 HEIGHT=131 ALIGN=BOTTOM ALT="figure497" SRC="img56.gif"  > <BR>
+<STRONG>Figure 13:</STRONG> The intensity and the phase after tilting the wavefront by 1e-4 rad
+and propagating it 8 m forward. Note the transversal shift of
+the intensity distribution and the phase tilt.<BR>
+<P>
+In this example the wavefront was tilted by  <IMG WIDTH=58 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1827" SRC="img57.gif"  >  rad in X
+and Y directions, then propagated to the distance <I>Z</I>=8m. In the
+output distribution we observe the transversal shift of the whole
+intensity distribution by  <IMG WIDTH=71 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1831" SRC="img58.gif"  > .
+<P>
+Two arguments must be passed to <TT>tilt</TT> even if one of the two
+arguments of <TT>tilt</TT> equals to zero.
+<P>
+<H2><A NAME="SECTION00048000000000000000">Zernike polynomials</A></H2>
+<P>
+	Any aberration in a circle can be decomposed over a sum of
+	Zernike polynomials. Formulas given in&nbsp;[<A HREF="betaman.html#Born1">2</A>] have been
+	directly implemented in <TT>LightPipes</TT>.  The filter is named
+	<TT>Zernike</TT> and accepts four command line arguments:
+<OL><LI> The radial order <I>n</I> (first column in Table 13.2&nbsp;[<A HREF="betaman.html#Malacara">3</A>] p. 465).<LI> The azimuthal order <I>m</I>,  <IMG WIDTH=41 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1837" SRC="img59.gif"  > , polynomials with negative
+<I>n</I> are rotated  <IMG WIDTH=16 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1697" SRC="img2.gif"  >  relative to the polynomials with positive
+<I>n</I>. For example <TT>Zernike 5 3 1 1</TT> gives the same aberration as
+<TT>Zernike 5 -3 1 1</TT>, but the last is rotated  <IMG WIDTH=16 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1697" SRC="img2.gif"  > . This index
+corresponds to the <I>n</I>-2<I>m</I> given in the third column of Table 13.2
+in&nbsp;[<A HREF="betaman.html#Malacara">3</A>], p. 465.<LI> The radius  <I>R</I><LI> The amplitude of aberration in radians,  at <I>R</I></OL> 
+We can uniformly introduce the <TT>lens</TT> and <TT>tilt</TT> using <TT>
+Zernike</TT>. The difference is that <TT>lens</TT> and <TT>tilt</TT> accept
+conventional meters and radians, which are widely in use for
+description of optical setups, while <TT>Zernike</TT> uses the amplitude
+of the aberration, which frequently has to be derived from the
+technical description.
+<P>
+Cylindric lens can be modeled as a combination of <TT>Zernike</TT>:
+<P>
+<PRE>begin 0.01 1e-6 | circ_ap 0.0045 | file_ps cl0.ps\
+| Zernike 2 2 0.0045 20 | Zernike 2 0 0.0045 -10\
+| Fresnel 1.55 | interpol same same 0 0 45 |\
+file_ps cl1.ps &gt; /dev/null</PRE>
+<P>
+<P><A NAME="525">&#160;</A><A NAME="cl">&#160;</A> <IMG WIDTH=325 HEIGHT=160 ALIGN=BOTTOM ALT="figure522" SRC="img60.gif"  > <BR>
+<STRONG>Figure 14:</STRONG> The intensity in the input plane and after propagation through
+a cylindrical system, defined as a combination of Zernike polynomials and
+free space propagation.  <BR>
+<P>
+<P>
+The result of propagation to the focal plane of cylindric lens, defined
+as a combination of two Zernike polynomials, is shown in Fig.&nbsp;<A HREF="betaman.html#cl">14</A>.
+<P>
+<H2><A NAME="SECTION00049000000000000000">Spherical coordinates</A></H2>
+<P>
+	The principle of beam propagation in the ``floating''
+coordinate system (for the case of a lens waveguide) is shown in
+Fig.&nbsp;<A HREF="betaman.html#coord">15</A>
+<P><A NAME="533">&#160;</A><A NAME="coord">&#160;</A> <IMG WIDTH=290 HEIGHT=283 ALIGN=BOTTOM ALT="figure531" SRC="img61.gif"  > <BR>
+<STRONG>Figure 15:</STRONG> Illustration for  the  light propagation in lens waveguides with 
+fixed and floating coordinate systems.<BR>
+<P>
+<P>
+The spherical coordinates follow the geometrical section of the
+divergent or convergent light beam.  Propagation in spherical
+coordinates is implemented with programs <TT>lens_forvard</TT> and <TT>
+lens_fresn</TT>. Both filters accept two parameters: the focal distance
+of the lens placed in the input of the propagation distance, and the
+distance of propagation. When <TT>lens_forvard</TT> or <TT>lens_fresn</TT>
+is called, it ``bends'' the coordinate system so that it follows the
+divergent or convergent spherical wavefront, and then propagates the
+field to the distance <I>Z</I> in the transformed coordinates. Filter <TT>
+convert</TT> should be used to convert the field back to the rectangular
+coordinate system. Some <TT>LightPipes</TT> filters can not be applied to
+the field in spherical coordinates.
+<P>
+As the coordinates follow the geometrical section of the light beam,
+operator <TT>lens_forvard 10 10</TT> will produce floating exception
+because the calculations just can not be conducted in a grid with zero
+size (that is so in the geometrical approximation of a focal
+point). On the other hand, diffraction to the focus is equivalent to
+the diffraction to the far field (infinity), thus FFT convolution
+algorithm will not work properly anyway. To model the diffraction into
+the focal point, a more complicated trick should be used:
+<PRE>begin 0.01 1e-6|rect_ap 0.005|lens 10|lens_fresn 1.111111 1 \
+|convert y|cros_out cros&gt;/dev/null</PRE>
+<P>
+Here we calculate the diffraction to the focus of a lens with a focal
+distance of 1m. It is represented as a combination of a weak phase
+mask <TT>lens 10</TT> and a ``strong'' geometrical coordinate transform
+<TT>lens_fresn 1.111111 1</TT>. The grid after propagation is  <IMG WIDTH=8 HEIGHT=4 ALIGN=BOTTOM ALT="tex2html_wrap_inline1855" SRC="img62.gif"  > 10
+times narrower than in the input plane. The focal intensity is 650
+times higher than the input intensity and the wavefront is plain as
+expected.  The same method is used in the script <TT>farfield</TT> (in
+the example's directory) to calculate the farfield distributions.
+<P>
+Diffraction behind the beam waist is more tricky: it can be done with
+<TT>lens_forvard</TT> but will not work with <TT>
+lens_fresn</TT>. Spherical coordinate variant of <TT>steps</TT> is not
+implemented, because the spherical coordinates also should be applied
+to absorption/refraction coefficients, which is far from trivial.
+<P>
+<H2><A NAME="SECTION000410000000000000000">User defined phase and intensity filters</A></H2>
+<P>
+	  A filter called <TT>fil_ter</TT> is used to manipulate the
+phase and intensity of the light beam.
+<PRE>USAGE: fil_ter C1 C2 F [N], where
+C1 is character constant with valid values 'int' and 'pha'
+C2 is character constant with valid values 'mult' and 'subst'
+F is the name of a file containing intensity/phase mask
+It may be portable graymap or anymap (*.pgm, *.pnm) with a grayscale data.
+Matrix F must have the same dimensions as the grid 
+N is (any) optional argument indicating that the intensity mask should
+be normalized before applying
+
+Examples:
+fil_ter int mult aa: filter THROUGH  the intensity mask from a file aa
+fil_ter pha subst aa: substitute the phase with a phase taken from file aa
+fil_ter pha mult aa: filter the field through phase filter aa
+fil_ter int subst aa: substitute intensity with one taken from file aa
+fil_ter int subst aa haha: substitute the intensity with a normalized
+one taken from the file aa</PRE>
+<P>
+The distributions for importing   may be formed by an external program -
+here is a simple Fortran77 example (<TT>arb.f</TT>) of such an operation:
+<P>
+<P><A NAME="554">&#160;</A><A NAME="arb">&#160;</A> <IMG WIDTH=117 HEIGHT=117 ALIGN=BOTTOM ALT="figure552" SRC="img63.gif"  > <BR>
+<STRONG>Figure 16:</STRONG> An arbitrary intensity distribution<BR>
+<P>	
+<PRE>c     Copyright Gleb Vdovin, 1995
+c
+c     This Fortran program forms complex
+c     intensity and phase filters in files in and pha, 
+c      to use with LightPipes
+      open(1, file='in', form='formatted')
+      open(2, file='pha', form='formatted')
+
+      do i=1,256
+c     ii corresponds to the X coordinate
+         ii=i-129
+
+         do j=1,256
+c     jj corresponds to the Y coordinate
+            jj=j-129
+
+c     ai and af are  some arbitrary function 
+c     of the coordinates ii and jj,
+c     ai corresponds to intensity and af is the phase:
+
+            ai=abs(sin(i/10.)*cos(j/5.))
+            af=cos(i/10.)*sin(j/5.)
+
+c     with this &quot;if&quot; a circular aperture is cut:
+c     writing intensity:
+            if (ii**2+jj**2 .le. 64**2) then
+            write(1,*) ai
+            else
+            write(1,*) 0.
+            end if
+
+c     writing phase:
+            write(2,*) af
+         end do
+
+c     empty line is a row separator:
+        write(1,*)
+        write(2,*)
+       end do
+
+c     all done:
+       close(1)
+       close(2)
+       stop
+       end</PRE>
+<P>
+This program forms two files: <TT>in</TT> and <TT>pha</TT>. A beam can be
+filtered through these filters to produce the intensity distribution
+shown in Fig.&nbsp;<A HREF="betaman.html#arb">16</A>:
+<P>
+<PRE>begin 0.1 1e-6 | fil_ter int subs in|file_ter pha subs pha\
+ | file_ps arb.ps &gt; /dev/null</PRE>
+<P>
+The phase and intensity distributions may be produced with a <TT>
+LightPipes</TT> script itself. <TT>File_int</TT>, <TT>file_pha</TT> and <TT>
+file_pgm</TT> provide such a possibility. The dimensions of the exported
+and imported distributions must be the same (this can be fixed with
+<TT>interpol</TT>), otherwise the behavior is not defined. 
+Any (square) file (gif,tiff, bmp) containing graphics, can be
+converted into <TT>pgm</TT> format - for example using <TT>xv</TT>, and
+imported by fil_ter as the intensity or the phase distribution.
+<P>
+<H2><A NAME="SECTION000411000000000000000">Random filters</A></H2>
+<P>
+<TT>random</TT> is a random filter with a uniform distribution. It uses
+standard C function <TT>rand</TT> (many consider it as a bad one, but it
+exists everywhere). By default <TT>random</TT> takes the random seed from
+the system clock, but if the result should be repeated with the same
+seed, the random seed (unsigned int) may be supplied as the third
+command line argument. The first argument may be <TT>int</TT> for the
+intensity or <TT>pha</TT> for the phase, the second gives the amplitude
+of the random phase screen (uniform distribution) in radians, or the
+amplitude of the intensity noise (uniformly distributed additive)
+normalized to the maximum intensity.
+<P>
+<H2><A NAME="SECTION000412000000000000000">FFT and spatial filters</A></H2>
+<P>
+LightPipes.1.1  and later versions provide a possibility to perform
+arbitrary filtering in the Fourier space. There is an operator,
+performing the Fourier transform of the whole data structure: <TT>
+pip_fft</TT>.
+<P>
+<PRE>pip_fft  performs FFT of the field distribution
+
+USAGE:  pip_fft IND , where IND is direction,
+IND=1 for forward, or -1 for inverse</PRE>
+<P>
+Here is the example of a spatial filter:
+<P>
+<PRE>#!/bin/csh -f
+
+# random screen and propagation
+begin 0.01 1e-6 200|circ_ap 0.003| random pha 3 | Fresnel 1 &gt; foo
+
+# how it looks like:
+cat foo|file_ps unfiltered.ps 100 &gt;/dev/null
+
+# spatial filter
+cat foo |pip_fft 1|circ_ap 0.0005|pip_fft -1 &gt;foo1
+
+# how it looks after filtering
+cat foo1 |file_ps filtered.ps 100 &gt;/dev/null
+
+# remove FOO's
+rm foo foo1</PRE>
+<P><A NAME="579">&#160;</A><A NAME="s_filter">&#160;</A> <IMG WIDTH=237 HEIGHT=117 ALIGN=BOTTOM ALT="figure576" SRC="img64.gif"  > <BR>
+<STRONG>Figure 17:</STRONG> Intensity distributions before and after 
+applying the  spatial filter.<BR>
+<P>
+<P>
+Note, we still can apply all the intensity and phase filters in the
+Fourier-space. The whole grid size in the angular frequency domain
+corresponds to  <IMG WIDTH=44 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1857" SRC="img65.gif"  >  where  <IMG WIDTH=18 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1859" SRC="img66.gif"  >  is the grid
+step.  One step in the frequency domain corresponds to  <IMG WIDTH=33 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1861" SRC="img67.gif"  > 
+where <I>x</I> is the total size of the grid. <TT>LightPipes</TT> filters do
+not know about all these transformations, so the user should take care
+about setting the proper size (using the relations mentioned) of the
+filter (still in linear units) in the frequency domain.
+<P>
+In many cases, the frequency spectrum occupies only few sampling
+intervals. In this case filtering mask has to be defined only on a few
+grid points, making precision definition of the mask impossible (too
+few points). In this case, interpolation into a grid with maximum
+possible dimensionality is advised, to define the filter mask with a
+higher precision.
+<P>
+<H2><A NAME="SECTION000413000000000000000">Service routines</A></H2>
+<P>
+There are two programs for phase unwrapping <TT>unf3</TT> and <TT>
+unf4</TT>. The phase distribution saved in the <TT>gnuplot</TT> format may be
+filtered to obtain unwrapped phase plot. The operation of unwrapping
+is sometimes (very frequently) somewhat unstable, therefore two
+different programs are given. There is no guarantee that these filters
+will always work. They work well on smooth distributions. For example:
+<PRE>#!/bin/csh -f
+begin 0.01 1e-6 60|lens 5 |file_pha pha &gt;/dev/null
+cat pha | unf3 &gt; pha1
+cat pha | unf4 &gt; pha2</PRE> 
+You can easily see the difference between pha, pha1 and pha2 after
+plotting the files.
+<P>
+Filter <TT>normal</TT> normalizes the integral intensity to 1.
+<P>
+Filter <TT>convert</TT> is used to transform spherical coordinates into
+Decarte's ones.
+<P>
+Filter <TT>absorber</TT> introduces intensity attenuator.
+<P>
+Filter <TT>a_phase</TT> compares two phase distributions, prints some
+info to the stderr and outputs the phase difference to stdout. <TT>
+a_phase</TT> is optional and may be not included into this distribution.
+<P>
+There are more programs like <TT>scale</TT>, <TT>c_matlab</TT> or <TT>
+c_xplot</TT>, operating on only intensity or only phase distributions. All
+these programs are more or less self-documented. They are distributed
+with source, therefore no explicit description is given here.
+<P>
+<H2><A NAME="SECTION000414000000000000000">Laser amplifiers</A></H2>
+<P>
+The <TT>l_amplif</TT> introduces a simple single-layer model of a laser
+amplifier. 
+<PRE>l_amplif filters the field through a laser medium
+
+USAGE: l_amplif G L I, where G is the gain,
+L and I are the length and the saturation intensity of the medium.</PRE>
+It is useful for modeling of amplifiers and lasers with active medium.
+<P>
+<H2><A NAME="SECTION000415000000000000000">Diagnostics: Strehl, the output power and the center of gravity</A></H2>
+<P>
+<TT>Strehl</TT> prints to the stderr the current parameters of
+beam. Using it in in combination with <TT>l_amplif</TT> you may
+calculate and print out the output power of a laser with active
+medium.
+<P>
+Example:
+<PRE>begin 1 1 | rect_ap 0.5 | normal y | l_amplif 0 1 1 | Strehl y &gt; /dev/null
+normal: Normalization coefficient= 2.539215e-01
+Strehl: ratio= 1.000000e+00 energy= 1.000000e+00
+Center_of_gravity: x= 9.926167e-24 y= 4.268252e-22
+Grid size: 1.000000e+00, Grid sampling: 256  
+
+begin 1 1 | rect_ap 0.5 | normal y | l_amplif 1 1 1 | Strehl y &gt; /dev/null
+normal: Normalization coefficient= 2.539215e-01
+Strehl: ratio= 1.000000e+00 energy= 1.499308e+00
+Center_of_gravity: x= 1.875808e-23 y= -3.237424e-21
+Grid size: 1.000000e+00, Grid sampling: 256</PRE>
+<P>
+<H1><A NAME="SECTION00050000000000000000">Example models</A></H1>
+<P>
+<H2><A NAME="SECTION00051000000000000000">Shearing interferometer</A></H2>
+<P>
+We can easily model a shearing interferometer using the operators
+introduced in the previous sections. Suppose we have to model a device
+shown in Fig.&nbsp;<A HREF="betaman.html#shearing">18</A>.
+<P><A NAME="605">&#160;</A><A NAME="shearing">&#160;</A> <IMG WIDTH=188 HEIGHT=170 ALIGN=BOTTOM ALT="figure603" SRC="img68.gif"  > <BR>
+<STRONG>Figure 18:</STRONG> The shearing interferometer<BR>
+<P>
+<P>
+Let  <IMG WIDTH=57 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1865" SRC="img69.gif"  > ,  <IMG WIDTH=57 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1867" SRC="img70.gif"  > ,  <IMG WIDTH=58 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1869" SRC="img71.gif"  > , the focal length of
+the lens is -20m, the beam is divided 1:1 and one of two beams is
+shifted by <I>D</I>=3<I>mm</I> in the X direction and  <IMG WIDTH=59 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1873" SRC="img72.gif"  >  in the Y direction
+after reflection on the back surface of the plane-parallel plate.
+<P>
+<PRE>#!/bin/csh -f
+# starting, lens, Z1 
+begin 0.04 5e-7 | circ_ap 0.01 |lens -20|forvard 0.5|b_split foo1 &gt; foo
+# shifting beam 3 mm without real interpolation, mixing it
+# with centered beam
+interpol 0.04 256 0.003 0.001 &lt;foo1|b_mix foo |forvard 0.5&gt;foo2
+# postscript output
+file_ps shear1.ps 128&lt;foo2|cros_out out &gt;/dev/null
+rm foo foo1 foo2</PRE>
+In Fig&nbsp;<A HREF="betaman.html#shear1">19</A> is shown the intensity distribution in the plane
+of the screen, obtained as a result of running this script:
+<P><A NAME="612">&#160;</A><A NAME="shear1">&#160;</A> <IMG WIDTH=389 HEIGHT=160 ALIGN=BOTTOM ALT="figure609" SRC="img73.gif"  > <BR>
+<STRONG>Figure 19:</STRONG> The intensity distribution in the plane of the screen, obtained with
+the model of a shearing interferometer, the intensity cross-section is shown
+in the right graph<BR>
+<P>
+<P>
+	We can put a source of arbitrary aberration on the place of a lens, for
+example we can introduce a spherical aberration with amplitude of 10 Rad:
+<PRE>#!/bin/csh -f
+# starting, lens, Z1 
+begin 0.04 5e-7 | circ_ap 0.01 |Zernike 4 0 0.01 10|\
+forvard 0.5|b_split foo1 &gt; foo
+# shifting beam 3 mm without real interpolation, mixing it
+# with centered beam
+interpol 0.04 256 0.003 0.00 &lt;foo1|b_mix foo |forvard 0.5&gt;foo2
+# postscript output
+file_ps shear3.ps 128&lt;foo2 &gt;/dev/null
+rm foo foo1 foo2</PRE>
+Changing the amplitude and the order of aberration we can obtain all
+the shearing interferograms shown in the section about shearing
+interferometers of&nbsp;[<A HREF="betaman.html#Malacara">3</A>].
+<P><A NAME="620">&#160;</A><A NAME="shear2">&#160;</A> <IMG WIDTH=359 HEIGHT=117 ALIGN=BOTTOM ALT="figure616" SRC="img74.gif"  > <BR>
+<STRONG>Figure 20:</STRONG> Shearing interferograms of the  spherical aberration, coma and astigmatism <BR>
+<P><H2><A NAME="SECTION00052000000000000000">Rotational shear interferometer</A></H2>
+<P>
+	In the rotational shear interferometer the beam interferes with a
+copy of itself rotated by the angle  <IMG WIDTH=7 HEIGHT=6 ALIGN=BOTTOM ALT="tex2html_wrap_inline1875" SRC="img75.gif"  >  around optical
+axis. Interferometer is useful for detecting of asymmetrical
+aberrations. We shall consider only bare-bone (no propagation and
+diffraction) model of such an interferometer:
+<P>
+<PRE>#!/bin/csh -f
+# Rotational interferometer with  coma
+begin 0.04 5e-7 | circ_ap 0.01 |Zernike 3 1 0.01 10|b_split foo1 &gt; foo
+# rotating and mixing
+interpol 0.04 256 0. 0. 180 &lt;foo1|b_mix foo &gt;foo2
+# postscript output
+file_ps rotational1.ps 128&lt;foo2 &gt;/dev/null
+rm foo foo1 foo2</PRE>
+<PRE>#!/bin/csh -f
+# Rotational interferometer with  astigmatism
+begin 0.04 5e-7 | circ_ap 0.01 |Zernike 2 2 0.01 10|b_split foo1 &gt; foo
+# rotating and mixing
+interpol 0.04 256 0. 0. 90 &lt;foo1|b_mix foo &gt;foo2
+# postscript output
+file_ps rotational2.ps 128&lt;foo2 &gt;/dev/null
+rm foo foo1 foo2</PRE>
+<PRE>#!/bin/csh -f
+# Rotational interferometer with  high order aberration
+begin 0.04 5e-7 | circ_ap 0.01 |Zernike 7 3 0.01 10|b_split foo1 &gt; foo
+# rotating and mixing
+interpol 0.04 256 0. 0. 90 &lt;foo1|b_mix foo &gt;foo2
+# postscript output
+file_ps rotational3.ps 128&lt;foo2 &gt;/dev/null
+rm foo foo1 foo2</PRE>
+<P><A NAME="628">&#160;</A><A NAME="rot1">&#160;</A> <IMG WIDTH=359 HEIGHT=117 ALIGN=BOTTOM ALT="figure624" SRC="img76.gif"  > <BR>
+<STRONG>Figure 21:</STRONG> Rotational interferograms of coma  <IMG WIDTH=21 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1695" SRC="img1.gif"  > , astigmatism  <IMG WIDTH=16 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1697" SRC="img2.gif"  > 
+and the high order Zernike aberration  <IMG WIDTH=16 HEIGHT=10 ALIGN=BOTTOM ALT="tex2html_wrap_inline1697" SRC="img2.gif"  > <BR>
+<P><H2><A NAME="SECTION00053000000000000000">Radial shearing interferometer</A></H2>
+<P>
+	In radial shearing interferometer the beam interferes with a
+copy of itself magnified by the  factor <I>M</I>. Interferometer is useful for
+detecting of axisymetrical aberrations. As for the previous case, we
+shall consider only bare-bone (no propagation and diffraction) model of
+such an interferometer:
+<P><A NAME="636">&#160;</A><A NAME="rad1">&#160;</A> <IMG WIDTH=359 HEIGHT=117 ALIGN=BOTTOM ALT="figure632" SRC="img77.gif"  > <BR>
+<STRONG>Figure 22:</STRONG> Radial shearing interferograms of defocus, spherical
+aberration and the higher-order aberration<BR>
+<P>
+<P>
+<PRE>#!/bin/csh -f
+# Radial shearing  interferometers:
+
+#defocus
+begin 0.04 5e-7 | circ_ap 0.01 |Zernike 2 0 0.01 10|b_split foo1 &gt; foo
+# Radial magnification
+interpol 0.04 256 0. 0. 0 1.3 &lt;foo1|b_mix foo &gt;foo2
+# postscript output
+file_ps radial1.ps 128&lt;foo2 &gt;/dev/null
+rm foo foo1 foo2
+
+#spherical aberration
+begin 0.04 5e-7 | circ_ap 0.01 |Zernike 4 0 0.01 10|b_split foo1 &gt; foo
+# Radial magnification
+interpol 0.04 256 0. 0. 0 1.3 &lt;foo1|b_mix foo &gt;foo2
+# postscript output
+file_ps radial2.ps 128&lt;foo2 &gt;/dev/null
+rm foo foo1 foo2
+
+#High order  aberration without axial symmetry
+begin 0.04 5e-7 | circ_ap 0.01 |Zernike 10 4 0.01 10|b_split foo1 &gt; foo
+# Radial magnification
+interpol 0.04 256 0. 0. 0 1.3 &lt;foo1|b_mix foo &gt;foo2
+# postscript output
+file_ps radial3.ps 128&lt;foo2 &gt;/dev/null
+rm foo foo1 foo2</PRE>
+<P>
+<H2><A NAME="SECTION00054000000000000000">Twyman-Green interferometer</A></H2>
+<P>
+<P><A NAME="643">&#160;</A><A NAME="tg">&#160;</A> <IMG WIDTH=325 HEIGHT=190 ALIGN=BOTTOM ALT="figure640" SRC="img78.gif"  > <BR>
+<STRONG>Figure 23:</STRONG> Twyman-Green interferometer (left) and the output of the interferometer model<BR>
+<P>
+	The scheme of the interferometer is shown in Fig.&nbsp;<A HREF="betaman.html#tg">23</A>.
+	In this example we put <I>D</I>=1cm,  <IMG WIDTH=57 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1865" SRC="img69.gif"  > ,  <IMG WIDTH=57 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1889" SRC="img79.gif"  > ,
+	 <IMG WIDTH=57 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1891" SRC="img80.gif"  > ,  <IMG WIDTH=47 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1893" SRC="img81.gif"  > ,  <IMG WIDTH=58 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1869" SRC="img71.gif"  > . The first mirror is
+	plane and the second is aberrated (coma) with aberration
+	amplitude of  <IMG WIDTH=23 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1703" SRC="img4.gif"  > . The beam-splitter is ideal dividing
+	the beam 3:7. We run the following script:
+<PRE>#!/bin/csh -f
+# propagation and splitting
+begin 0.03 5e-7 | circ_ap 0.005 | forvard 0.5 | b_split foo 0.3 &gt;foo1
+# Propagation to mirror1, reflection,
+# propagation back and beam-splitter again
+forvard 1 &lt;foo|i_filter 0.7 &gt;foo2
+# Propagation to mirror2, reflection,
+# propagation back and beam-splitter again
+forvard 0.4 &lt; foo1 | Zernike 3 1 0.005 25|forvard 0.4|i_filter 0.3 &gt;foo3
+# mixing the two beams and propagation to the screen
+b_mix foo2 &lt;foo3 |forvard 1| interpol 0.012 128 | file_ps tg.ps 128&gt;/dev/null
+# deleting the temp files
+rm foo foo1 foo2 foo3</PRE>
+<P>
+<H2><A NAME="SECTION00055000000000000000">Unstable laser resonator</A></H2>
+<P>
+	We know enough to solve a real problem with <TT>LightPipes</TT>.
+Here is the script which calculates the output mode of an unstable
+resonator with square mirrors. The example is taken from [<A HREF="betaman.html#rench">10</A>].
+The scheme of the resonator is shown in Fig.&nbsp;<A HREF="betaman.html#unst">24</A> together with
+the equivalent lens waveguide scheme used in calculations. The
+infinite sequence of reflections from resonator mirrors is replaced
+here by finite but long enough sequence of propagations through afocal
+magnifying lens system.
+<P><A NAME="653">&#160;</A><A NAME="unst">&#160;</A> <IMG WIDTH=293 HEIGHT=176 ALIGN=BOTTOM ALT="figure651" SRC="img82.gif"  > <BR>
+<STRONG>Figure 24:</STRONG> An unstable confocal resonator and a lens waveguide<BR>
+<P> 
+<P><A NAME="659">&#160;</A><A NAME="res1">&#160;</A> <IMG WIDTH=331 HEIGHT=89 ALIGN=BOTTOM ALT="figure656" SRC="img83.gif"  > <BR>
+<STRONG>Figure 25:</STRONG> Intensity and phase distributions at the output of the model
+of unstable resonator<BR>
+<P>
+<PRE>#!/bin/csh -f
+
+#	LightPipes script: a model of an unstable resonator
+#	with N=10, M=2, 
+#	See D.B. Rench, Applied  Optics 13, 2546...2561 (1974)
+#	All dimensions are taken from the table on p. 2552
+#	in this reference
+
+#	theoretically the initial field distribution may be random 
+#	but we'll use a good plane wave because it won't
+#	converge fast with a random distribution
+	
+begin 20. 3e-4 512 &gt;field1
+
+#	20 field iteration inside the resonator
+@ i=0
+while( $i &lt; 20)
+#	reflection from the convex mirror and propagation 
+	rect_ap 5.48 &lt; field1 | lens -1e4 |forvard 1e4 &gt; field2
+#	reflection from the concave mirror and propagation
+	rect_ap 10.96 &lt;field2 | lens 2e-4  | forvard 1e4 | normal y &gt; field1
+	Strehl y &lt; field1 &gt;/dev/null
+	@ i += 1
+end
+# output of the resonator is screened by the output mirror:
+# the output 
+rect_screen 5.48 &lt;field1 | file_int in |\
+ file_pha pha|file_ps res_out.ps |Strehl y&gt;/dev/null
+# removing the temp files
+rm field1 field2</PRE>
+<P>
+ When executed, the script prints values of the feedback coefficient
+and other information for the output beam at each iteration.
+<P>
+From the output sequence we see that after 20 iterations the feedback
+coefficient is quite stable, so the calculations can be terminated. If
+the files <TT>field1</TT> and <TT>field2</TT> are not deleted, we can
+continue the calculations later. To do this, the operator <TT>begin</TT>
+should be commented, othervise it will start again the calculations
+from a plane wave.
+<P>
+We can compare the intensity and phase distribution in the output
+mode with original distributions obtained by Rench [<A HREF="betaman.html#rench">10</A>]:
+<P>
+	In this example we calculated the mode profile of an ideal
+unstable resonator.  A resonator with aberrated and misaligned mirrors
+can be also easily modeled.  One problem with the considered model is
+the way, the mirror's curvature is defined. Curved mirrors are modeled
+as phase masks <TT>lens</TT> and for high curvatures the phase difference
+between the neighbour points of grid may be higer than  <IMG WIDTH=19 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1899" SRC="img84.gif"  > ,
+especially in the proximity of the mirror edges. If the phase
+difference is greater than  <IMG WIDTH=19 HEIGHT=20 ALIGN=MIDDLE ALT="tex2html_wrap_inline1899" SRC="img84.gif"  > , the results are not valid, so the
+nuber of points must be increased to fix the mentioned phase
+condition. It leads to enormous grids (we used 512x512 ) for a
+simple problem. This can be solved by applying spherical coordinate
+system to propagate spherical waves. In such a system the coordinate
+surfaces coincide approximately with the propagating wavefront.
+<P>
+<H2><A NAME="SECTION00056000000000000000">Laser with unstable resonator in spherical coordinates. </A></H2>
+<P>
+The script for a laser with a confocal unstable resonator in spherical
+coordinates follows (including laser medium):
+<P>
+<PRE>#!/bin/csh -f
+
+#all dimensions are in mm here
+
+	
+begin 7. 3e-4 100 &gt;field1
+
+#	40 iterations inside the resonator
+@ i=0
+while( $i &lt; 20)
+#	reflection from the convex mirror and propagation 
+	rect_ap 5.48 &lt; field1|l_amplif 1e-4 1e4 1 | lens_fresn -1e4  1e4 &gt; field2
+#	reflection from the concave mirror and propagation
+	rect_ap 10.96 &lt;field2 |l_amplif 1e-4 1e4 1| lens_fresn 2e4  1e4\
+|Strehl y &gt; field1
+	cp field1 field_out
+	interpol 7. &lt;field1 &gt; field2 
+	mv field2 field1
+	@ i += 1
+end
+# output of the resonator is screened by the output mirror:
+# the output 
+echo 'Output beam:'
+cat field_out |convert y |rect_screen 5.48 | file_ps res_out.ps\
+ |Strehl y &gt;/dev/null
+# removing the temp files
+rm field1 field2</PRE>
+<P><A NAME="671">&#160;</A><A NAME="res2">&#160;</A> <IMG WIDTH=396 HEIGHT=159 ALIGN=BOTTOM ALT="figure668" SRC="img85.gif"  > <BR>
+<STRONG>Figure 26:</STRONG> The output (intensity and phase) of an 
+unstable resonator, modeled in spherical coordinates<BR>
+<P>
+Here is the tail of the screen output:
+<PRE>Strehl: ratio= 8.415976e-01 energy= 3.978092e+02
+Center_of_gravity: x= -1.330218e-03 y= -1.100146e-03
+Grid size: 1.400000e+01, Grid sampling: 100
+Output beam:
+Strehl: ratio= 8.209055e-01 energy= 2.917869e+02
+Center_of_gravity: x= -1.716706e-03 y= -1.600309e-03
+Grid size: 1.400000e+01, Grid sampling: 100</PRE>
+<P>
+The last script is much faster and the field occupies a larger part of
+the grid.  It produces almost the same feedback coefficient, the
+Strehl number is also close to that obtained in the previous example,
+the difference is due to the better computational approach used in the
+latter case.
+<P>
+<H2><A NAME="SECTION00057000000000000000">Propagation in lens-like/absorptive medium</A></H2>
+<P>
+Here the model of the propagation of a Gaussian beam in a lens-like
+waveguide is built. The profile of the refractive index is chosen so,
+that the beam preserves approximately its diameter in the waveguide
+(we use fundamental mode). We'll consider the propagation of an axial
+mode, tilted with respect to the waveguide axis and a non-axial
+mode. First, we form the distribution of a refractive coefficient in a
+file. We do that with a Fortran program (any other way, for example by
+hand ;-), can be used:
+<P>
+<PRE>      program med
+c     The program to form a quadratic 
+c     distribution of the refractive index;
+c     nc is the grid  sampling
+c     an0 is the axis value of refractive index
+c     an1 is n1 in the formula for refractive index: 
+c     n=sqrt(an0^2-an0*an1*r^2) where 
+c     r is the radial coordinate
+c     xmax is the grid size
+
+      read*, nc, an0, an1, xmax
+      dx=xmax/(nc-1.)
+      n2=nc/2+1
+      do i=1,nc
+         ii=i-n2
+         x=dx*ii
+         do j=1,nc
+            jj=j-n2
+            y=jj*dx
+            r2=x*x+y*y
+            print*, sqrt(an0*an0 -an1*an0*r2)
+            end do
+            print*
+            end do
+            stop
+            end</PRE>
+<P>
+Here we use the approximation for the profile of the refractive
+coefficient in th form:  <IMG WIDTH=93 HEIGHT=22 ALIGN=MIDDLE ALT="tex2html_wrap_inline1903" SRC="img86.gif"  > . It is a well-known
+fact&nbsp;[<A HREF="betaman.html#Marcuse">12</A>] that the half-width of the fundamental Gaussian mode of a
+lens-like waveguide is defined as:  <IMG WIDTH=84 HEIGHT=23 ALIGN=MIDDLE ALT="tex2html_wrap_inline1905" SRC="img87.gif"  > .  For a waveguide of 1x1mm,  <IMG WIDTH=46 HEIGHT=18 ALIGN=MIDDLE ALT="tex2html_wrap_inline1907" SRC="img88.gif"  > ,  <IMG WIDTH=48 HEIGHT=18 ALIGN=MIDDLE ALT="tex2html_wrap_inline1909" SRC="img89.gif"  >  and   <IMG WIDTH=57 HEIGHT=18 ALIGN=MIDDLE ALT="tex2html_wrap_inline1911" SRC="img90.gif"  > ,
+the Gaussian mode has a diameter of 226 <IMG WIDTH=7 HEIGHT=13 ALIGN=MIDDLE ALT="tex2html_wrap_inline1913" SRC="img91.gif"  > m. We shall use this value
+in the following script, which demonstrates three-dimensional propagation
+of tilted and off-axis beams in square absorptive medium:
+<P>
+<PRE>#!/bin/csh -f
+
+#	We form here the distribution of the refractive index
+#	in the file refr.ind;
+#       med is a Fortran program to do that:
+
+f77 -o med  med.f -lm 
+echo 100 1.5 400 1e-3  | med &gt; refr.ind
+
+#	The array of refractive indexes (1.5 ) is used here
+#	to form an array of absorbtion coefficients.
+#	No optics here, it's just a reuse of the table of numbers!
+#	 
+
+scale -1. &lt; refr.ind &gt; abs.co
+
+# 	propagation of a  gauss beam in a quadratic medium: 
+#	the steps back are implemented with the 
+#	second operator to show the reversibility of the
+#	operator:
+
+
+begin 1e-3 1e-6 100 |  gauss 113e-6 | tilt 1e-3 0 |\
+steps 1e-3 1000  refr.ind  abs.co s.out 10 |\
+steps -1e-3 1000  refr.ind abs.co si.out 10  &gt; /dev/null
+  
+
+#	The graphs can be plotted with gnuplot:
+
+#	set par
+#	set con
+#	splot 's.out' using 1:6:2 w l
+
+# here is the  propagation of a non-axial gauss beam:
+
+begin 1e-3 1e-6 100 |  gauss 113e-6 2e-4 |\
+steps 1e-3 1000  refr.ind  abs.co s_s.out 10 &gt; /dev/null
+
+# here we have two non-axial beams:
+
+begin 1e-3 1e-6 100 |  gauss 113e-6 2e-4 &gt;foo1
+begin 1e-3 1e-6 100 |  gauss 113e-6 -2e-4 &gt;foo2
+b_mix foo2 &lt; foo1 |\
+steps 1e-3 1000  refr.ind  abs.co s_ss.out 10 &gt; /dev/null
+
+rm foo*</PRE>
+<P>
+The array of refractive coefficients is plotted in Fig.&nbsp;<A HREF="betaman.html#refr_ind">27</A>.
+<P><A NAME="681">&#160;</A><A NAME="refr_ind">&#160;</A> <IMG WIDTH=262 HEIGHT=157 ALIGN=BOTTOM ALT="figure679" SRC="img92.gif"  > <BR>
+<STRONG>Figure 27:</STRONG> Distribution of the refractive index in a lens-like waveguide.<BR>
+<P>
+The result of the first example - centered Gaussian beam under small
+angle to the axis in a lens-like medium is shown in Fig.&nbsp;<A HREF="betaman.html#wav1">28</A>
+<P><A NAME="688">&#160;</A><A NAME="wav1">&#160;</A> <IMG WIDTH=393 HEIGHT=108 ALIGN=BOTTOM ALT="figure685" SRC="img93.gif"  > <BR>
+<STRONG>Figure 28:</STRONG> Radial (x at the left, y at the right) energy distribution in a tilted Gaussian beam propagating in a lens-like absorptive medium.<BR>
+<P>
+The result of ``reversed'' propagation is shown in
+Fig.&nbsp;<A HREF="betaman.html#wav2">29</A>. Comparison with Fig.&nbsp;<A HREF="betaman.html#wav1">28</A> proves the validity
+of algorithm for refractive/absorptive media.
+<P><A NAME="696">&#160;</A><A NAME="wav2">&#160;</A> <IMG WIDTH=393 HEIGHT=110 ALIGN=BOTTOM ALT="figure693" SRC="img94.gif"  > <BR>
+<STRONG>Figure 29:</STRONG> Radial (x at the left, y at the right) energy distribution in a tilted Gaussian beam, reversely propagated  in a lens-like absorptive medium.<BR>
+<P>
+The result of propagation of ``shifted'' Gaussian beam, incident parallel to the axis is shown in Fig.&nbsp;<A HREF="betaman.html#wav3">30</A>.
+<P><A NAME="703">&#160;</A><A NAME="wav3">&#160;</A> <IMG WIDTH=393 HEIGHT=108 ALIGN=BOTTOM ALT="figure700" SRC="img95.gif"  > <BR>
+<STRONG>Figure 30:</STRONG> Radial (x at the left, y at the right) energy distribution in a shifted Gaussian beam, incident parallel to the waveguide axis.<BR>
+<P>
+The result of propagation of two ``shifted'' Gaussian beams, both
+incident parallel to the axis of the waveguide is shown in
+Fig.&nbsp;<A HREF="betaman.html#wav4">31</A>.
+<P><A NAME="710">&#160;</A><A NAME="wav4">&#160;</A> <IMG WIDTH=393 HEIGHT=108 ALIGN=BOTTOM ALT="figure707" SRC="img96.gif"  > <BR>
+<STRONG>Figure 31:</STRONG> Radial (x at the left, y at the right) energy distribution in two Gaussian beams, incident parallel to the waveguide axis.<BR>
+<P>
+<P>
+<TT>Steps</TT> is a ``rich'' filter. Whole classes of waveguide devices
+can be simulated.  Simple examples in this manual illustrate only the
+very basic capabilities.
+<P>
+<H2><A NAME="SECTION00058000000000000000">Inverse problem: reconstructing the phase from measured intensities</A></H2>
+<P>
+The idea is very simple: we have two near field intensity
+distributions, but we don't know the phase of the field. To
+reconstruct the phase we start from a field with uniform (random)
+distribution and iterate then the field ``forward'' and ``back'',
+substituting each time the measured intensity and leaving the phase
+untouched. This process converges to a field distribution with
+reconstructed phase, providing a good match to the measured
+intensities. This <B>very</B> specific algorithm may be easily
+implemented with <TT>LightPipes</TT> script:
+<P><A NAME="723">&#160;</A><A NAME="res2a">&#160;</A> <IMG WIDTH=217 HEIGHT=379 ALIGN=BOTTOM ALT="figure717" SRC="img97.gif"  > <BR>
+<STRONG>Figure 32:</STRONG> Given intensity distributions (top), reconstructed intensities (middle) and reconstructed phase<BR>
+<P>
+<P>
+<PRE>#!/bin/csh -f # (C) Gleb Vdovin 1993-1995 
+# This file is a part of
+LightPipes.1.1 distribution 
+# 
+# 
+# this script demonstrates the possibility of 
+# phase reconstruction from two near-field intensity
+# distributions i_1 and i_2
+ 	
+@ num_point1 = 128
+@ num_point2=256
+@ num_iter= 100
+@ dist = 2
+
+# here we start from a plane phase:
+begin  0.011 6.33e-7 $num_point1| random 0 &gt; f_far1
+#begin  0.02 6.33e-7 $num_point| random 9 &gt; f_near1
+
+#	num_iter  iterations 
+@ i=0
+while( $i &lt; $num_iter)
+	echo $i
+#	Here we substitute the known second intensity and interpolate
+#	into a bigger grid - to make &quot;forvard&quot; happy
+	fil_ter int subs i_2 &lt; f_far1 |interpol 0.02 256&gt;foo
+#	propagation &quot;back&quot; to the plane of the first image
+	cat foo| forvard -2|interpol 1.1e-2 128 &gt; f_near1
+
+#	substitution of the first intensity distribution
+#	and propagation forward:
+	fil_ter int subs  i_1 &lt; f_near1 | Fresnel 2 &gt; f_far1
+	@ i += 1
+end</PRE>
+<P>
+Example script <TT>inverse</TT> solves similar problem for Young
+interferometer.
+<P>
+<H2><A NAME="SECTION00059000000000000000">Optical information processing</A></H2>
+<P>
+<P><A NAME="732">&#160;</A><A NAME="filter">&#160;</A> <IMG WIDTH=314 HEIGHT=102 ALIGN=BOTTOM ALT="figure728" SRC="img98.gif"  > <BR>
+<STRONG>Figure 33:</STRONG> Initial transparant (left), filtered with a high-frequency component cut (center), the same filter with low frequency components cut (right).
+ <BR>
+<P>
+<P>
+<TT>LightPipes</TT> can be used to model the classical setups of
+Fourier-optics information processing. For example, this script models
+coherent optical computer, performing Fourier-plane image filtering:
+<P>
+<PRE>#!/bin/csh -f
+
+# 	importing the intensity mask:
+begin 1e-2 5e-7 200 | fil_ter int subs reg.pgm | forvard 1 &gt; foo
+#	lens, focal filter, free space...
+lens 1 &lt; foo | forvard 1 | circ_ap 0.0015 | forvard 1 &gt; foo1
+#	lens free space, output.
+lens 1 &lt; foo1 | forvard 1 | file_ps filtered_l.ps 200 4 &gt; /dev/null
+#	all done</PRE>
+<P>
+compare the result with the result of:
+<PRE>lens 1 &lt; foo | forvard 1 | circ_screen 0.0015 | forvard 1 &gt; foo1
+#	lens free space, output.
+lens 1 &lt; foo1 | forvard 1 | file_ps filtered_h.ps 200 4 &gt; /dev/null
+#	all done</PRE>
+<P>
+The initial distribution (file reg.pgm) and two filtered images are
+shown in Fig.&nbsp;<A HREF="betaman.html#filter">33</A>.
+<P>
+<H2><A NAME="SECTION000510000000000000000">Generation and reconstruction of interferograms</A></H2>
+<P>
+	In the simplest case the interferogram (hologram) is generated
+by mixing of an aberrated beam with a plane wave:
+<PRE>#!/bin/csh -f
+#	Aberrated beam:
+begin 1e-2 1e-6 200 | Zernike 7 1 0.72e-2 10 &gt; foo
+#	Saving and unfolding the phase:
+file_pha pha 50 &lt; foo &gt;/dev/null
+unf3 &lt; pha &gt; pha1  
+#	Addition of tilt, to obtain the vertical fringes:
+tilt 2e-3 0 &lt; foo &gt; foo1
+#	Ideal beam, mixing -&gt; generation of interferogram:
+begin 1e-2 1e-6 200 | b_mix foo1 | file_int int_in 256 &gt; foo2
+#	Plot the interferogram:
+file_ps interf.ps 200 1 &lt; foo2 &gt; /dev/null
+#	All done</PRE>
+The generated interferogram, saved in file <TT>interf.ps</TT> may be
+directly plotted, as shown in Fig.&nbsp;<A HREF="betaman.html#interf1a">34</A>.
+<P><A NAME="933">&#160;</A><A NAME="interf1a">&#160;</A> <IMG WIDTH=277 HEIGHT=116 ALIGN=BOTTOM ALT="figure740" SRC="img99.gif"  > <BR>
+<STRONG>Figure 34:</STRONG> The phase distribution and the interferogram, generated with <TT>
+LightPipes</TT> script.<BR>
+<P>
+To reconstruct the phase from the obtained interferogram, we shall
+build a model of the algorithm of phase reconstruction, using shift
+and filtering in the fourier domain.
+Let the fringe pattern has the form:
+<P><A NAME="fringes">&#160;</A> <IMG WIDTH=500 HEIGHT=14 ALIGN=BOTTOM ALT="equation746" SRC="img100.gif"  > <P>
+where 
+<P><A NAME="fringes1">&#160;</A> <IMG WIDTH=500 HEIGHT=14 ALIGN=BOTTOM ALT="equation749" SRC="img101.gif"  > <P>
+where the phase  <IMG WIDTH=36 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1915" SRC="img102.gif"  >  contains information about the mirror
+shape and the term  <IMG WIDTH=19 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1917" SRC="img103.gif"  >  describes the wavefront tilt.  Fourier
+transform of the expression&nbsp;(<A HREF="betaman.html#fringes">13</A>) gives:
+<P> <IMG WIDTH=500 HEIGHT=14 ALIGN=BOTTOM ALT="equation753" SRC="img104.gif"  > <P> 
+where the capitals <I>A</I> and <I>C</I> denote the Fourier spectra and <I>f</I> is
+the spatial frequency.
+<P><A NAME="757">&#160;</A><A NAME="spectr">&#160;</A> <IMG WIDTH=176 HEIGHT=192 ALIGN=BOTTOM ALT="figure755" SRC="img105.gif"  > <BR>
+<STRONG>Figure 35:</STRONG> Fourier spectra of a fringe pattern modulated by the spatial
+frequency  <IMG WIDTH=10 HEIGHT=19 ALIGN=MIDDLE ALT="tex2html_wrap_inline1701" SRC="img3.gif"  >  (top) and a single spectrum translated to the origin
+(bottom). <BR>
+<P>
+<P><A NAME="938">&#160;</A><A NAME="interf">&#160;</A> <IMG WIDTH=378 HEIGHT=118 ALIGN=BOTTOM ALT="figure760" SRC="img106.gif"  > <BR>
+<STRONG>Figure:</STRONG> Spectrum of the interferogram shown in Fig.&nbsp;<A HREF="betaman.html#interf1a">34</A>,
+with a side lobe shifted to the origin (left), the same after
+filtering (middle) and finally, the reconstructed phase (right).<BR>
+<P>
+We may take one of two side-lobe spectra  <IMG WIDTH=65 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1927" SRC="img107.gif"  >  or  <IMG WIDTH=70 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1929" SRC="img108.gif"  > 
+and translate it to the origin with zero spatial frequency as shown in
+Fig.&nbsp;<A HREF="betaman.html#spectr">35</A>. Now we can take the inverse Fourier transform of
+the translated spectrum to obtain <I>c</I>(<I>x</I>,<I>y</I>) defined in the
+expression(<A HREF="betaman.html#fringes">13</A>, <A HREF="betaman.html#fringes1">14</A>). Calculating the complex
+logarithm of the expression (<A HREF="betaman.html#fringes1">14</A>) we obtain the phase  <IMG WIDTH=36 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1915" SRC="img102.gif"  > :
+<P><A NAME="logarithm">&#160;</A> <IMG WIDTH=500 HEIGHT=14 ALIGN=BOTTOM ALT="equation771" SRC="img109.gif"  > <P>
+<P>
+The phase  <IMG WIDTH=36 HEIGHT=21 ALIGN=MIDDLE ALT="tex2html_wrap_inline1915" SRC="img102.gif"  >  is obtained indeterminate to a factor of  <IMG WIDTH=13 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1937" SRC="img110.gif"  > 
+with its principal value localized  in the range of  <IMG WIDTH=42 HEIGHT=11 ALIGN=MIDDLE ALT="tex2html_wrap_inline1939" SRC="img111.gif"  > . To obtain the continuous phase map, a special unwrapping 
+algorithm, removing discontinuities with an amplitude close to  <IMG WIDTH=13 HEIGHT=9 ALIGN=BOTTOM ALT="tex2html_wrap_inline1937" SRC="img110.gif"  >  is applied to the reconstructed phase map. 
+The algorithm implementation includes the following steps:
+<OL><LI>
+Calculation of the spectrum of the initial intensity distribution <TT>
+pip_fft 1</TT>. It consists of a central lobe and two side-lobes,
+containing information about the phase.<LI> 
+Shift of the obtained spectrum to put one of the side lobes into the
+origin: <TT>interpol</TT>.<LI> 
+Filtering, leaving only the side lobe, containing th phase
+information. This operation is performed as a product with rectangular
+spectral window <TT>rect_ap</TT>.<LI> 
+Reversed Fourier transform <TT>pip_fft -1</TT> and saving of the wrapped phase.<LI>
+Phase unwrapping.
+</OL>
+Described procedure is performed by the following script:
+<PRE>#!/bin/csh -f
+#Importing the interferogram intensity pattern:
+begin 1e-2 1e-6 200 | fil_ter int subs int_in &gt;foo
+#Fourier transform and shift in the spectral domain: 
+pip_fft 1 &lt; foo | interpol 1e-2 200  10.e-4 0 &gt; foo1
+#Postscript of the intensity distribution in the Fourier domain:
+interpol 4e-3 &lt; foo1 | file_ps fft_shifted.ps 200 14 |rect_ap 15e-4 1\
+|file_ps fft_shifted_filtered.ps 200 14&gt; /dev/null
+
+#Filtering in the Fourier domain, reverse FFT and saving of the phase:
+rect_ap 15e-4 1 &lt; foo1 |pip_fft -1|file_pha pha 50 &gt; foo
+#Unwrapping the phase:
+unf3 -1 &lt; pha &gt; pha1
+#All done</PRE>
+The initial interferogram is even (symmetric) with respect to the
+vertical axis, but the phase is odd, thus the phase is reconstructed
+with inverted sign (this depends on the direction of the shift in the
+frequency domain). The amount of shift in the frequency domain can be
+calculated using relations, given in the section containing
+description of <TT>pip_fft</TT>, it also can be determined
+experimentally by visualizing the spectrum and shifting it, to
+position one of its side lobes at the origin. This can be done with
+<TT>interpol</TT>. Visualization of the spectrum side lobes requires high
+ <IMG WIDTH=7 HEIGHT=13 ALIGN=MIDDLE ALT="tex2html_wrap_inline1721" SRC="img7.gif"  >  (of the order of 10).
+<P>
+<H1><A NAME="SECTION00060000000000000000">LightPipes: port to MSDOS</A></H1>
+<P>
+MSDOS port has <B>the full functionality of the Unix distribution</B>.
+All command names are cut to 8 letters, capitals are not
+supported. Thus, for example, instead of a Unix command <TT>
+LongCommandOfPipes</TT> you must use the abridged version: <TT>
+longcomm</TT>. Simple <TT>NULL</TT> have to be used instead of <TT>
+/dev/null</TT> The <TT>.EXE</TT> files are compiled with DJGPP compiler
+(version 1.12) - many thanks to DJ Delorie. DJGPP is the MSDOS port of
+Gnu C compiler, it is freely available from any Simtel mirror. If you
+don't have enough RAM, the program will swap to the harddisk. Under
+MSDOS it was approximately 2 times slower than under Linux on the same
+computer (Pentium90 of unknown origin with 24MB of RAM). I tested it
+on a 386 with 3MB of RAM- it runs all the example scripts and some of
+them take number of days to execute. It runs happily in a DOS box
+under MS Windows 3.1. It also runs all scripts under DOSEMU&nbsp;0.60.1
+with 8MB of DPMI (I tried it again under DOSEMU&nbsp;0.60.4. - it works
+but it was not really stable).
+<P>
+<B>Use the part 1 of this manual as the command reference and
+tutorial for MSDOS port</B>. You just have to take into account some
+basic differences between DOS and Unix.
+<P>
+The syntax depends on the version of <TT>command.com</TT> you
+use. Microsoft <TT>command.com</TT> is supposed to be present. 4DOS is
+better. There is a problem with programming loops in script batch 
+files, the simplest solution is just a mechanical repetition of the
+command sequence inside the batch file. The script files are
+getting longer, but the result is achieved. There is a full set of
+ported to MSDOS example scripts in the directory <TT>scripts</TT>.
+<P>
+Some rules to port a script from Unix to DOS (the list is not
+complete):
+<UL><LI> Remove the first line with the call to shell;<LI> put <TT>@echo off</TT> at the beginning of the script;<LI> replace comments # with <TT>rem</TT>;<LI> replace the constructs like <TT>cat filename | command |</TT> with 
+<TT>command &lt; filename |</TT>;<LI> rename <TT>script</TT> to <TT>script.bat</TT>;<LI> replace <TT>rm</TT> with <TT>del</TT>, note that standard <TT>del</TT>
+does not work on lists, you have to issue a separate <TT>del</TT> for
+each file;<LI> check out that all the tokens are separated by spaces.
+</UL><H1><A NAME="SECTION00070000000000000000">Command reference</A></H1>
+<P>
+The command reference is excluded from this manual. If you have a
+working program, just type the command you want to know about at the
+shell prompt, it will print short explanation to the screen.
+<P>
+If you want to get a list of all descriptions, the following command
+(under Unix Csh) will do the job:
+<P>
+<PRE>rm refer; touch refer;
+find . -perm -555 -exec {} &gt;&gt; &amp; refer \;</PRE>
+<P>
+The resulting file <TT>refer</TT> contains all descriptions of all
+executables.
+<P>
+<P>
+<P>
+ <P><A NAME="SECTIONREF"><H2>References</H2></A><P>
+<DL COMPACT>
+<DT><A NAME="Cshell"><STRONG>1</STRONG></A><DD> G. Anderson, P. Anderson,
+The Unix C shell guide, Prentice-Hall (1986)
+<P>
+<DT><A NAME="Born1"><STRONG>2</STRONG></A><DD> 
+M. Born, E. Wolf, Principles of Optics, Pergamon, 464, 767-772 (1993)
+<P>
+<DT><A NAME="Malacara"><STRONG>3</STRONG></A><DD> 
+D. Malacara, Optical shop testing, J.Wiley &amp; Sons, (1992)
+<P>
+<DT><A NAME="Goodman"><STRONG>4</STRONG></A><DD> 
+J.W. Goodman, Introduction to Fourier Optics, McGraw-Hill, 49-56
+(1968)
+<P>
+<DT><A NAME="Southwell"><STRONG>5</STRONG></A><DD> 
+W.H. Southwell, J. Opt. Soc. Am., <B>71</B>, 7-14 (1981)
+<P>
+<DT><A NAME="siegman2"><STRONG>6</STRONG></A><DD> 
+A.E. Siegman , E.A. Sziklas, Mode calculations in unstable resonators
+with flowing saturable gain: 2. Fast Fourier transform method, Applied
+Optics <B>14</B>, 1874-1889 (1975)
+<P>
+<DT><A NAME="Elkin"><STRONG>7</STRONG></A><DD> 
+N.N. Elkin, A.P. Napartovich, in &quot;Applied optics of Lasers&quot;, Moscow
+TsniiAtomInform, 66 (1989) (in Russian)
+<P>
+<DT><A NAME="Baracat"><STRONG>8</STRONG></A><DD> 
+R. Baracat, in &quot;The Computer in Optical Research&quot;, ed. B.R.&nbsp;Frieden,
+Springer-Verlag, 72-75 (1980)
+<P>
+<DT><A NAME="siegman1"><STRONG>9</STRONG></A><DD> 
+A. E. Siegman, Lasers, Oxford University Press (1986)
+<P>
+<DT><A NAME="rench"><STRONG>10</STRONG></A><DD> 
+D.B. Rench, Three- dimensional Unstable Resonator Calculations with
+Laser Medium, Appl. Opt. <B>13</B>, 2546-2561 (1974)
+<P>
+<DT><A NAME="samar"><STRONG>11</STRONG></A><DD>
+A.A. Samarskii, E.S. Nikolaev, Numerical Methods for Grid Equations,
+V.1, Direct methods, pp. 61-65, Birkh&#228;user Verlag 1989.
+<P>
+<DT><A NAME="Marcuse"><STRONG>12</STRONG></A><DD>
+Dietrich Marcuse, Light Transmission Optics, Van Nostrand Reinhold,
+267-280, 1972.
+</DL><BR> <HR>
+<P><ADDRESS>
+<I>Gleb Vdovin <BR>
+Mon Jan 13 16:55:15 MET 1999</I>
+</ADDRESS>
+</BODY>
+</HTML>

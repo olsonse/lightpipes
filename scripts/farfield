@@ -1,0 +1,49 @@
+#!/bin/csh -f
+#	(C) Gleb Vdovin 1993-1995
+#	This file is a part of LightPipes.1.0 distribution
+#	
+#	Far field distributions for aberrated beams:
+#	Here the trick with coordinate transfer is used:
+#	first we define the field in a "small" region
+#	then we apply a weak positive lens
+#	then we apply coordinate transfer equivalent to a small
+#	negative lens (resulting in a plane wave in divergent coordinates
+#	and then we propagate it. As the coordinates are 
+#	divergent, the output field is wide enough to
+#	to match the diffracted pattern
+#	Without this trick the input grid would be too coarse
+
+# Ideal beam:
+begin 0.1 1e-6  | circ_ap 0.01 |Zernike 3 1 0.01 0|lens 200 > foo
+lens_fresn -200 1000 < foo  |file_ps far_field1.ps same 2.5> foo1
+echo "Ideal beam:"
+show foo1
+rm foo foo1
+
+# Coma with amplitude 6.28 rad or ~ 1 lambda:
+begin 0.1 1e-6  | circ_ap 0.01 |Zernike 3 1 0.01 3.14 | lens 200 > foo
+lens_fresn -200 1000 < foo  |file_ps far_field2.ps same 2.5> foo1
+echo "Coma"
+show foo1
+rm foo foo1
+
+# Astigmatism with amplitude 6.28 rad or ~ 1 lambda:
+begin 0.1 1e-6  | circ_ap 0.01 |Zernike 2 2 0.01 3.14 |lens 200 > foo
+lens_fresn -200 1000 < foo  |file_ps far_field3.ps same 2.5> foo1
+echo "Astigmatism:"
+show foo1
+rm foo foo1
+
+# Spherical aberration with amplitude 6.28 rad or ~ 1 lambda:
+begin 0.1 1e-6  | circ_ap 0.01 |Zernike 4 0 0.01 3.14 | lens 200 > foo
+lens_fresn -200 1000 < foo  |file_ps far_field4.ps same 2.5> foo1
+echo "Spherical aberration"
+show foo1
+rm foo foo1
+
+#compare this with a direct calculation without a coordinate transform:
+begin 0.6 1e-6  | circ_ap 0.01 |Zernike 4 0 0.01 3.14 > foo
+Fresnel  1000 < foo  |file_ps far_field4_bis.ps same 2.5> foo1
+echo "Compare it with this, obtained without the coordinate transformation:"
+show foo1
+rm foo foo1

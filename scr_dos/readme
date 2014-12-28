@@ -1,0 +1,16 @@
+This directory contains LightPipes.1.2 scripts for DOS.
+
+All scripts are tested and work fine with LightPipes.1.2.
+
+If you have not Ghostview installed in your system, "show" will
+produce an error. With Ghostscript (available from Simtel) you
+may convert Postscript output into almost any graphical format.
+
+Some of these scripts will not work with the demo version of
+LightPipes.1.2  producing a message with ordering information.
+
+
+Gleb.
+
+gleb@okotech.com
+
