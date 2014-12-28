@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/sh
 #	(C) Gleb Vdovin 1993-1996
 #	This file is a part of LightPipes distribution
 #	

@@ -1,41 +1,35 @@
-#!/bin/csh -f
-#	(C) Gleb Vdovin 1993-1996
-#	This file is a part of LightPipes  distribution
-#	
+#!/bin/sh
+# (C) Gleb Vdovin 1993-1996
+# This file is a part of LightPipes  distribution
+#
 
-#	LightPipes script: a model of an unstable resonator
-#	with N=10, M=2, 
-#	See D.B. Rench, Applied  Optics 13, 2546...2561 (1974)
-#	All dimensions are taken from the table on p. 2552
-#	in this reference
+# LightPipes script: a model of an unstable resonator
+# with N=10, M=2,
+# See D.B. Rench, Applied  Optics 13, 2546...2561 (1974)
+# All dimensions are taken from the table on p. 2552
+# in this reference
 
-#	theoretically the initial field distribution may be random 
-#	but we'll use a good plane wave because it won't
-#	converge with a random distribution
-	
+# theoretically the initial field distribution may be random
+# but we'll use a good plane wave because it won't
+# converge with a random distribution
+
 begin 12. 3e-4  > field1
 
-#	40 iterations inside the resonator
-@ i=0
-while( $i < 40)
-#	reflection from the convex mirror and propagation 
-	rect_ap 5.48 < field1 | lens -1e4 | fresnel 1e4 > field2
-#	reflection from the concave mirror and propagation
-	rect_ap 10.96 < field2 | lens 2e4  | fresnel 1e4 | normal y > field1
-	Strehl y < field1 > /dev/null
-	file_int in < field1 | cros_out cross > /dev/null
-	@ i += 1
-end
+# 40 iterations inside the resonator
+i=0
+while [ "$i" < 40 ] ; do
+  # reflection from the convex mirror and propagation
+  rect_ap 5.48 < field1 | lens -1e4 | fresnel 1e4 > field2
+  # reflection from the concave mirror and propagation
+  rect_ap 10.96 < field2 | lens 2e4  | fresnel 1e4 | normal y > field1
+  Strehl y < field1 > /dev/null
+  file_int in < field1 | cros_out cross > /dev/null
+  let i+=1
+done
 # output of the resonator is screened by the output mirror:
-# the output 
-rect_screen 5.48 < field1 | file_int in same \
+# the output
+rect_screen 5.48 < field1 | file_int in same | \
  file_pha pha same | file_ps res_out.ps same | Strehl y > field
 show field
 # removing the temp files
 rm field1 field2
-
-
-
-
-
-

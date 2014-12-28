@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/sh
 
 #	(C) Gleb Vdovin 1993-1995
 #	This file is a part of LightPipes.1.0
@@ -40,7 +40,3 @@ fil_ter pha subs pha <field2 | fil_ter int subs in > field5
 #	End, all the files have to be erased:
 
 rm field1 field2 field3 field4 field5
-
-
-
-

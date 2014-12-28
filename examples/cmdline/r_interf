@@ -1,21 +1,21 @@
-#!/bin/csh -f
-#	(C) Gleb Vdovin 1993-1995
-#	This file is a part of LightPipes.1.0 distribution
-#	
-#	rotational interferometers:
+#!/bin/sh
+# (C) Gleb Vdovin 1993-1995
+# This file is a part of LightPipes.1.0 distribution
+#
+# rotational interferometers:
 
 
-#	coma 
+# coma
 
 begin 0.025 5e-7 | circ_ap 0.01 | zernike 3 1 0.01 10 | b_split foo1 > foo
 # rotating and mixing
 interpol same same  0. 0. 180 < foo1 | b_mix foo > foo2
 show foo2
 # postscript output
-file_ps rotational1.ps same < foo2 >/dev/null
+file_ps rotational1.ps same < foo2 > /dev/null
 rm foo foo1 foo2
 
-#	astigmatism
+# astigmatism
 begin 0.025 5e-7 | circ_ap 0.01 | zernike 2 2 0.01 10 | b_split foo1 > foo
 # rotating and mixing
 interpol same same  0. 0. 90   < foo1 | b_mix foo > foo2
@@ -25,7 +25,7 @@ file_ps rotational2.ps same < foo2 > /dev/null
 rm foo foo1 foo2
 
 
-#	high order
+# high order
 begin 0.025 5e-7 | circ_ap 0.01 | zernike 7 3 0.01 10 | b_split foo1 > foo
 # rotating and mixing
 interpol same same 0. 0. 90 < foo1 | b_mix foo > foo2
@@ -33,4 +33,3 @@ show foo2
 # postscript output
 file_ps rotational3.ps same < foo2 > /dev/null
 rm foo foo1 foo2
-
