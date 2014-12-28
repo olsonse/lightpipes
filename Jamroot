@@ -75,6 +75,8 @@ project /lightpipes
         <define>LIGHTPIPES_VERSION=\\\"$(VERSION)\\\"
     ;
 
+lib fftw3 : : <name>fftw3 : : <link>shared ;
+
 lib lightpipes
     : # sources
       src/lightpipes/Field.cpp
@@ -87,6 +89,7 @@ lib lightpipes
       <include>.
     : # no default build
     : # no client includes
+        <library>fftw3/<link>shared
     ;
 
 build-project src/progs ;
