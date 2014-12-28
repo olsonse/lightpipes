@@ -1,9 +1,9 @@
-#!/bin/csh -f
-#	(C) Gleb Vdovin 1993-1996
-#	This file is a part of LightPipes distribution
-#	
+#!/bin/sh
+# (C) Gleb Vdovin 1993-1996
+# This file is a part of LightPipes distribution
+#
 
-#	shearing intererometer, defocus
+# shearing intererometer, defocus
 # starting, lens, Z1 
 begin 0.04 5e-7  | circ_ap 0.01 | lens -20 | forvard 0.5 | b_split foo1 > foo
 # shifting beam 3 mm without real interpolation, mixing it
@@ -14,9 +14,9 @@ file_ps shear1.ps same  < foo2 | cros_out out > /dev/null
 show foo2
 rm foo foo1 foo2
 
-#	shearing intererometer, astigmatism
-begin 0.04 5e-7 | circ_ap 0.01 | zernike 2 2 0.01 20 |\
-forvard 0.5 | b_split foo1 > foo
+# shearing intererometer, astigmatism
+begin 0.04 5e-7 | circ_ap 0.01 | zernike 2 2 0.01 20 | \
+  forvard 0.5 | b_split foo1 > foo
 # shifting beam 3 mm without real interpolation, mixing it
 # with centered beam
 interp4 0.04 same 0.003 0.0  <foo1 | b_mix foo | forvard 0.5 > foo2
@@ -25,9 +25,9 @@ file_ps shear5.ps  same < foo2 > /dev/null
 show foo2
 rm foo foo1 foo2
 
-#	shearing intererometer, coma
-begin 0.04 5e-7 | circ_ap 0.01 | zernike 3 1 0.01 10 |\
-forvard 0.5 | b_split foo1 > foo
+# shearing intererometer, coma
+begin 0.04 5e-7 | circ_ap 0.01 | zernike 3 1 0.01 10 | \
+  forvard 0.5 | b_split foo1 > foo
 # shifting beam 3 mm without real interpolation, mixing it
 # with centered beam
 interp4 0.04 same 0.003 0.00 < foo1 | b_mix foo | forvard 0.5 > foo2
@@ -36,9 +36,9 @@ file_ps shear4.ps  same <foo2 >/dev/null
 show foo2
 rm foo foo1 foo2
 
-#	this may be a spherical aberration ??
-begin 0.04 5e-7  | circ_ap 0.01 | zernike 4 0 0.01 10|\
-forvard 0.5 | b_split foo1 > foo
+# this may be a spherical aberration ??
+begin 0.04 5e-7  | circ_ap 0.01 | zernike 4 0 0.01 10| \
+  forvard 0.5 | b_split foo1 > foo
 # shifting beam 3 mm without real interpolation, mixing it
 # with centered beam
 interp4 0.04 same 0.003 0.00 < foo1 | b_mix foo | forvard 0.5 > foo2
@@ -46,4 +46,3 @@ interp4 0.04 same 0.003 0.00 < foo1 | b_mix foo | forvard 0.5 > foo2
 file_ps shear3.ps same < foo2 > /dev/null
 show foo2
 rm foo foo1 foo2  
-

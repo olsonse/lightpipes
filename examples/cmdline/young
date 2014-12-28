@@ -1,7 +1,7 @@
-#!/bin/csh -f
-#	(C) Gleb Vdovin 1993-1995
-#	This file is a part of LightPipes.1.0 distribution
-#	
+#!/bin/sh
+# (C) Gleb Vdovin 1993-1995
+# This file is a part of LightPipes.1.0 distribution
+#
 
 #model of a screen with two round holes
         begin 0.005 0.55e-6 150> beam

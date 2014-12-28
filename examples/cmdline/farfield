@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #	(C) Gleb Vdovin 1993-1995
 #	This file is a part of LightPipes.1.0 distribution
 #	
@@ -19,7 +19,7 @@ lens_fresn -200 1000 < foo  |file_ps far_field1.ps same 2.5> foo1
 echo "Ideal beam:"
 show foo1
 
-read -p "press enter to continue"
+read -p "press enter to continue" tmpvar
 rm foo foo1
 
 # Coma with amplitude 6.28 rad or ~ 1 lambda:
