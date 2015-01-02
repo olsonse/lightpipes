@@ -366,7 +366,7 @@ namespace lightpipes {
      *
      * The direct calculation of diffraction integral in the Fresnel
      * approximation is used, thus forward can not be used to propagate the
-     * field to a short distances.  Use forvard or steps instead.
+     * field to short distances.  Use forvard or steps instead.
      *
      * forward is a <b><i>very</i></b> slow routine.
      * @see forvard, fresnel, steps
@@ -583,6 +583,14 @@ namespace lightpipes {
     void cleanup();
     void base_init();
     void init(Pixel init_fill);
+
+    template < typename n_accessor >
+    void stepsImpl( const double & step_size,
+                    const int & N,
+                    const n_accessor & n,
+                    const std::string & dump_filename,
+                    const int & dump_period)
+                    throw (std::runtime_error);
   };
 
 
