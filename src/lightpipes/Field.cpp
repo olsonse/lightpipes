@@ -2090,9 +2090,9 @@ namespace lightpipes {
         b_i( -1 / dx2 )
         { }
 
-      void operator()(const std::vector<Pixel> c,
-                      const std::vector<Pixel> p,
-                            std::vector<Pixel> u ) {
+      void operator()(const std::vector<Pixel> & c,
+                      const std::vector<Pixel> & p,
+                            std::vector<Pixel> & u ) {
         /*
          * initial condition, everything is going to be zero at the edge
          */
@@ -2303,7 +2303,7 @@ namespace lightpipes {
                                      static_cast<double>(j_left),
                                      band_pow );
 
-          if ( j >= j_right )
+          else if ( j >= j_right )
             cj[j].imag() -= ( AA * K )
                          * std::pow( static_cast<double>(j - j_right) /
                                      static_cast<double>(info.number.second - j_right),
@@ -2341,7 +2341,7 @@ namespace lightpipes {
                                      band_pow );
 
           /* seems like this extra factor of 2 here is not consistent. */
-          if ( j >= j_right )
+          else if ( j >= j_right )
             cj[j].imag() -= ( AA * 2. * K )
                          * std::pow( static_cast<double>(j - j_right) /
                                      static_cast<double>(info.number.second - j_right),
@@ -2396,7 +2396,7 @@ namespace lightpipes {
                                      static_cast<double>(i_left),
                                      band_pow );
 
-          if ( i >= i_right )
+          else if ( i >= i_right )
             ci[i].imag() -= ( AA * K )
                          * std::pow( static_cast<double>(i - i_right) /
                                      static_cast<double>(info.number.first - i_right),
@@ -2432,7 +2432,7 @@ namespace lightpipes {
                                      static_cast<double>(i_left),
                                      band_pow );
 
-          if ( i >= i_right )
+          else if ( i >= i_right )
             ci[i].imag() -= ( AA * K )
                          * std::pow( static_cast<double>(i - i_right) /
                                      static_cast<double>(info.number.first - i_right),
