@@ -2086,37 +2086,41 @@ namespace lightpipes {
         N(N),
         alpha(N-1, Pixel(0,0)),
         beta (N-1, Pixel(0,0)),
-        a_i( -1 ./ dx2 ),
-        b_i( -1 ./ dx2 ),
+        a_i( -1 / dx2 ),
+        b_i( -1 / dx2 )
         { }
 
-      void operator()(const std::complex<double> * c,
-                      const std::complex<double> * p,
-                            std::complex<double> * u ) {
+      void operator()(const std::vector<Pixel> c,
+                      const std::vector<Pixel> p,
+                            std::vector<Pixel> u ) {
         /*
          * initial condition, everything is going to be zero at the edge
          */
         alpha[N-2] = beta[N-2] = alpha[0] = beta[0] = std::complex<double>(0,0);
 
         /*
-         * forward elimination 
+         * forward elimination
          */
-        for ( int i = 2; i <= N - 2; ++i ) {
-          std::complex<double> cc = c[i] -  a_i * alpha[i-2];
-          alpha[i-1] = b_i / cc;
-          beta[i-1] = ( p[i] + a_i * beta[i-2] ) / cc;
+        for ( size_t i = 0; i < N - 3; ++i ) {
+          std::complex<double> cc = c[i+1] -  a_i * alpha[i];
+          alpha[i+1] = b_i / cc;
+          beta[i+1] = ( p[i] + a_i * beta[i] ) / cc;
         }
 
+        /* This routine seems somewhat hackish with the absorption.  Also skips
+         * c[N-2] entirely. */
+
         /*
-         * edge amplitude =0 
+         * edge amplitude =0
          */
-        u[N] = ( p[N] + a_i * beta[N-2] )
-             / ( c[N] - a_i * alpha[N-2] );
+        /* Probably not important:  I think c[N-2] instead of original c[N-1] */
+        u[N-1] = ( p[N-3] + a_i * beta[N-2] )
+               / ( c[N-2] - a_i * alpha[N-2] );
         /*
-         * backward elimination 
+         * backward elimination
          */
-        for ( int i = N - 1; i >= 1; --i ) {
-          u[i] = alpha[i-1] * u[i+1] + beta[i-1];
+        for ( int i = N - 2; i >= 0; --i ) {
+          u[i] = alpha[i] * u[i+1] + beta[i];
         }
       }
     };
@@ -2180,62 +2184,65 @@ namespace lightpipes {
     return *this;
   }
 
+  namespace {
+    typedef std::complex<double> Pixel;
+    struct GetN {
+      const Pixel * n;
+      GetN( const Pixel * n ) : n(n) { }
+      const Pixel & operator[](const size_t & i) const { return n[i]; }
+    };
+
+    static const std::complex<double> One(1.0, 0.0);
+    struct VacuumN {
+      const Pixel & operator[](const size_t &) const { return One; }
+    };
+  }/* anonymous */
+
   Field & Field::steps( const double & step_size,
                         const int & N,
                         const Pixel * n,
                         const std::string & dump_filename,
                         const int & dump_period)
                         throw (std::runtime_error) {
-    if ( n == NULL ) {
-      struct GetN {
-        const Pixel * n;
-        GetN( const Pixel * n ) : n(n) { }
-        const Pixel & operator[](const size_t & i) const { return n[i]; }
-      };
+    if ( n != NULL ) {
       GetN getn(n);
       this->stepsImpl( step_size, N, getn, dump_filename, dump_period );
     } else {
-      struct VacuumN {
-        const Pixel operator[](const size_t &) const { Pixel(1.0,0.0); }
-      };
-      VacuumN vacuum_n();
+      VacuumN vacuum_n;
       this->stepsImpl( step_size, N, vacuum_n, dump_filename, dump_period );
     }
     return *this;
   }
 
   template < typename n_accessor >
-  Field & Field::stepsImpl( const double & step_size,
-                            const int & N,
-                            const n_accessor & n,
-                            const std::string & dump_filename,
-                            const int & dump_period)
-                            throw (std::runtime_error) {
+  void Field::stepsImpl(const double & step_size,
+                        const int & N,
+                        const n_accessor & n,
+                        const std::string & dump_filename,
+                        const int & dump_period)
+                        throw (std::runtime_error) {
     if ( info.sph_coords_factor != 0. ) {
       throw std::runtime_error(
         "steps:  spherical coords not supported.  First call "
         "Field::spherical_to_normal_coords()"
       );
     }
-    throw std::runtime_error("not fixed for NxM yet");
     const double K = 2. * M_PI / info.lambda;
-    const double Pi4lz = 4. * M_PI / info.lambda / (step_size/2.0);
-    const double delta2 = SQR( info.side_length / (info.number - 1.0 ) );
     const double dx2 = SQR( info.side_length.first / (info.number.first - 1.0 ) );
     const double dy2 = SQR( info.side_length.second / (info.number.second - 1.0 ) );
+
+    //if ( dx2 != dy2 )
+    //  throw std::runtime_error("steps: not fixed for non-uniform grid yet");
 
     Eliminator elim_i(info.number.first, dx2),
                elim_j(info.number.second, dy2);
 
-    Pixel * c    = new Pixel[ info.number+3 ];
-    Pixel * p    = new Pixel[ info.number+3 ];
-    Pixel * u    = new Pixel[ info.number+3 ];
-    Pixel * u1   = new Pixel[ info.number+3 ];
-    Pixel * u2   = new Pixel[ info.number+3 ];
-
-    std::vector<Pixel> ui(info.number.first,  Pixel(0,0)),
-                       uj(info.number.second, Pixel(0,0));
-
+    std::vector<Pixel> ui(info.number.first,    Pixel(0,0)),
+                       uj(info.number.second,   Pixel(0,0)),
+                       ci(info.number.first,    Pixel(0,0)),
+                       cj(info.number.second,   Pixel(0,0)),
+                       pi(info.number.first-2,  Pixel(0,0)),
+                       pj(info.number.second-2, Pixel(0,0));
 
     std::ofstream dump_file;
     if ( dump_filename != "" ) {
@@ -2243,225 +2250,205 @@ namespace lightpipes {
     }
 
     /*
-     * absorption at the borders is described here 
+     * absorption at the borders is described here
      */
     const double AA = -10. / (step_size/2.0) / N; /* total absorption */
     const double band_pow = 2.; /* profile of the absorption border,
                                  * 2=quadratic */
     /*
-     * width of the absorption border 
+     * width of the absorption border
      */
-    const size_t i_left  = 0.1 * info.number.first + 1;
-    const size_t i_right = 0.9 * info.number.first + 1;
-    const size_t j_left  = 0.1 * info.number.second+ 1;
-    const size_t j_right = 0.9 * info.number.second+ 1;
+    const size_t i_left  = 0.1 * info.number.first  + 1;
+    const size_t i_right = 0.9 * info.number.first  + 1;
+    const size_t j_left  = 0.1 * info.number.second + 1;
+    const size_t j_right = 0.9 * info.number.second + 1;
 
-
-    for ( int i = 0; i < info.number; ++i ) {
-      u2[i+1] = Pixel(0.0, 0.0);
-    }
 
     /*
-     * Main loop, steps here 
+     * Main loop, steps here
      */
     for ( int istep = 1; istep <= N; ++istep ) {
+      std::fill( uj.begin(), uj.end(), Pixel(0,0) );
+
       /*
-       * Elimination in the direction i, halfstep 
+       * Elimination in the direction i, halfstep
        */
       for ( long i = info.size() - 1; i >= 0; --i ) {
         register double fi = 0.25 * K * (step_size/2.0) * ( n[i].real() - 1. );
         val[i] *= exp(I * fi);
       }
 
-      for ( int jj = 1; jj < info.number.first - 2; jj += 2 ) {
-        int j = jj;
+      for ( size_t ii = 1; ii < info.number.first - 2; ii += 2 ) {
+        size_t i = ii;
 
-        for ( size_t i = 1; i < info.number.second - 1; ++i ) {
-          const Pixel & uij   = idx(j    , i);
-          const Pixel & uij1  = idx(j + 1, i);
-          const Pixel & uij_1 = idx(j - 1, i);
+        for ( size_t j = 1; j < info.number.second - 1; ++j ) {
+          const Pixel & uij   = idx(i    , j);
+          const Pixel & ui1j  = idx(i + 1, j);
+          const Pixel & ui_1j = idx(i - 1, j);
 
-          p[i+1] = Pixel ( 0., Pi4lz ) * uij
-                 + ( -1. / delta2 ) * (-2. * uij + uij1 + uij_1);
+          pj[j-1] = 2. * I * K / (step_size/2.0) * uij
+                  - (-2. * uij + ui1j + ui_1j) / dx2;
         }
 
-        for ( size_t i = 0; i < info.number.second; ++i ) {
-          const size_t ik = j * info.number.second + i;
+        for ( size_t j = 0; j < info.number.second; ++j ) {
+          const size_t ik = i * info.number.second + j;
 
-          c[i+1] = Pixel(
-            -2. / delta2,
-            Pi4lz + -2. * M_PI * n[ik].imag() / info.lambda
-          );
+          cj[j] = -2/dx2 + I * K * ( 2/(step_size/2) - n[ik].imag() );
           /*
            * absorption borders are formed here 
            */
-          if ( (i+1) <= i_left )
-            c[i+1].imag() -= ( AA * K )
-                         * std::pow( static_cast<double>(i_left - (i+1)) /
-                                     static_cast<double>(i_left),
+          if ( j <= j_left )
+            cj[j].imag() -= ( AA * K )
+                         * std::pow( static_cast<double>(j_left - j) /
+                                     static_cast<double>(j_left),
                                      band_pow );
 
-          if ( (i+1) >= i_right )
-            c[i+1].imag() -= ( AA * K )
-                         * std::pow( static_cast<double>((i+1) - i_right) /
-                                     static_cast<double>(info.number - i_right),
+          if ( j >= j_right )
+            cj[j].imag() -= ( AA * K )
+                         * std::pow( static_cast<double>(j - j_right) /
+                                     static_cast<double>(info.number.second - j_right),
                                      band_pow );
         }
 
-        elim(c, p, u);
-
-        for ( int i = 0; i < info.number.second; ++i ) {
-          idx(j-1,i) = u2[i+1];
-          u1[i+1] = u[i+1];
+        for ( size_t j = 0; j < info.number.second; ++j ) {
+          idx(i-1,j) = uj[j];
         }
 
-        j = jj + 1;
+        elim_j(cj, pj, uj);
 
-        for ( size_t i = 1; i < info.number.second - 1; ++i ) {
-          const Pixel & uij   = idx(j    , i);
-          const Pixel & uij1  = idx(j + 1, i);
-          const Pixel & uij_1 = idx(j - 1, i);
+        i = ii + 1;
 
-          p[i+1] = Pixel ( 0., Pi4lz ) * uij
-                 + ( -1. / delta2 ) * (-2. * uij + uij1 + uij_1);
+        for ( size_t j = 1; j < info.number.second - 1; ++j ) {
+          const Pixel & uij   = idx(i    , j);
+          const Pixel & ui1j  = idx(i + 1, j);
+          const Pixel & ui_1j = idx(i - 1, j);
+
+          pj[j-1] = 2. * I * K / (step_size/2.0) * uij
+                  - (-2. * uij + ui1j + ui_1j) / dx2;
         }
 
-        for ( size_t i = 0; i < info.number.second; ++i ) {
-          const size_t ik = j * info.number.second + i;
+        for ( size_t j = 0; j < info.number.second; ++j ) {
+          const size_t ik = i * info.number.second + j;
 
-          c[i+1] = Pixel(
-            -2. / delta2,
-            Pi4lz + -2. * M_PI * n[ik].imag() / info.lambda
-          );
+          cj[j] = -2/dx2 + I * K * ( 2/(step_size/2) - n[ik].imag() );
           /*
            * absorption borders are formed here 
            */
-          if ( (i+1) <= i_left )
-            c[i+1].imag() -= ( AA * K )
-                         * std::pow( static_cast<double>(i_left - (i+1)) /
-                                     static_cast<double>(i_left),
+          if ( j <= j_left )
+            cj[j].imag() -= ( AA * K )
+                         * std::pow( static_cast<double>(j_left - j) /
+                                     static_cast<double>(j_left),
                                      band_pow );
 
-          if ( (i+1) >= i_right )
-            c[i+1].imag() -= ( AA * 2. * K )
-                         * std::pow( static_cast<double>((i+1) - i_right) /
-                                     static_cast<double>(info.number - i_right),
+          /* seems like this extra factor of 2 here is not consistent. */
+          if ( j >= j_right )
+            cj[j].imag() -= ( AA * 2. * K )
+                         * std::pow( static_cast<double>(j - j_right) /
+                                     static_cast<double>(info.number.second - j_right),
                                      band_pow );
         }
 
-        elim(c, p, u);
-
-        for ( int i = 0; i < info.number.second; ++i ) {
-          idx(j-1,i) = u1[i+1];
-          u2[i+1] = u[i+1];
+        for ( size_t j = 0; j < info.number.second; ++j ) {
+          idx(i-1,j) = uj[j];
         }
+
+        elim_j(cj, pj, uj);
+
       }
 
       /* something to the last row. */
-      for ( int j = 0; j < info.number.second; ++j ) {
-        idx(info.number.first-1,j) = u2[j+1];
+      for ( size_t j = 0; j < info.number.second; ++j ) {
+        idx(info.number.first-1,j) = uj[j];
       }
 
-      for ( long i = info.size() - 1; i >= 0; ++i ) {
+      for ( long i = info.size() - 1; i >= 0; --i ) {
         register double fi = 0.5 * K * (step_size/2.0) * ( n[i].real() - 1. );
         val[i] *= exp(I * fi);
       }
-      
+
 
       /*
        * Elimination in the j direction is here, halfstep 
        */
-      for ( size_t i = 0; i < info.number; ++i ) {
-        u2[i+1] = Pixel(0.0, 0.0);
-      }
-
+      std::fill( ui.begin(), ui.end(), Pixel(0,0) );
       
-      for ( size_t ii = 1; ii < info.number.second - 2; ii += 2 ) {
-        int i = ii;
-        for ( size_t j = 1; j < info.number.first - 1; ++j ) {
-          const Pixel & uij   = idx(j,i    );
-          const Pixel & ui1j  = idx(j,i + 1);
-          const Pixel & ui_1j = idx(j,i - 1);
+      for ( size_t jj = 1; jj < info.number.second - 2; jj += 2 ) {
+        size_t j = jj;
+        for ( size_t i = 1; i < info.number.first - 1; ++i ) {
+          const Pixel & uij   = idx(i,j    );
+          const Pixel & uij1  = idx(i,j + 1);
+          const Pixel & uij_1 = idx(i,j - 1);
 
-          p[j+1] = Pixel ( 0., Pi4lz ) * uij
-                 + ( -1. / delta2 ) * (-2. * uij + ui1j + ui_1j);
+          pi[i-1] = 2. * I * K / (step_size/2.0) * uij
+                  - (-2. * uij + uij1 + uij_1) / dy2;
         }
 
-        for ( size_t j = 0; j < info.number.first; ++j ) {
-          const size_t ik = j * info.number.second + i;
+        for ( size_t i = 0; i < info.number.first; ++i ) {
+          const size_t ik = i * info.number.second + j;
 
-          c[i+1] = Pixel(
-            -2. / delta2,
-            Pi4lz + -2. * M_PI * n[ik].imag() / info.lambda
-          );
+          ci[i] = -2/dy2 + I * K * ( 2/(step_size/2) - n[ik].imag() );
           /*
            * absorption borders are formed here 
            */
-          if ( (j+1) <= i_left )
-            c[j+1].imag() -= ( AA * K )
-                         * std::pow( static_cast<double>(i_left - (j+1)) /
+          if ( i <= i_left )
+            ci[i].imag() -= ( AA * K )
+                         * std::pow( static_cast<double>(i_left - i) /
                                      static_cast<double>(i_left),
                                      band_pow );
 
-          if ( (j+1) >= i_right )
-            c[j+1].imag() -= ( AA * K )
-                         * std::pow( static_cast<double>((j+1) - i_right) /
-                                     static_cast<double>(info.number - i_right),
+          if ( i >= i_right )
+            ci[i].imag() -= ( AA * K )
+                         * std::pow( static_cast<double>(i - i_right) /
+                                     static_cast<double>(info.number.first - i_right),
                                      band_pow );
         }
 
-        elim(c, p, u);
-
-        for ( size_t j = 0; j < info.number; ++j ) {
-          const size_t iki_1j = j * info.number + i - 1;
-          val[iki_1j] = u2[j+1];
-          u1[j+1] = u[j+1];
+        for ( size_t i = 0; i < info.number.first; ++i ) {
+          idx(i,j-1)  = ui[i];
         }
 
-        i = ii + 1;
-        for ( size_t j = 1; j < info.number.first - 1; ++j ) {
-          const Pixel & uij   = idx(j,i    );
-          const Pixel & ui1j  = idx(j,i + 1);
-          const Pixel & ui_1j = idx(j,i - 1);
+        elim_i(ci, pi, ui);
 
-          p[j+1] = Pixel ( 0., Pi4lz ) * uij
-                 + ( -1. / delta2 ) * (-2. * uij + ui1j + ui_1j);
+        j = jj + 1;
+        for ( size_t i = 1; i < info.number.first - 1; ++i ) {
+          const Pixel & uij   = idx(i,j    );
+          const Pixel & uij1  = idx(i,j + 1);
+          const Pixel & uij_1 = idx(i,j - 1);
+
+          pi[i-1] = 2. * I * K / (step_size/2.0) * uij
+                  - (-2. * uij + uij1 + uij_1) / dy2;
         }
 
-        for ( size_t j = 0; j < info.number.first; ++j ) {
-          const size_t ik = j * info.number.second + i;
+        for ( size_t i = 0; i < info.number.first; ++i ) {
+          const size_t ik = i * info.number.second + j;
 
-          c[i+1] = Pixel(
-            -2. / delta2,
-            Pi4lz + -2. * M_PI * n[ik].imag() / info.lambda
-          );
+          ci[i] = -2/dy2 + I * K * ( 2/(step_size/2) - n[ik].imag() );
           /*
            * absorption borders are formed here 
            */
-          if ( (j+1) <= i_left )
-            c[j+1].imag() -= ( AA * K )
-                         * std::pow( static_cast<double>(i_left - (j+1)) /
+          if ( i <= i_left )
+            ci[i].imag() -= ( AA * K )
+                         * std::pow( static_cast<double>(i_left - i) /
                                      static_cast<double>(i_left),
                                      band_pow );
 
-          if ( (j+1) >= i_right )
-            c[j+1].imag() -= ( AA * K )
-                         * std::pow( static_cast<double>((j+1) - i_right) /
-                                     static_cast<double>(info.number - i_right),
+          if ( i >= i_right )
+            ci[i].imag() -= ( AA * K )
+                         * std::pow( static_cast<double>(i - i_right) /
+                                     static_cast<double>(info.number.first - i_right),
                                      band_pow );
         }
 
-        elim(c, p, u);
-
-        for ( int j = 0; j < info.number.first; ++j ) {
-          idx(j,i-1) = u1[j+1];
-          u2[j+1] = u[j+1];
+        for ( int i = 0; i < info.number.first; ++i ) {
+          idx(i,j-1) = ui[i];
         }
+
+        elim_i(ci, pi, ui);
       }
 
       /* something to the last column. */
       for ( int i = 0; i < info.number.first; ++i ) {
-        idx(i,info.number.second-1) = u2[i+1];
+        idx(i,info.number.second-1) = ui[i];
       }
       
 
@@ -2512,7 +2499,7 @@ namespace lightpipes {
       }
     }
 
-    for ( int i = info.size() - 1; i >= 0; ++i ) {
+    for ( int i = info.size() - 1; i >= 0; --i ) {
       register double fi = 0.25 * K * (step_size/2.0) * ( n[i].real() - 1. );
       val[i] *= exp(I * fi);
     }
@@ -2520,14 +2507,6 @@ namespace lightpipes {
     if ( dump_file.is_open() ) {
       dump_file.close();
     }
-
-    delete[] c;
-    delete[] u;
-    delete[] u1;
-    delete[] u2;
-    delete[] p;
-
-    return *this;
   }
   /* *** STUFF FOR STEPS ENDS HERE *** */
 
