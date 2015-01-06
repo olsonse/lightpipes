@@ -55,7 +55,7 @@ DEFUN_DLD (LPGaussScreen, args, nargout,
     double y0  = args(2).double_value();
     double R   = args(3).double_value();
     Field * field = mapToField( args(4).map_value() );
-    field->gaussian_screen(w, x0, y0, R);
+    field->gaussian_screen(w, w, x0, y0, R);
     octave_value retval(fieldToMap(*field));
     delete field;       field = NULL;
 

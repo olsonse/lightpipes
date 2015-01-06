@@ -441,39 +441,65 @@ namespace lightpipes {
                                    const double & angle = 0.0 ); 
 
     /** Supergaussian aperature.
-     * @param w
-     *    1/e intensity width
+     * @param wx
+     *    1/e intensity width in x direction
+     * @param wy
+     *    1/e intensity width in y direction.  If set to 0.0, this takes the wx
+     *    value.
      * @param n
      *    (2*n) == power of super gaussian
      */
-    Field & supergaussian_aperture(const double & w,
+    Field & supergaussian_aperture(const double & wx,
+                                         double   wy,
                                    const int    & n,
                                    const double & x0 = 0.0,
                                    const double & y0 = 0.0,
                                    const double & A = 1.0 );
 
     /** Supergaussian aperature.
-     * @param w
-     *    1/e intensity width
+     * @param wx
+     *    1/e intensity width in x direction
+     * @param wy
+     *    1/e intensity width in y direction.  If set to 0.0, this takes the wx
+     *    value.
      * @param n
      *    (2*n) == power of super gaussian
      */
-    Field & supergaussian_screen  (const double & w,
+    Field & supergaussian_screen  (const double & wx,
+                                         double   wy,
                                    const int    & n,
                                    const double & x0 = 0.0,
                                    const double & y0 = 0.0,
                                    const double & A = 1.0 );
 
-    Field & gaussian_aperture    ( const double & w,
-                                   const double & x0 = 0.0, const double & y0 = 0.0,
+    /** Gaussian aperature.
+     * @param wx
+     *    1/e intensity width in x direction
+     * @param wy
+     *    1/e intensity width in y direction.  If set to 0.0, this takes the wx
+     *    value.  [Default:  0.0]
+     */
+    Field & gaussian_aperture    ( const double & wx,
+                                   const double & wy = 0.0,
+                                   const double & x0 = 0.0,
+                                   const double & y0 = 0.0,
                                    const double & A = 1.0 ) {
-      return supergaussian_aperture( w, 1, x0, y0, A );
+      return supergaussian_aperture( wx, wy, 1, x0, y0, A );
     }
 
-    Field & gaussian_screen      ( const double & w,
-                                   const double & x0 = 0.0, const double & y0 = 0.0,
+    /** Gaussian screen.
+     * @param wx
+     *    1/e intensity width in x direction
+     * @param wy
+     *    1/e intensity width in y direction.  If set to 0.0, this takes the wx
+     *    value.  [Default:  0.0]
+     */
+    Field & gaussian_screen      ( const double & wx,
+                                   const double & wy = 0.0,
+                                   const double & x0 = 0.0,
+                                   const double & y0 = 0.0,
                                    const double & A = 1.0 ) {
-      return supergaussian_screen( w, 1, x0, y0, A );
+      return supergaussian_screen( wx, wy, 1, x0, y0, A );
     }
 
     Field & fft3 ( int ind );

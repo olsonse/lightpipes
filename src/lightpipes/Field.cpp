@@ -471,7 +471,8 @@ namespace lightpipes {
     return *this;
   }
 
-  Field & Field::supergaussian_aperture ( const double & w,
+  Field & Field::supergaussian_aperture ( const double & wx,
+                                                double   wy,
                                           const int    & n,
                                           const double & x0,
                                           const double & y0,
@@ -482,14 +483,18 @@ namespace lightpipes {
     double i2 = std::floor(info.number.first / 2);
     double j2 = std::floor(info.number.second / 2);
 
-    double w2_inv = 1./ (SQR(w) * 2.);
+    if ( wy == 0.0 )
+      wy = wx;
+
+    double wx2_inv = 1./ (SQR(wx) * 2.);
+    double wy2_inv = 1./ (SQR(wy) * 2.);
     double Asqrt = sqrt( abs(A) );
 
     for ( size_t i = 0; i < info.number.first; ++i ) {
         double x2 = SQR( (i - i2) * dx - x0 );
         for ( size_t j = 0; j < info.number.second; ++j ) {
             double y = (j - j2) * dy - y0;
-            double parg = pow(( x2 + SQR(y) ) * w2_inv, n);
+            double parg = pow( x2*wx2_inv + SQR(y)*wy2_inv, n );
             double cc = Asqrt * exp( - parg );
             idx(i,j) *= cc;
         }
@@ -502,7 +507,8 @@ namespace lightpipes {
    * as a mirror then A is the maximum reflection and gauss_scr returns the
    * transmitted field 
    */
-  Field & Field::supergaussian_screen ( const double & w,
+  Field & Field::supergaussian_screen ( const double & wx,
+                                              double   wy,
                                         const int    & n,
                                         const double & x0,
                                         const double & y0,
@@ -513,13 +519,17 @@ namespace lightpipes {
     double i2 = std::floor(info.number.first / 2);
     double j2 = std::floor(info.number.second / 2);
 
-    double w2_inv = 1./SQR(w);
+    if ( wy == 0.0 )
+      wy = wx;
+
+    double wx2_inv = 1./SQR(wx);
+    double wy2_inv = 1./SQR(wy);
 
     for ( size_t i = 0; i < info.number.first; ++i ) {
         double x2 = SQR( (i - i2) * dx - x0 );
         for ( size_t j = 0; j < info.number.second; ++j ) {
             double y = (j - j2) * dy - y0;
-            double parg = pow(( x2 + SQR(y) ) * w2_inv, n);
+            double parg = pow( x2*wx2_inv + SQR(y)*wy2_inv, n );
             double cc = sqrt( abs( 1. - A * exp ( -parg ) ) );
             idx(i,j) *= cc;
         }

@@ -53,7 +53,7 @@ DEFUN_DLD (LPGaussAperture, args, nargout,
     double y0  = args(2).double_value();
     double T   = args(3).double_value();
     Field * field = mapToField( args(4).map_value() );
-    field->gaussian_aperture(w, x0, y0, T);
+    field->gaussian_aperture(w, w, x0, y0, T);
     octave_value retval(fieldToMap(*field));
     delete field;       field = NULL;
 

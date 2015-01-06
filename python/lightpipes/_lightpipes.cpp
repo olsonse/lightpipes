@@ -222,15 +222,17 @@ BOOST_PYTHON_MODULE(_lightpipes) {
          (arg("Lx"),arg("Ly")=-0.1,
           arg("x0")=0.0,arg("y0")=0.0,arg("angle")=0.0),    return_self<>() )
     .def("supergaussian_aperture",      &Field::supergaussian_aperture,
-         (arg("w"),arg("n"),
+         (arg("wx"),arg("wy"),arg("n"),
           arg("x0")=0.0,arg("y0")=0.0,arg("A")=1.0),        return_self<>() )
     .def("supergaussian_screen",        &Field::supergaussian_screen,
-         (arg("w"),arg("n"),
+         (arg("wx"),arg("wy"),arg("n"),
           arg("x0")=0.0, arg("y0")=0.0, arg("A")=1.0),      return_self<>() )
     .def("gaussian_aperture",           &Field::gaussian_aperture,
-         (arg("w"),arg("x0")=0.0,arg("y0")=0.0,arg("A")=1.0), return_self<>() )
+         (arg("wx"),arg("wy")=0.0,arg("x0")=0.0,arg("y0")=0.0,arg("A")=1.0),
+          return_self<>() )
     .def("gaussian_screen",             &Field::gaussian_screen,
-         (arg("w"),arg("x0")=0.0,arg("y0")=0.0,arg("A")=1.0), return_self<>() )
+         (arg("wx"),arg("wy")=0.0,arg("x0")=0.0,arg("y0")=0.0,arg("A")=1.0),
+          return_self<>() )
     .def("fft3",                        &Field::fft3,       return_self<>() )
     .def("tilt",                        &Field::tilt,       return_self<>() )
     .def("zernike",                     &Field::zernike,

@@ -44,7 +44,7 @@ int main ( int argc, char *argv[] ) {
     }
 
     lightpipes::Field * field = lightpipes::Field::read (  );
-    field->gaussian_aperture ( R, x0, y0, A );
+    field->gaussian_aperture ( R, R, x0, y0, A );
     field->write (  );
 
     return 0;

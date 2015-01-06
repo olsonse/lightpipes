@@ -44,7 +44,7 @@ int main ( int argc, char *argv[] ) {
     }
 
     lightpipes::Field * field = lightpipes::Field::read (  );
-    field->gaussian_screen ( R, x0, y0, T );
+    field->gaussian_screen ( R, R, x0, y0, T );
     field->write (  );
 
     return 0;
