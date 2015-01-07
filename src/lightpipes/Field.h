@@ -504,6 +504,10 @@ namespace lightpipes {
 
     Field & fft3 ( int ind );
 
+    /** Introduces tilt into the field distribution.
+     * @param tx  Tilt in Radians for x-direction
+     * @param ty  Tilt in Radians for y-direction
+    */
     Field & tilt ( double tx, double ty );
 
     /** Zernike polynomials.
