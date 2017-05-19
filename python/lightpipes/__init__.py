@@ -1,7 +1,7 @@
 import _lightpipes as lib
 from _lightpipes import *
 import randomize
-from grating import grating
+import grating
 import lg
 
 

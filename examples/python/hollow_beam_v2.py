@@ -76,7 +76,7 @@ F.lens(f)             # apply lens (physical lens)
 Fb = F.copy()         # store the undeflected beam
 Fb.value[:] *= sqrt(0.2) # undeflected light
 F.value[:] *= lg      # apply lg phase
-grating(F,32,0)       # apply a grating phase.
+grating.perfect(F,32,0)# apply a perfect grating phase.
 F.value[:] *= sqrt(0.8) # deflection efficiency of SLM
 F.value[:] += Fb.value # mix the beams back together.
 print 'finished writing SLM phase.'
