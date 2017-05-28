@@ -18,3 +18,7 @@ Example scripts are available from the same place.
 
 Building the package requires bjam from the Boost.Build component of the Boost
 project.  The python bindings require Boost.Python.
+
+Versioning:
+  The last number in the version string will indicate minor revisions while the
+  other numbers will indicate significantly increased/changed capability.
